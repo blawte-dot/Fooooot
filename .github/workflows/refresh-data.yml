@@ -1,0 +1,32 @@
+name: refresh-data
+# يجلب إحصاءات المباريات ويختبر الأسواق على خوادم GitHub المجانية ويحفظ النتائج في data/ داخل المستودع.
+on:
+  schedule:
+    - cron: "30 3,15 * * *"      # مرتان يوميًا (توقيت UTC)
+  workflow_dispatch:             # أو يدويًا من تبويب Actions
+concurrency:
+  group: refresh-data
+  cancel-in-progress: false
+permissions:
+  contents: write
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 150
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Build data
+        env:
+          PITCHAPI_KEY: ${{ secrets.PITCHAPI_KEY }}
+        run: python -m app.pipeline
+      - name: Commit data
+        run: |
+          git config user.name "data-bot"
+          git config user.email "data-bot@users.noreply.github.com"
+          git add data
+          if git diff --cached --quiet; then echo "no changes"; else git commit -m "data: refresh [skip render]" && git push; fi

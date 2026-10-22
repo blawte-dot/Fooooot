@@ -1,0 +1,304 @@
+<!doctype html><html lang="ar" dir="rtl"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#0b0f14"><title>MatchPredict AI</title>
+<style>
+:root{--bg:#0b0f14;--card:#151b23;--tx:#e8ecf2;--mu:#8793a3;--ac:#3ddc97;--er:#ff6b6b;--ln:#232c38}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--tx);font-family:system-ui,"Segoe UI",Tahoma,sans-serif;padding-bottom:76px}
+main{padding:12px;max-width:760px;margin:auto}h2{font-size:18px;margin:6px 0 10px}
+#nav{position:fixed;bottom:0;right:0;left:0;display:flex;background:#10161d;border-top:1px solid var(--ln);z-index:9}
+#nav button{flex:1;background:none;border:0;color:var(--mu);padding:14px 2px;font:inherit;font-size:13px}#nav button.on{color:var(--ac);font-weight:700}
+.card{background:var(--card);border-radius:12px;padding:12px;margin:10px 0}.mu{color:var(--mu);font-size:13px}.er{color:var(--er)}
+input,select{background:var(--card);color:var(--tx);border:1px solid #2a3340;border-radius:8px;padding:10px;font:inherit;font-size:16px;width:100%;margin:4px 0}
+.row{display:flex;justify-content:space-between;align-items:center;gap:8px}button.b{background:var(--ac);color:#06231a;border:0;border-radius:8px;padding:8px 14px;font:inherit;font-weight:700}
+.bar{display:flex;height:26px;border-radius:6px;overflow:hidden;margin:10px 0;direction:ltr;font-size:13px}.bar div{display:flex;align-items:center;justify-content:center;color:#06231a;font-weight:700}
+details.card summary{font-weight:700;cursor:pointer}.mr{display:grid;grid-template-columns:1fr 60px;gap:6px;align-items:center;padding:7px 0;border-top:1px solid var(--ln);font-size:14px}
+.mr .od{padding:4px;margin:0;font-size:13px}.hd{font-size:11px;color:var(--mu);display:grid;grid-template-columns:1fr 60px;gap:6px;margin-top:8px}
+.m2{display:grid;grid-template-columns:1fr auto;gap:8px;padding:6px 0;border-top:1px solid var(--ln);font-size:14px}.hr{background:none;border:0;color:var(--mu);font-size:26px;padding:0 6px;line-height:1}.hr.on{color:#ff4d6d}.crest{width:28px;height:28px;border-radius:50%;background:#222c38;display:inline-flex;align-items:center;justify-content:center;font-size:12px;color:var(--mu);overflow:hidden;vertical-align:middle;margin-left:6px;flex:none}.crest img{width:100%;height:100%;object-fit:contain}.tw{overflow-x:auto;margin:8px 0}table.st{border-collapse:collapse;width:100%;font-size:13px}table.st th{color:var(--mu);font-weight:600;padding:6px 4px;border-bottom:1px solid var(--ln);white-space:nowrap}table.st td{padding:7px 4px;text-align:center;white-space:nowrap;border-bottom:1px solid var(--ln)}table.st td.n{text-align:right;position:sticky;right:0;background:var(--bg)}table.st td.pt{font-weight:700;color:var(--ac)}.fw{font-weight:700}.pl{display:block;color:var(--mu);font-size:13px;margin:10px 0 2px}.sel{width:100%;min-height:46px;font-size:16px;padding:10px 12px}.evl{max-height:340px;overflow-y:auto;border:1px solid var(--ln);border-radius:10px}.ev{display:grid;grid-template-columns:1fr auto auto;gap:10px;align-items:center;padding:11px 12px;border-top:1px solid var(--ln);cursor:pointer;font-size:14px}.ev:first-child{border-top:0}.ev.on{background:#1b2430;box-shadow:inset 3px 0 0 var(--ac)}.cl{font-size:12px;font-weight:700;min-width:46px;text-align:left}.big{font-size:22px;font-weight:700}.chs{display:flex;gap:6px;overflow-x:auto;padding:4px 0 8px}.ch{flex:none;background:var(--card);color:var(--mu);border:0;border-radius:18px;padding:8px 14px;font:inherit}.ch.on{background:var(--ac);color:#06231a;font-weight:700}
+</style></head><body><main id="v"></main><nav id="nav"></nav>
+<script>
+const $=s=>document.querySelector(s),esc=t=>String(t??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const T={today:"المباريات",analysis:"التحليل",team:"فريق",leagues:"الدوريات",perf:"الأداء"};let cur="today",day=new Date().toLocaleDateString("sv"),M=[],mid=null;
+async function api(p){const r=await fetch(p);let j;try{j=await r.json()}catch{throw new Error("استجابة غير صالحة من الخادم (قد يكون يستيقظ، أعد المحاولة)")}if(!r.ok){const e=new Error(j.error?.message||"خطأ");e.code=j.error?.code;throw e}return j}
+const V={today,analysis,team,l50,board,leagues,perf};
+function go(){$("#nav").innerHTML=Object.entries(T).map(([k,t])=>`<button class="${k==cur?"on":""}" data-k="${k}">${t}</button>`).join("");
+document.querySelectorAll("#nav button").forEach(b=>b.onclick=()=>{cur=b.dataset.k;go()});V[cur]();window.scrollTo(0,0)}
+const ld=m=>`<div class="mu">${m}</div>`,er=e=>`<div class="card er">${esc(e.message)}</div>`;
+const LC={};
+const cr=(id,name)=>`<span class="crest" data-t="${esc(id)}">${esc((name||"?").trim().charAt(0))}</span>`;
+const crU=(u,name)=>`<span class="crest">${u?`<img src="${esc(u)}" alt="${esc((name||"?").trim().charAt(0))}" onerror="this.parentNode.textContent=this.alt">`:esc((name||"?").trim().charAt(0))}</span>`;
+async function fillLogos(root){if(!root)return;const els=[...root.querySelectorAll(".crest[data-t]")];const need=[...new Set(els.map(e=>e.dataset.t).filter(i=>!(i in LC)))];
+for(let i=0;i<need.length;i+=20){const ch=need.slice(i,i+20);try{Object.assign(LC,await api("/api/logos?ids="+ch.join(",")))}catch(e){ch.forEach(x=>LC[x]=null)}}
+els.forEach(e=>{const u=LC[e.dataset.t];if(u)e.innerHTML=`<img src="${esc(u)}" alt="${esc(e.textContent)}" onerror="this.parentNode.textContent=this.alt">`})}
+const dstr=n=>{const d=new Date();d.setDate(d.getDate()+n);return d.toLocaleDateString("sv")};
+let B5=null,big=false,fam=false;
+async function today(){
+const chips=[...Array(7).keys()].map(n=>`<button class="ch ${day==dstr(n)?"on":""}" data-d="${dstr(n)}">${n==0?"اليوم":n==1?"غدًا":new Date(dstr(n)+"T12:00").toLocaleDateString("ar",{weekday:"short",day:"numeric"})}</button>`).join("")+`<button class="ch ${day=="all"?"on":""}" data-d="all">كل الأسبوع</button>`;
+$("#v").innerHTML=`<h2>المباريات (السابقة والقادمة)</h2><div class="chs">${chips}</div><div class="chs"><button class="ch ${fam?"on":""}" id="fm">⭐ أشهر المباريات</button><button class="ch ${big?"on":""}" id="b5">الخمس الكبرى فقط</button></div><input type="date" id="d" value="${day=="all"?"":day}"><input id="q" placeholder="ابحث عن فريق"><select id="lg"><option value="">كل الدوريات</option></select><div id="l">${ld("جارٍ التحميل…")}</div>`;
+document.querySelectorAll(".ch[data-d]").forEach(b=>b.onclick=()=>{day=b.dataset.d;today()});
+$("#b5").onclick=()=>{big=!big;today()};$("#fm").onclick=()=>{fam=!fam;today()};
+$("#d").onchange=e=>{if(e.target.value){day=e.target.value;today()}};
+try{const ds=day=="all"?[...Array(7).keys()].map(dstr):[day];let errs=0,last;
+const R=await Promise.all(ds.map(d=>api((fam?"/api/famous?date=":"/api/matches?date=")+d).then(x=>x.matches||[]).catch(e=>{errs++;last=e;return[]})));
+if(errs==ds.length)throw last;
+if(big&&!B5)B5=new Set((await api("/api/leagues")).leagues.filter(l=>l.big5).map(l=>l.id));
+M=R.flat().sort(fam?((a,b)=>b.score-a.score||new Date(a.time_utc)-new Date(b.time_utc)):((a,b)=>new Date(a.time_utc)-new Date(b.time_utc)));
+[...new Set(M.map(m=>m.league.name))].sort().forEach(n=>$("#lg").insertAdjacentHTML("beforeend",`<option>${esc(n)}</option>`));$("#q").oninput=$("#lg").onchange=draw;draw()}catch(e){$("#l").innerHTML=er(e)}}
+const bd=b=>b?`<div class="mu">⭐ ${[...(b.famous||[]).map(esc),b.ucl?"دوري الأبطال":"",b.big5?esc(b.big5):""].filter(Boolean).join(" · ")}</div>`:"";
+function draw(){const q=$("#q").value.trim().toLowerCase(),lg=$("#lg").value;
+const L=M.filter(m=>(!big||(B5&&B5.has(m.league.id)))&&(!lg||m.league.name==lg)&&(!q||(m.home_team.name+m.away_team.name).toLowerCase().includes(q)));
+$("#l").innerHTML=L.length?L.map((m,i)=>`<div class="card"><div class="mu">${esc(m.league.name)} · ${new Date(m.time_utc).toLocaleString("ar",{weekday:"short",day:"numeric",hour:"2-digit",minute:"2-digit"})}</div>${bd(m.badges)}
+<div class="row"><b>${i<40?cr(m.home_team.id,m.home_team.name):""}${esc(m.home_team.name)} ${m.score_home!=null?m.score_home+" - "+m.score_away:"×"} ${i<40?cr(m.away_team.id,m.away_team.name):""}${esc(m.away_team.name)}</b><button class="b" data-id="${esc(m.id)}">حلّل</button></div></div>`).join(""):ld(fam?"لا توجد مباريات مشهورة في هذا التاريخ (أندية مشهورة أو دوري الأبطال).":big?"لا توجد مباريات من الخمس الكبرى في هذا التاريخ.":"لا توجد مباريات مغطاة في هذا التاريخ.");
+document.querySelectorAll("button.b[data-id]").forEach(b=>b.onclick=()=>{mid=b.dataset.id;cur="analysis";go()});fillLogos($("#l"))}
+const row=(l,p)=>`<div class="mr"><span>${esc(l)}</span><b>${p}%</b></div>`;
+const sec=(t,rows,open)=>`<details class="card" ${open?"open":""}><summary>${t}</summary>${rows.join("")}</details>`;
+function mk(M,m){const o=[];
+o.push(sec("إجمالي الأهداف",Object.entries(M.ou).flatMap(([l,v])=>[row("أكثر من "+l,v.over),row("أقل من "+l,v.under)]),true));
+o.push(sec("أهداف كل فريق",["0.5","1.5","2.5"].flatMap(l=>[row(m.home+" أكثر من "+l,M.team_goals.home[l]),row(m.away+" أكثر من "+l,M.team_goals.away[l])])));
+o.push(sec("الفرصة المزدوجة / بدون تعادل",[row(m.home+" أو تعادل",M.double_chance["1X"]),row("تعادل أو "+m.away,M.double_chance.X2),row("أي فريق يفوز (لا تعادل)",M.double_chance["12"]),row(m.home+" (التعادل استرداد)",M.dnb.home),row(m.away+" (التعادل استرداد)",M.dnb.away)]));
+const a=M.ah;o.push(sec("التعويض -1 (الفوز بفارق هدفين+)",[row(m.home+" -1 ربح",a.home_m1.win),row(m.home+" -1 استرداد (فارق هدف)",a.home_m1.push),row(m.away+" -1 ربح",a.away_m1.win),row(m.away+" -1 استرداد (فارق هدف)",a.away_m1.push)]));
+o.push(sec("كلا الفريقين يسجل / شباك نظيفة",[row("كلا الفريقين يسجل: نعم",M.btts.yes),row("كلا الفريقين يسجل: لا",M.btts.no),row(m.home+" شباك نظيفة",M.clean_sheet.home),row(m.away+" شباك نظيفة",M.clean_sheet.away)]));
+o.push(sec("النتائج الدقيقة الأرجح",M.correct_score.map(c=>row(c.score,c.p))));return o.join("")}
+const dots=f=>f.form.map(x=>x=="W"?"🟢":x=="D"?"⚪":"🔴").join("");
+const fm=(t,f)=>f?`<div class="mu">${t}: ${dots(f)} · أهداف ${f.gf}/${f.ga} · +2.5: ${f.over25}% · كلا الفريقين: ${f.btts}% · شباك نظيفة: ${f.clean}% (${f.n} مباريات)</div>`:"";
+function extra(r){const m=r.match,e=r.engine,c=r.confidence,F=r.features;let h="";
+h+=`<div class="card"><b>مؤشر الثقة: ${c.level}</b><div class="mu">${c.reasons.length?c.reasons.map(esc).join(" · "):"البيانات كافية والنماذج متفقة"}<br>${esc(c.note)}</div></div>`;
+h+=`<div class="card"><b>المحرك</b><div class="mu">Dixon-Coles: ${e.dixon_coles.join(" / ")}${e.elo?` · Elo: ${e.elo.join(" / ")}`:""} (فوز/تعادل/خسارة)<br>${e.elo_weight>0?`الدمج مفعّل بوزن Elo ${Math.round(e.elo_weight*100)}% لأن الاختبار التاريخي أظهر تحسنًا`:"الدمج مع Elo غير مفعّل: لم يُظهر الاختبار التاريخي تحسنًا"}${e.temperature!=1?` · معايرة ${e.temperature}`:""}</div></div>`;
+h+=`<div class="card"><b>الشكل الحالي</b>${fm(esc(m.home)+" (كل المباريات)",F.home.overall)}${fm(esc(m.home)+" (على أرضه)",F.home.venue)}${fm(esc(m.away)+" (كل المباريات)",F.away.overall)}${fm(esc(m.away)+" (خارج أرضه)",F.away.venue)}</div>`;
+const H=F.h2h;h+=H?`<div class="card"><b>المواجهات المباشرة (${H.n})</b><div class="mu">${esc(m.home)} ${H.record.home_wins} فوز · ${H.record.draws} تعادل · ${esc(m.away)} ${H.record.away_wins} فوز</div>${H.matches.map(x=>`<div class="mu">${esc(x.date)}: ${esc(x.score)} (${x.home_was_home?esc(m.home)+" مضيف":esc(m.away)+" مضيف"})</div>`).join("")}</div>`:`<div class="card mu">لا توجد مواجهات مباشرة سابقة في البيانات.</div>`;
+return h}
+const gsLine=r=>{const g=r.grades_state;if(!g)return"";if(g.state=="running")return`<div class="mu" style="margin-top:6px">⏳ جارٍ اختبار موثوقية الأسواق (${g.finished}/${g.total}). كل سوق ينتهي اختباره يظهر حكمه فورًا، وتتحدث الصفحة تلقائيًا.</div>`;return g.errors&&g.errors.length?`<div class="mu" style="margin-top:6px">⚠️ تعذّر اختبار بعض الأسواق (${g.errors.map(esc).join("، ")}) فحكمها «غير مؤكد».</div>`:""};
+let PK=null,PKS={g:"result",e:0},PKC={};
+const CALLC={"نعم":"#3ddc97","محايد":"#f2c14e","لا":"#ff6b6b","غير مؤكد":"#8793a3","انتظر":"#8793a3"};
+const pickerHTML=()=>`<div class="card" id="pk"><b>اختر حدثًا وسأخبرك باحتماله</b><div id="pks" class="mu" style="margin-top:6px">جارٍ تحميل الأسواق… (أول مرة قد يستغرق دقائق)</div></div>`;
+async function initPicker(id){const box=()=>$("#pks");
+if(PKC[id]&&box()){PK=PKC[id];renderPicker()}                       // عرض فوري من آخر نتيجة ثم تحديثها بصمت
+try{const r=await api("/api/board/"+id);PKC[id]=r;if(cur!="analysis"||mid!=id||!box())return;PK=r;renderPicker();
+if(r.status.stats_loading||r.picks===null||(r.grades_state&&r.grades_state.state=="running"))setTimeout(()=>{if(cur=="analysis"&&mid==id)initPicker(id)},8000)}
+catch(e){if(box()&&!PKC[id])box().innerHTML=`<span class="er">${esc(e.message)}</span>`}}
+function renderPicker(){const r=PK,box=$("#pks");if(!box)return;const order=["result","goals","corners","corners_1h","corners_2h","yellow","sot","shots","fouls"];
+const gs=order.map(k=>r.groups.find(g=>g.key==k)).filter(Boolean);if(!gs.length){box.innerHTML="لا توجد أسواق متاحة لهذه المباراة.";return}if(!gs.find(g=>g.key==PKS.g)){PKS.g=gs[0].key;PKS.e=0}
+box.innerHTML=`<label class="pl" for="pg">القسم</label><select id="pg" class="sel">${gs.map(g=>`<option value="${g.key}" ${g.key==PKS.g?"selected":""}>${esc(g.label)}${g.available?"":" — غير متاح"}</option>`).join("")}</select><div id="prs"></div><label class="pl">أحداث القسم (اضغط حدثًا لعرض تفاصيله)</label><div id="pel" class="evl"></div>${gsLine(r)}${r.status.stats_loading?`<div class="mu" style="margin-top:6px">إحصاءات المباريات قيد التحميل (${r.status.done}/${r.status.total})، تتحدث النتائج تلقائيًا.</div>`:""}`;
+$("#pg").onchange=e=>{PKS.g=e.target.value;PKS.e=0;fillEv()};fillEv()}
+function fillEv(){const r=PK,g=r.groups.find(x=>x.key==PKS.g),E=r.events.filter(x=>x.group==PKS.g);
+if(!g.available){$("#pel").innerHTML=`<div class="mu" style="padding:10px">لا أحداث متاحة.</div>`;$("#prs").innerHTML=`<div class="card er" style="margin:8px 0">${esc(g.reason||"غير متاح")}</div>`;return}
+$("#pel").innerHTML=E.map((x,i)=>`<div class="ev" data-i="${i}"><span>${esc(x.label)}</span><b>${x.p}%</b><span class="cl" style="color:${CALLC[x.call]||"#8793a3"}">${esc(x.call)}</span></div>`).join("");
+$("#pel").querySelectorAll(".ev").forEach(el=>el.onclick=()=>{PKS.e=+el.dataset.i;showEv()});showEv()}
+function showEv(){const r=PK,E=r.events.filter(x=>x.group==PKS.g);if(PKS.e>=E.length)PKS.e=0;const x=E[PKS.e];if(!x)return;const g=r.groups.find(y=>y.key==PKS.g),ex=g.expected;
+document.querySelectorAll("#pel .ev").forEach((el,i)=>el.classList.toggle("on",i==PKS.e));
+$("#prs").innerHTML=`<div class="card" style="margin:8px 0"><div class="big">${x.p}%</div><div>احتمال: <b>${esc(x.label)}</b></div><div class="mu">${x.p>=50?"الأرجح أن يحدث":"الأرجح ألا يحدث"} · المعتاد تاريخيًا في هذا الدوري: ${x.base==null?"—":x.base+"%"}${x.n?` · من ${x.n} مباراة`:""}</div>
+<div style="margin-top:8px">هل أختارها؟ <b style="color:${CALLC[x.call]||"#8793a3"}">${esc(x.call)}</b> ${x.grade?gbadge({grade:x.grade}):""}</div><div class="mu">${esc(x.why)}</div>
+${ex?`<div class="mu" style="margin-top:6px">المتوقع: ${esc(r.match.home)} ${ex.home} · ${esc(r.match.away)} ${ex.away} · المجموع ${ex.total}</div>`:""}
+<div class="mu" style="margin-top:6px">⚠️ الاحتمال المرتفع لا يعني رهانًا رابحًا: لا أعرف سعر شركة الرهان، و«نعم» تعني فقط أن النموذج اجتاز الاختبار في هذا السوق، وليست ضمانًا.</div></div>`}
+const aiHTML=()=>`<div class="card" id="aic"><b>🤖 رأي Gemini (محلل ذكاء اصطناعي)</b><div class="mu" style="margin:6px 0">يشرح أرقام النموذج ويكشف مواضع الشك. «دراسة شاملة» تبحث عن الملعب والديربي والمدربين والغيابات. <b>لا يضع احتمالات</b>: كل نسبة تُعرض من المحرك الإحصائي، وأي رقم يذكره من عنده يُعلَّم «غير موثّق». قد يخطئ.</div><div class="row" style="gap:8px"><button class="b" id="aib">حلّل بـ Gemini</button><button class="b" id="ain">أخبار الإصابات (بحث)</button><button class="b" id="aid">دراسة شاملة</button></div><div id="air" style="margin-top:8px"></div></div>`;
+const DIRL={home:"لصالح المضيف",away:"لصالح الضيف",draw:"يميل للتعادل",over:"يميل لأكثر",under:"يميل لأقل",neutral:"محايد"},WL={high:"مؤثر جدًا",medium:"متوسط",low:"ضعيف"};
+const mkRow=x=>`<div class="m2"><span>${esc(x.label)}<br><span class="mu">${esc(x.reason)}</span></span><b>${x.p}% <span class="mu">(${esc(x.call)})</span></b></div>`;
+async function runAI(id,news){const el=$("#air");if(!el)return;el.innerHTML=ld(news?"جارٍ البحث عن الأخبار…":"Gemini يحلل… قد يستغرق حتى دقيقة");
+try{const r=await api((news?"/api/ai-news/":"/api/ai/")+id);if(!$("#air"))return;
+if(news){el.innerHTML=`<div class="card" style="margin:0"><b>أخبار وغيابات (بحث جوجل)</b><div style="white-space:pre-wrap;margin-top:6px">${esc(r.text)}</div>${r.sources.length?`<div class="mu" style="margin-top:6px">المصادر:<br>${r.sources.filter(x=>/^https:\/\//.test(x.uri)).map(x=>`<a href="${esc(x.uri)}" target="_blank" rel="noopener noreferrer" style="color:var(--ac)">${esc(x.title||x.uri)}</a>`).join("<br>")}</div>`:""}<div class="mu" style="margin-top:6px">⚠️ ${esc(r.note)}</div></div>`;return}
+const a=r.analysis;
+el.innerHTML=`<div class="card" style="margin:0"><div>${esc(a.summary)}</div>
+<div class="mu" style="margin-top:6px">رأيه في النموذج: <b style="color:${a.model_view_ok?"var(--ac)":"var(--er)"}">${a.model_view_ok?"سليم":"فيه ملاحظات"}</b> ${esc(a.model_view_note)}</div>
+${a.key_factors.length?`<div style="margin-top:8px"><b>عوامل</b></div>`+a.key_factors.map(k=>`<div class="m2"><span>${esc(k.factor)}</span><b class="mu">${esc(DIRL[k.direction]||k.direction)} · ${esc(WL[k.weight]||k.weight)}</b></div>`).join(""):""}
+${a.best_supported_markets.length?`<div style="margin-top:8px"><b>أسواق تدعمها البيانات (أرقامها من المحرك)</b></div>`+a.best_supported_markets.map(mkRow).join(""):""}
+${a.avoid_markets.length?`<div style="margin-top:8px"><b>أسواق يتجنبها</b></div>`+a.avoid_markets.map(mkRow).join(""):""}
+${a.risks.length?`<div style="margin-top:8px"><b>ما قد يجعل النموذج مخطئًا</b></div>`+a.risks.map(x=>`<div class="mu">• ${esc(x)}</div>`).join(""):""}
+${a.data_gaps.length?`<div style="margin-top:8px"><b>بيانات ناقصة</b></div>`+a.data_gaps.map(x=>`<div class="mu">• ${esc(x)}</div>`).join(""):""}
+<div class="mu" style="margin-top:8px">الثقة: ${esc(a.confidence)} — ${esc(a.confidence_reason)}</div>
+${a.unverified_numbers.length?`<div class="card er" style="margin:8px 0 0">⚠️ ذكر Gemini أرقامًا لا أصل لها في البيانات: ${a.unverified_numbers.map(esc).join("، ")}. لا تعتمد عليها.</div>`:`<div class="mu" style="margin-top:6px">✓ لم تُرصد أرقام خارج البيانات.</div>`}
+<div class="mu" style="margin-top:6px">${esc(r.note)}</div></div>`}
+catch(e){if($("#air"))$("#air").innerHTML=`<div class="card er" style="margin:0">${esc(e.message)}</div>`}}
+const fstr=x=>x?formH(String(x).split("").filter(c=>"WDL".includes(c))):"—";
+const mktHTML=()=>`<div class="card" id="mkc"><b>🏟️ الملعب والسوق</b><div id="mkr" class="mu" style="margin-top:6px">جارٍ التحميل…</div></div>`;
+async function initMarket(id){try{const r=await api("/api/market/"+id);const el=$("#mkr");if(!el||mid!=id)return;
+if(!r.available){el.textContent=r.reason||"غير متاح";return}const v=r.venue||{};
+let h=`<div>${v.name?`<b>${esc(v.name)}</b>${v.city?" · "+esc(v.city):""}`:"الملعب غير معروف"}</div><div class="mu">شكل الفريقين (ESPN): ${esc(r.match.home)} ${fstr(r.form&&r.form.home)} · ${esc(r.match.away)} ${fstr(r.form&&r.form.away)}</div>`;
+if(r.market){h+=`<div class="hd" style="display:block;margin-top:10px"><b>النموذج مقابل السوق</b></div>`+r.compare.map(c=>`<div class="m2"><span>${esc(c.label)}</span><b>${c.model}% <span class="mu">نموذج</span> · ${c.market}% <span class="mu">سوق</span> · <span style="color:${Math.abs(c.gap)>=8?"var(--er)":"var(--mu)"}">${c.gap>0?"+":""}${c.gap}</span></b></div>`).join("");
+const o=r.market.ml_open&&r.market.ml;if(o)h+=`<div class="mu" style="margin-top:6px">تحرك السعر منذ الفتح (فوز المضيف): ${r.market.ml_open.prob.home}% ← ${r.market.ml.prob.home}% · (فوز الضيف): ${r.market.ml_open.prob.away}% ← ${r.market.ml.prob.away}%</div>`;
+h+=`<div style="margin-top:8px">${esc(r.read||"")}</div><div class="mu" style="margin-top:4px">المصدر: ${esc(r.source||"")}${r.market.ml?` · هامش الشركة ${r.market.ml.overround}%`:""}. الأسعار لا تعني أن الرهان رابح.</div>`}else h+=`<div class="mu" style="margin-top:6px">${esc(r.reason||"لا أسعار منشورة")}</div>`;
+el.innerHTML=h}catch(e){const el=$("#mkr");if(el)el.textContent="تعذر تحميل الملعب والسوق"}}
+const dSec=(t,b)=>b?`<div style="margin-top:10px"><b>${t}</b><div style="margin-top:2px">${b}</div></div>`:"";
+const dList=a=>a&&a.length?a.map(x=>`<div class="mu">• ${esc(x)}</div>`).join(""):"";
+async function runDossier(id,n){const el=$("#air");if(!el||mid!=id)return;if(!n)el.innerHTML=ld("بدأت الدراسة الشاملة (بحث + ملعب + ديربي + غيابات)… قد تستغرق حتى دقيقتين");
+try{const r=await api("/api/ai-dossier/"+id);if(!$("#air")||mid!=id)return;
+if(r.state=="running"){if((n||0)<80)setTimeout(()=>runDossier(id,(n||0)+1),3000);else $("#air").innerHTML=`<div class="card er" style="margin:0">استغرقت الدراسة وقتًا طويلًا، أعد المحاولة بعد قليل</div>`;return}
+if(r.state=="error"){el.innerHTML=`<div class="card er" style="margin:0">${esc(r.error)}</div>`;return}
+const src=r.sources&&r.sources.length?`<div class="mu" style="margin-top:8px">المصادر:<br>${r.sources.filter(x=>/^https:\/\//.test(x.uri)).map(x=>`<a href="${esc(x.uri)}" target="_blank" rel="noopener noreferrer" style="color:var(--ac)">${esc(x.title||x.uri)}</a>`).join("<br>")}</div>`:"";
+if(!r.structured){el.innerHTML=`<div class="card" style="margin:0"><b>الدراسة (نص حر)</b><div style="white-space:pre-wrap;margin-top:6px">${esc(r.raw)}</div>${src}<div class="mu" style="margin-top:6px">⚠️ ${esc(r.note)}</div></div>`;return}
+const d=r.dossier,T=(n,t)=>t&&(t.manager||t.style||t.strengths.length||t.weaknesses.length)?`<div style="margin-top:6px"><b>${esc(n)}</b>${t.manager?` <span class="mu">· المدرب: ${esc(t.manager)}</span>`:""}${t.style?`<div>${esc(t.style)}</div>`:""}${t.strengths.length?`<div class="mu">قوة: ${t.strengths.map(esc).join("، ")}</div>`:""}${t.weaknesses.length?`<div class="mu">ضعف: ${t.weaknesses.map(esc).join("، ")}</div>`:""}</div>`:"";
+const m=r.match;
+el.innerHTML=`<div class="card" style="margin:0"><div>${esc(d.summary)}</div>
+${dSec("🏟️ الملعب",esc(d.venue.notes)+dList(d.venue.factors))}
+${dSec("⚔️ خصوصية المباراة",(d.rivalry.is_derby===true?"<b>ديربي / مواجهة خاصة</b> — ":d.rivalry.is_derby===false?"ليست ديربي — ":"")+esc(d.rivalry.notes))}
+${dSec("🧠 الفريقان",T(m.home,d.teams.home)+T(m.away,d.teams.away))}
+${dSec("🩹 الغيابات",(d.availability.home.length?`<div class="mu">${esc(m.home)}: ${d.availability.home.map(esc).join("، ")}</div>`:"")+(d.availability.away.length?`<div class="mu">${esc(m.away)}: ${d.availability.away.map(esc).join("، ")}</div>`:""))}
+${dSec("📅 الجدول والدافع",esc(d.schedule_and_motivation))}${dSec("🟨 الحكم",esc(d.referee))}
+${dSec("💡 نصائح (ليست ضمانًا)",dList(d.advice))}${dSec("❓ ما لم أجده",dList(d.unknowns))}
+<div class="mu" style="margin-top:8px">الثقة: ${esc(d.confidence)}</div>
+${d.unverified_percentages.length?`<div class="card er" style="margin:8px 0 0">⚠️ ذكر نسبًا لا أصل لها في أرقام المحرك: ${d.unverified_percentages.map(esc).join("، ")}. تجاهلها.</div>`:""}
+${src}<div class="mu" style="margin-top:6px">⚠️ ${esc(r.note)}</div></div>`}
+catch(e){if($("#air"))$("#air").innerHTML=`<div class="card er" style="margin:0">${esc(e.message)}</div>`}}
+async function showStatus(id){const el=$("#dsr");el.innerHTML=ld("جارٍ فحص البيانات…");
+try{const r=await api("/api/data-status/"+id);if(!$("#dsr"))return;
+el.innerHTML=`<div class="card" style="margin:8px 0"><b>حالة بيانات ${esc(r.league.name)}</b><div class="mu">${r.matches} مباراة منتهية${r.last_match?" · آخر مباراة "+esc(r.last_match):""} · ESPN: ${r.espn.covered?"مفعّل"+(r.espn.filled!=null?` (أُكمل ${r.espn.filled})`:""):"لا يغطي هذا الدوري"}</div>
+${r.loading?`<div class="mu">قيد التحميل (${r.done}/${r.total}) من الأحدث للأقدم…</div>`:""}
+${Object.values(r.metrics).map(m=>`<div class="m2"><span>${m.usable?"✅":"❌"} ${esc(m.label)}${m.why?`<br><span class="mu">${esc(m.why)}</span>`:""}</span><b>${m.n} <span class="mu">(${m.pct}%)</span></b></div>`).join("")}
+<div class="mu" style="margin-top:6px">${esc(r.note)}</div></div>`}catch(e){if($("#dsr"))$("#dsr").innerHTML=er(e)}}
+async function analysis(){if(!mid){$("#v").innerHTML=ld("اختر مباراة من تبويب «المباريات» ثم اضغط حلّل.");return}
+$("#v").innerHTML=ld("جارٍ جلب التاريخ وحساب النموذج… قد يستغرق حتى دقيقة في أول مرة");
+try{const r=await api("/api/predict/"+mid),p=r.prediction,m=r.match;
+let h=`<div class="card"><b class="big">${crU(m.home_logo,m.home)}${esc(m.home)} × ${crU(m.away_logo,m.away)}${esc(m.away)}</b><div class="mu">${esc(m.league)}${m.referee?" · الحكم: "+esc(m.referee):""}</div><button class="b" id="to50" style="margin-top:8px">تحليل آخر 50 مباراة (الدوري + دوري الأبطال)</button> <button class="b" id="tobd" style="margin-top:8px">لوحة الأسواق: أهداف، تسديدات، بطاقات…</button></div>`;
+if(!p)h+=`<div class="card er">لا يوجد توقع: ${esc(r.reason)}</div>`;
+else{h+=`<div class="card"><div class="row"><span>${esc(m.home)} <b>${p.home}%</b></span><span>تعادل <b>${p.draw}%</b></span><span>${esc(m.away)} <b>${p.away}%</b></span></div>
+<div class="bar"><div style="width:${p.home}%;background:#3ddc97">${p.home}</div><div style="width:${p.draw}%;background:#c9d1dc">${p.draw}</div><div style="width:${p.away}%;background:#5aa9ff">${p.away}</div></div>
+<div class="mu">الأهداف المتوقعة: ${p.xg_home} - ${p.xg_away}</div>
+</div>`+pickerHTML()+mktHTML()+aiHTML()+extra(r)+mk(p.markets,m);
+const c=r.cards;h+=c?sec("البطاقات الصفراء (إجمالي المباراة)",Object.entries(c.lines).flatMap(([l,v])=>[row("أكثر من "+l,v.over),row("أقل من "+l,v.under)]),false).replace("</summary>",`</summary><div class="mu">المتوقع: ${esc(m.home)} ${c.home.avg} (${c.home.n} مباريات) · ${esc(m.away)} ${c.away.avg} (${c.away.n}) · المجموع ${c.total}</div>`)+`<div class="mu">${esc(c.note)}</div>`:`<div class="card mu">البطاقات: غير متاحة لهذه المباراة (أحداث المباريات السابقة غير كافية في المصدر).</div>`;
+const q=r.params;if(r.horizon_days>14)h+=`<div class="card mu">⚠️ المباراة بعد ${r.horizon_days} يومًا: النموذج يعتمد على النتائج حتى اليوم، وقد تتغير الأحوال (إصابات، انتقالات، مدرب) قبلها، فالدقة أقل.</div>`;h+=`<div class="card mu">⚠️ ${esc(r.warning)}<br>التعلم الذاتي: ${q.status=="tuned"?`معاملات مضبوطة من أخطاء المباريات السابقة (LogLoss ${q.log_loss} مقابل ${q.default_log_loss??"—"} للافتراضي و${q.baseline_log_loss} للنموذج الأساسي)`:q.status=="tuning"?"الضبط جارٍ في الخلفية، أعد فتح التحليل بعد دقيقة":"معاملات افتراضية (بيانات غير كافية للضبط)"}<br>مباريات التدريب: ${r.n_matches} (${esc(m.home)}: ${r.scope.home_n} · ${esc(m.away)}: ${r.scope.away_n}${r.scope.extra_matches?" · شملت مسابقات أخرى في نفس الدولة":""}) · آخر بيانات: ${esc(r.data_through||"—")} · غير مستخدم بعد: ${r.not_used.join("، ")}${r.xg?`<br>xG: ${r.xg.alpha>0?"مفعّل بوزن "+Math.round(r.xg.alpha*100)+"%":r.xg.loading?"جارٍ تحميل إحصاءات المباريات "+r.xg.done+"/"+r.xg.total:"غير مفعّل (لم يحسّن الاختبار الخطأ، تغطية البيانات "+r.xg.coverage+"%)"}`:""}</div>`}
+$("#v").innerHTML=h;$("#to50").onclick=()=>{cur="l50";go()};$("#tobd").onclick=()=>{cur="board";go()};initPicker(mid);if($("#aib")){$("#aib").onclick=()=>runAI(mid,false);$("#ain").onclick=()=>runAI(mid,true);$("#aid").onclick=()=>runDossier(mid,0);initMarket(mid)}}catch(e){$("#v").innerHTML=er(e)}}
+const AR={goals:["الأهداف","هدف"],corners:["الركنيات","ركنية"],yellow:["البطاقات الصفراء","بطاقة"],shots:["التسديدات","تسديدة"],sot:["التسديدات على المرمى","تسديدة"],fouls:["الأخطاء","خطأ"],xg:["الأهداف المتوقعة (xG)",""]};
+const pct=(a,n)=>n?Math.round(100*a/n):0;
+function tm(name,t,k){const x=t.metrics[k];if(!x)return`<div class="mu" style="margin-top:8px">${esc(name)}: غير متوفر</div>`;const u=AR[k][1];
+let h=`<div style="margin-top:10px"><b>${esc(name)}</b> <span class="mu">(${x.n} من ${t.n} مباراة)</span></div><div class="mu">المتوسط: له ${x.for_avg} · عليه ${x.against_avg} · مجموع المباراة ${x.total_avg}</div>`;
+if(x.total_freq){h+=`<div class="mu">مجموع المباراة، من الأكثر تكرارًا إلى الأقل:</div>`+x.total_freq.slice(0,8).map(f=>`<div class="m2"><span>${f.value} ${u}</span><b>${f.matches} مباراة (${pct(f.matches,x.n)}%)</b></div>`).join("");
+h+=`<div class="mu">الأعلى: ${x.max_total.value} (${x.max_total.matches} مباراة) · الأدنى: ${x.min_total.value} (${x.min_total.matches} مباراة)</div>`;
+if(x.lines)h+=x.lines.map(l=>`<div class="m2"><span>المجموع أكثر من ${l.line}</span><b>${l.over} من ${x.n} (${pct(l.over,x.n)}%)</b></div>`).join("");
+if(x.team_lines)h+=x.team_lines.map(l=>`<div class="m2"><span>${esc(name)} وحده أكثر من ${l.line}</span><b>${l.over} من ${x.n} (${pct(l.over,x.n)}%)</b></div>`).join("")}
+return h}
+const rb=x=>`${x.W} فوز · ${x.D} تعادل · ${x.L} خسارة`;
+const rc=(n,t)=>{const r=t.results;return `<div class="card"><b>${esc(n)} — آخر ${t.n} مباراة</b><div class="bar"><div style="width:${pct(r.W,t.n)}%;background:#3ddc97">${r.W}</div><div style="width:${pct(r.D,t.n)}%;background:#c9d1dc">${r.D}</div><div style="width:${pct(r.L,t.n)}%;background:#ff6b6b">${r.L}</div></div>
+<div>فاز <b>${r.W}</b> (${pct(r.W,t.n)}%) · تعادل <b>${r.D}</b> (${pct(r.D,t.n)}%) · خسر <b>${r.L}</b> (${pct(r.L,t.n)}%)</div>
+<div class="mu">الأهداف: سجّل ${t.gf} واستقبل ${t.ga} · النقاط ${t.points}</div>
+<div class="mu">على أرضه: ${rb(t.venue_results.home)}<br>خارج أرضه: ${rb(t.venue_results.away)}<br>الدوري: ${rb(t.comp_results.league)}${t.competitions.champions_league?`<br>دوري الأبطال: ${rb(t.comp_results.champions_league)}`:""}</div></div>`};
+const rowsH=(n,t)=>t.rows&&t.rows.length?`<details class="card"><summary>مباريات ${esc(n)} الأخيرة بالترتيب (${t.rows.length})</summary>`+t.rows.map((x,i)=>`<div class="m2"><span class="mu">${i+1}. ${esc(x.date)} · ${x.home?"على أرضه":"خارج أرضه"} ضد ${esc(x.opp)}<br>${esc(x.comp)}${x.corners?` · ركنيات ${x.corners[0]}-${x.corners[1]}`:""}</span><b style="color:${x.r=="W"?"#3ddc97":x.r=="D"?"#c9d1dc":"#ff6b6b"}">${esc(x.score)} ${x.r=="W"?"فوز":x.r=="D"?"تعادل":"خسارة"}</b></div>`).join("")+`</details>`:"";
+const NOCORN='<div class="card er">الركنيات غير متوفرة: لم أجد إحصائية الركنيات في بيانات PitchAPI لهذه المباريات، ووثائق المصدر لا تذكرها. راجع «الحقول المتاحة فعليًا» في آخر الصفحة.</div>';
+async function l50(){if(!mid){$("#v").innerHTML=ld("اختر مباراة من تبويب «المباريات» ثم اضغط حلّل، ثم «آخر 50».");return}
+$("#v").innerHTML=ld("جارٍ جمع آخر 50 مباراة لكل فريق وإحصاءاتها… قد يستغرق من نصف دقيقة إلى دقيقتين في أول مرة");
+try{const r=await api("/api/last50/"+mid),m=r.match,H=r.home,A=r.away,o=r.outlook;
+let h=`<h2>آخر 50 مباراة</h2><div class="card"><b class="big">${crU(m.home_logo,m.home)}${esc(m.home)} × ${crU(m.away_logo,m.away)}${esc(m.away)}</b><div class="mu">${esc(m.league)}</div></div>`;
+h+=o&&o.home!=null?`<div class="card"><b>من سيفوز؟ (المحرك الرئيسي)</b><div class="row"><span>${esc(m.home)} <b>${o.home}%</b></span><span>تعادل <b>${o.draw}%</b></span><span>${esc(m.away)} <b>${o.away}%</b></span></div><div class="bar"><div style="width:${o.home}%;background:#3ddc97">${o.home}</div><div style="width:${o.draw}%;background:#c9d1dc">${o.draw}</div><div style="width:${o.away}%;background:#5aa9ff">${o.away}</div></div><div class="mu">الأهداف المتوقعة ${o.xg_home} - ${o.xg_away} · مؤشر الثقة: ${esc(o.confidence)}</div></div>`:`<div class="card mu">لا يتوفر توقع الفوز لهذه المباراة${o&&o.reason?": "+esc(o.reason):""}.</div>`;
+h+=rc(m.home,H)+rc(m.away,A);
+const cc=r.combined.corners;h+=cc?`<div class="card"><b>الركنيات المتوقعة في المباراة</b><div>المجموع <b>${cc.expected_total}</b> · ${esc(m.home)} ${cc.expected_home} · ${esc(m.away)} ${cc.expected_away}</div><div class="mu">دمج متوسط ركنيات كل فريق (له وعليه) في آخر 50 مباراة.</div></div>`:NOCORN;
+Object.keys(AR).forEach(k=>{if(!H.metrics[k]&&!A.metrics[k])return;const c=r.combined[k];
+h+=`<details class="card" ${k=="goals"||k=="corners"?"open":""}><summary>${AR[k][0]}</summary>`+(c?`<div class="mu">المتوقع للمباراة (دمج متوسطات الفريقين): ${c.expected_total}</div>`+(c.lines||[]).map(l=>`<div class="m2"><span>أكثر من ${l.line} (الفريقان معًا)</span><b>${l.avg_pct}% <span class="mu">(${l.home}/${l.home_n} · ${l.away}/${l.away_n})</span></b></div>`).join(""):"")+tm(m.home,H,k)+tm(m.away,A,k)+`</details>`});
+h+=rowsH(m.home,H)+rowsH(m.away,A);
+const miss=Object.keys(AR).filter(k=>k!="corners"&&!H.metrics[k]&&!A.metrics[k]);
+if(miss.length)h+=`<div class="card mu">غير متوفرة في بيانات المصدر لهذه المباريات: ${miss.map(k=>AR[k][0]).join("، ")}</div>`;
+h+=`<div class="card mu">المسابقات المحسوبة: ${(r.competitions_used||[]).map(esc).join("، ")}</div><div class="card mu">${esc(r.note)}</div><details class="card mu"><summary>الحقول المتاحة فعليًا في المصدر (${r.available_stat_keys.length})</summary>${r.available_stat_keys.map(esc).join("<br>")}</details>`;
+$("#v").innerHTML=h}catch(e){$("#v").innerHTML=er(e)}}
+const AL={"برشلونة":"barcelona","ريال مدريد":"real madrid","مانشستر سيتي":"manchester city","مانشستر يونايتد":"manchester united","ليفربول":"liverpool","ارسنال":"arsenal","تشيلسي":"chelsea","بايرن":"bayern","باريس":"paris","يوفنتوس":"juventus","ميلان":"milan","انتر":"inter","اتلتيكو":"atl","دورتموند":"dortmund","توتنهام":"tottenham","نابولي":"napoli","بنفيكا":"benfica","بورتو":"porto","اياكس":"ajax","الهلال":"hilal","النصر":"nassr","الاهلي":"ahly","الاتحاد":"ittihad","اشبيلية":"sevilla","فالنسيا":"valencia","روما":"roma","لاتسيو":"lazio","سوسيداد":"sociedad","بيلباو":"athletic"};
+let tmr=null;const FK="mp_favs";
+const favs=()=>{try{return JSON.parse(localStorage.getItem(FK)||"[]")}catch{return[]}};
+const saveF=a=>{try{localStorage.setItem(FK,JSON.stringify(a));return true}catch{return false}};
+const isF=id=>favs().some(f=>f.id==id);
+const slim=t=>({id:t.id,name:t.name,comp_ids:t.comp_ids||[]});
+const heart=t=>`<button class="hr ${isF(t.id)?"on":""}" data-t="${esc(JSON.stringify(slim(t)))}" aria-label="حفظ النادي">${isF(t.id)?"♥":"♡"}</button>`;
+function bindHearts(root,after){root.querySelectorAll(".hr").forEach(b=>b.onclick=e=>{e.stopPropagation();const t=JSON.parse(b.dataset.t);let a=favs();a=a.some(f=>f.id==t.id)?a.filter(f=>f.id!=t.id):[...a,t];if(!saveF(a)){alert("تعذر الحفظ في هذا المتصفح");return}b.classList.toggle("on",isF(t.id));b.textContent=isF(t.id)?"♥":"♡";if(after)after()})}
+function renderFav(){const el=$("#fv");if(!el)return;const a=favs().sort((x,y)=>x.name.localeCompare(y.name));
+el.innerHTML=a.length?`<div class="mu">أنديتي المحفوظة (${a.length})</div>`+a.map(t=>`<div class="card"><div class="row"><b>${cr(t.id,t.name)}${esc(t.name)}</b><span>${heart(t)} <button class="b" data-t="${esc(JSON.stringify(slim(t)))}">حلّل</button></span></div></div>`).join(""):`<div class="mu">اضغط ♡ بجانب أي نادٍ لحفظه هنا وتحليله لاحقًا بدون بحث، وبلا حد لعدد الأندية.</div>`;
+bindHearts(el,renderFav);fillLogos(el);el.querySelectorAll("button.b").forEach(b=>b.onclick=()=>t50(JSON.parse(b.dataset.t)))}
+function backupUI(){return `<details class="card mu"><summary>نسخ احتياطي واستيراد القائمة</summary><div style="margin-top:8px">للنسخ: اضغط «تصدير» ثم احفظ النص في ملاحظاتك. للاستيراد على جهاز آخر أو بعد مسح المتصفح: الصق النص هنا واضغط «استيراد».</div><textarea id="bt" rows="4" style="width:100%;background:var(--card);color:var(--tx);border:1px solid #2a3340;border-radius:8px;padding:8px;margin:6px 0;direction:ltr"></textarea><div class="row"><button class="b" id="bx">تصدير ونسخ</button><button class="b" id="bi">استيراد (دمج)</button></div><div id="bm" class="mu" style="margin-top:6px"></div></details>`}
+function bindBackup(){$("#bx").onclick=async()=>{const t=JSON.stringify(favs());$("#bt").value=t;let ok=false;try{await navigator.clipboard.writeText(t);ok=true}catch{$("#bt").select();try{ok=document.execCommand("copy")}catch{}}$("#bm").textContent=ok?`تم النسخ (${favs().length} نادٍ)`:"انسخ النص يدويًا من الخانة"};
+$("#bi").onclick=()=>{let a;try{a=JSON.parse($("#bt").value)}catch{$("#bm").textContent="النص غير صالح";return}
+if(!Array.isArray(a)){$("#bm").textContent="النص غير صالح";return}
+const ok=a.filter(x=>x&&/^t_[0-9A-Za-z]{6}$/.test(x.id)&&typeof x.name=="string").map(x=>({id:x.id,name:x.name.slice(0,60),comp_ids:(Array.isArray(x.comp_ids)?x.comp_ids:[]).filter(c=>/^l_[0-9A-Za-z]{6}$/.test(c)).slice(0,8)}));
+const cur=favs(),have=new Set(cur.map(f=>f.id)),add=ok.filter(x=>!have.has(x.id)&&have.add(x.id));
+if(!saveF([...cur,...add])){$("#bm").textContent="تعذر الحفظ في هذا المتصفح";return}
+renderFav();$("#bm").textContent=`أُضيف ${add.length} نادٍ جديد من ${a.length}`}}
+const tcard=t=>`<div class="card"><div class="row"><b>${cr(t.id,t.name)}${esc(t.name)}</b><span>${heart(t)} <button class="b" data-t="${esc(JSON.stringify(slim(t)))}">حلّل 50 مباراة</button></span></div><div class="mu">${(t.competitions||[]).map(esc).join(" · ")}</div></div>`;
+function tbind(){const r=$("#tr");bindHearts(r,renderFav);r.querySelectorAll("button.b").forEach(b=>b.onclick=()=>t50(JSON.parse(b.dataset.t)));fillLogos(r)}
+const qnorm=raw=>{let q=(raw||"").trim().toLowerCase().replace(/أ|إ|آ/g,"ا").replace(/ة/g,"ه");const k=Object.keys(AL).find(a=>q&&q.includes(a.replace(/أ|إ|آ/g,"ا").replace(/ة/g,"ه")));return k?AL[k]:q};
+let tmode="big5",TB=null,tlg="";
+function team(){$("#v").innerHTML=`<h2>تحليل فريق (آخر 50 مباراة)</h2><div id="fv"></div>${backupUI()}<div class="chs"><button class="ch ${tmode=="big5"?"on":""}" id="m1">الخمس الكبرى</button><button class="ch ${tmode=="all"?"on":""}" id="m2">كل الأندية</button></div><div class="chs" id="lgc"></div><input id="tq" placeholder="${tmode=="big5"?"ابحث داخل أندية الخمس الكبرى (فوري)":"ابحث في كل الأندية: برشلونة، Barcelona…"}"><label class="mu" style="display:block;margin:6px 0"><input type="checkbox" id="tall" style="width:auto;margin:0 0 0 6px">كل المسابقات المتاحة للنادي (الافتراضي: الدوري + دوري الأبطال)</label><div id="tr">${ld("جارٍ التحميل…")}</div>`;
+renderFav();bindBackup();$("#m1").onclick=()=>{tmode="big5";team()};$("#m2").onclick=()=>{tmode="all";team()};
+if(tmode=="big5"){$("#tq").oninput=tfilter;tbig()}else{$("#tr").innerHTML=ld("اكتب اسم نادٍ للبحث. أول بحث قد يستغرق حتى دقيقة لبناء فهرس الفرق.");$("#tq").oninput=()=>{clearTimeout(tmr);tmr=setTimeout(tsearch,450)}}}
+async function tbig(){if(TB)return tfilter();$("#tr").innerHTML=ld("جارٍ تحميل أندية الخمس الكبرى (أول مرة قد يستغرق حتى دقيقة)…");
+try{const r=await api("/api/teams?big5=1");if(!$("#tr")||tmode!="big5")return;
+if(!r.ready){$("#tr").innerHTML=r.state=="failed"?`<div class="card er">${esc(r.error||"فشل بناء الفهرس")}</div>`:ld("جارٍ بناء فهرس الفرق (أول مرة فقط، حتى دقيقة)…");if(r.state!="failed")tmr=setTimeout(tbig,8000);return}
+TB=r.teams;tfilter()}catch(e){if($("#tr"))$("#tr").innerHTML=er(e)}}
+function tfilter(){if(!TB||!$("#tr")||tmode!="big5")return;const q=qnorm($("#tq").value);const labs=[...new Set(TB.map(t=>t.big5))];
+$("#lgc").innerHTML=`<button class="ch ${!tlg?"on":""}" data-l="">الكل</button>`+labs.map(l=>`<button class="ch ${tlg==l?"on":""}" data-l="${esc(l)}">${esc(l)}</button>`).join("");
+document.querySelectorAll("#lgc .ch").forEach(b=>b.onclick=()=>{tlg=b.dataset.l;tfilter()});
+const F=TB.filter(t=>(!tlg||t.big5==tlg)&&(!q||t.name.toLowerCase().includes(q)));const g={};F.forEach(t=>(g[t.big5]=g[t.big5]||[]).push(t));
+$("#tr").innerHTML=F.length?Object.entries(g).map(([k,a])=>`<h2>${esc(k)} (${a.length})</h2>`+a.map(tcard).join("")).join(""):`<div class="card mu">${TB.length?"لا يوجد نادٍ بهذا الاسم بين أندية الخمس الكبرى. جرّب «كل الأندية».":"لم أتعرف على الدوريات الخمس الكبرى في كتالوج المصدر."}</div>`;tbind()}
+async function tsearch(){const q=qnorm($("#tq")?.value);if(q.length<2)return;
+$("#tr").innerHTML=ld("جارٍ البحث…");
+try{const r=await api("/api/teams?q="+encodeURIComponent(q));if(!$("#tr"))return;
+if(!r.ready){$("#tr").innerHTML=r.state=="failed"?`<div class="card er">${esc(r.error||"فشل بناء الفهرس")}</div>`:ld("جارٍ بناء فهرس الفرق من مباريات كل الدوريات (أول مرة فقط، حتى دقيقة)…");if(r.state!="failed")tmr=setTimeout(tsearch,8000);return}
+$("#tr").innerHTML=r.teams.length?r.teams.map(tcard).join(""):`<div class="card mu">لا يوجد فريق بهذا الاسم في بيانات المصدر. جرّب الاسم بالإنجليزية.</div>`;tbind()}catch(e){if($("#tr"))$("#tr").innerHTML=er(e)}}
+async function t50(t){if(!$("#tr"))return;const all=$("#tall")?.checked;$("#tr").innerHTML=ld("جارٍ جمع مباريات النادي وإحصاءاتها… قد يستغرق من نصف دقيقة إلى دقيقتين في أول مرة");
+try{const q=[all?"scope=all":"",(t.comp_ids||[]).length?"comps="+t.comp_ids.join(","):"","name="+encodeURIComponent(t.name)].filter(Boolean).join("&");
+const r=await api("/api/team50/"+t.id+"?"+q),D=r.data,n=t.name;if(!$("#tr"))return;
+let h=`<button class="b" id="bk2">رجوع</button><div class="card"><div class="row"><b class="big">${crU(r.team.logo,n)}${esc(n)}</b>${heart(t)}</div><div class="mu">${D.n} مباراة${r.period?` · من ${esc(r.period[0])} إلى ${esc(r.period[1])}`:""}<br>المسابقات: ${r.competitions_used.map(esc).join("، ")}</div></div>`+(D.n?rc(n,D):`<div class="card er">لا توجد مباريات منتهية لهذا النادي في المسابقات المحسوبة.</div>`);
+if(D.n&&!D.metrics.corners)h+=NOCORN;
+Object.keys(AR).forEach(k=>{if(!D.metrics[k])return;h+=`<details class="card" ${k=="goals"||k=="corners"?"open":""}><summary>${AR[k][0]}</summary>${tm(n,D,k)}</details>`});
+h+=rowsH(n,D);
+const miss=Object.keys(AR).filter(k=>k!="corners"&&!D.metrics[k]);if(D.n&&miss.length)h+=`<div class="card mu">غير متوفرة في بيانات المصدر لهذه المباريات: ${miss.map(k=>AR[k][0]).join("، ")}</div>`;
+h+=`<div class="card mu">${esc(r.note)}</div><details class="card mu"><summary>الحقول المتاحة فعليًا في المصدر (${r.available_stat_keys.length})</summary>${r.available_stat_keys.map(esc).join("<br>")}</details>`;
+$("#tr").innerHTML=h;bindHearts($("#tr"));$("#bk2").onclick=team}
+catch(e){if(!$("#tr"))return;if(e.code=="INDEX_NOT_READY"){$("#tr").innerHTML=ld("جارٍ بناء فهرس الفرق (أول مرة فقط)…");setTimeout(()=>t50(t),8000);return}$("#tr").innerHTML=er(e)}}
+let bdt=null;
+const GB={"جيد":"#3ddc97","مقبول":"#f2c14e","ضعيف":"#ff6b6b"};
+const gbadge=g=>g?`<span style="background:${GB[g.grade]};color:#06231a;border-radius:10px;padding:1px 8px;font-size:12px;margin-right:6px">${esc(g.grade)}</span>`:`<span class="mu" style="font-size:12px"> (غير مختبر)</span>`;
+const RACEK=["corners","corners_1h","corners_2h","shots","sot"];
+const raceH=(x,m)=>{const R=x.race,H=R.hist;return `<div class="m2"><span><b>الأكثر: ${esc(x.label)}</b></span><b>${esc(m.home)} ${R.home}% · تعادل ${R.draw}% · ${esc(m.away)} ${R.away}% <span class="mu">(المعتاد ${R.base.home}/${R.base.draw}/${R.base.away})</span></b></div><div class="mu">${esc(m.home)}: تفوق في ${H.home.more} من ${H.home.n} مباراة وتعادل في ${H.home.tie} · ${esc(m.away)}: تفوق في ${H.away.more} من ${H.away.n} وتعادل في ${H.away.tie}</div>`};
+const lrow=(t,x)=>`<div class="m2"><span>${esc(t)} ${x.line}</span><b>${x.over}% <span class="mu">أكثر · ${(100-x.over).toFixed(1)}% أقل · المعتاد ${x.base}%</span></b></div>`;
+async function board(){clearTimeout(bdt);if(!mid){$("#v").innerHTML=ld("اختر مباراة من تبويب «المباريات» ثم اضغط حلّل، ثم «لوحة الأسواق».");return}
+if(!$("#v").querySelector("#bdw"))$("#v").innerHTML=ld("جارٍ بناء لوحة الأسواق… قد يستغرق دقيقة في أول مرة");
+try{const r=await api("/api/board/"+mid),m=r.match,S=r.status,G=r.grades||{};if(cur!="board")return;
+let h=`<div id="bdw"><h2>لوحة الأسواق</h2><div class="card"><b class="big">${crU(m.home_logo,m.home)}${esc(m.home)} × ${crU(m.away_logo,m.away)}${esc(m.away)}</b><div class="mu">${esc(m.league)}${r.outlook?` · فوز ${r.outlook.home}% · تعادل ${r.outlook.draw}% · خسارة ${r.outlook.away}%`:""}</div></div>`;
+if(S.stats_loading)h+=`<div class="card mu">جارٍ تحميل إحصاءات المباريات من المصدر (${S.done}/${S.total}). تتحدث الصفحة تلقائيًا.</div>`;
+h+=gsLine(r);h+=r.picks===null?`<div class="card mu">جارٍ اختبار موثوقية كل سوق على مباريات سابقة قبل اقتراح أي شيء…</div>`:r.picks.length?`<div class="card"><b>الأقوى حسب النموذج (أسواق اجتازت الاختبار فقط)</b>`+r.picks.map(p=>`<div class="m2"><span>${esc(p.market)} · ${esc(p.text)}${gbadge({grade:p.grade})}</span><b>${p.p}% <span class="mu">(المعتاد ${p.base}%)</span></b></div>`).join("")+`</div>`:`<div class="card mu">لا توجد خيارات تتجاوز 58% في أسواق اجتازت اختبار الموثوقية. هذا طبيعي: الصدق أفضل من اقتراح بلا أساس.</div>`;
+h+=`<div class="card mu">⚠️ ${esc(r.disclaimer)}</div>`;
+if(r.half_split){const H=r.half_split;h+=`<div class="card"><b>الركنيات بين الشوطين</b><div class="mu">الشوط الأول ${H.league}% · الثاني ${(100-H.league).toFixed(1)}% في هذا الدوري (من ${H.n} مباراة)${H.home!=null?` · ${esc(m.home)}: الأول ${H.home}%`:""}${H.away!=null?` · ${esc(m.away)}: الأول ${H.away}%`:""}</div></div>`}
+["goals","sot","shots","yellow","corners","corners_1h","corners_2h","fouls"].forEach(k=>{const x=r.metrics[k];if(!x)return;
+h+=`<details class="card" ${k=="goals"||k=="sot"?"open":""}><summary>${esc(x.label||k)}${gbadge(G[k])}</summary>`+(x.available?`<div class="mu">المتوقع: ${esc(m.home)} ${x.exp_home} · ${esc(m.away)} ${x.exp_away} · المجموع ${x.exp_total} (من ${x.n_rows} مباراة${G[k]?` · الاختبار: ${G[k].n} مباراة، تحسن LogLoss ${G[k].log_loss_gain}`:""})</div>`+x.lines.map(l=>lrow("المجموع",l)).join("")+x.team_lines.home.map(l=>lrow(m.home,l)).join("")+x.team_lines.away.map(l=>lrow(m.away,l)).join("")+(RACEK.includes(k)&&x.race?raceH(x,m):""):`<div class="mu" style="margin-top:6px">${esc(x.reason)}</div>`)+`</details>`});
+h+=`<div class="card mu">الشارة: «جيد» = تفوق النموذج على المتوسط التاريخي في اختبار على مباريات لم يرها، «ضعيف» = لا يتفوق فلا يُقترح منه شيء. «المعتاد» = نسبة تحقق الخط تاريخيًا في هذا الدوري.</div></div>`;
+$("#v").innerHTML=h;if(S.stats_loading||r.picks===null||(r.grades_state&&r.grades_state.state=="running"))bdt=setTimeout(()=>{if(cur=="board")board()},8000)}
+catch(e){if(cur=="board")$("#v").innerHTML=er(e)}}
+let lb=false;
+async function leagues(){$("#v").innerHTML="<h2>الدوريات</h2>"+ld("جارٍ التحميل…");
+try{const L=(await api("/api/leagues")).leagues;
+$("#v").innerHTML=`<h2>الدوريات (${L.length})</h2><div class="chs"><button class="ch ${lb?"on":""}" id="lb5">الخمس الكبرى فقط</button></div><input id="ls" placeholder="ابحث: أبطال، أوروبا، champions، uefa، أو اسم الدوري"><div class="mu">القائمة كاملة كما يرسلها المصدر. اضغط على دوري لعرض ترتيبه وإحصاءاته ومبارياته القادمة.</div><div id="ll"></div>`;
+const dr=()=>{let q=$("#ls").value.trim().toLowerCase().replace(/أ|إ|آ/g,"ا");if(q.includes("ابطال"))q="champions";else if(q.includes("اوروبا"))q="europa";
+const F=L.filter(l=>(!lb||l.big5)&&(!q||(l.name+" "+l.country_code).toLowerCase().includes(q)));
+$("#ll").innerHTML=F.length?F.map(l=>`<div class="card row lg" data-id="${esc(l.id)}" style="cursor:pointer"><span>${crU(l.image_url,l.name)}${esc(l.name)}${l.big5?' <span class="mu">★</span>':""}</span><span class="mu">${esc(l.country_code)} · ${esc((l.seasons||[])[0]||"")}</span></div>`).join(""):`<div class="card mu">لا يوجد دوري بهذا الاسم في كتالوج المصدر.</div>`;
+document.querySelectorAll(".lg").forEach(e=>e.onclick=()=>lgv(e.dataset.id))};
+$("#lb5").onclick=()=>{lb=!lb;$("#lb5").classList.toggle("on",lb);dr()};$("#ls").oninput=dr;dr()}catch(e){$("#v").innerHTML=er(e)}}
+let LV={id:null,mode:"all",data:null,tmr:null};
+const FC={W:"#3ddc97",D:"#c9d1dc",L:"#ff6b6b"};
+const formH=a=>a.map(x=>`<span class="fw" style="color:${FC[x]}">${x=="W"?"ف":x=="D"?"ت":"خ"}</span>`).join(" ");
+async function lgv(id,season){clearTimeout(LV.tmr);LV.id=id;if(!$("#stw"))$("#v").innerHTML=ld("جارٍ حساب الترتيب…");
+try{const r=await api("/api/standings/"+id+(season?"?season="+encodeURIComponent(season):""));if(cur!="leagues"||LV.id!=id)return;LV.data=r;stView();
+if(r.stats_loading&&LV.mode=="stats")LV.tmr=setTimeout(()=>{if(cur=="leagues"&&LV.id==id)lgv(id,r.season)},10000)}catch(e){if(cur=="leagues")$("#v").innerHTML=er(e)}}
+function stView(){const D=LV.data,mode=LV.mode,L=D.league;let rows=D.table.slice();
+if(mode=="home"||mode=="away")rows.sort((a,b)=>b[mode].pts-a[mode].pts||b[mode].gd-a[mode].gd||b[mode].gf-a[mode].gf||a.name.localeCompare(b.name));
+const nm=(t,i)=>`<td>${i}</td><td class="n">${cr(t.id,t.name)}${esc(t.name)}</td>`;
+const sc=(t,k)=>{const x=t.stats[k];return x?`${x.for} / ${x.against}`:"—"};
+let head,body;
+if(mode=="stats"){head=["#","الفريق","تسديدات","على المرمى","صفراء","ركنيات","أخطاء","xG","مباريات"];
+body=rows.map(t=>`<tr>${nm(t,t.pos)}<td>${sc(t,"shots")}</td><td>${sc(t,"sot")}</td><td>${sc(t,"yellow")}</td><td>${sc(t,"corners")}</td><td>${sc(t,"fouls")}</td><td>${sc(t,"xg")}</td><td>${Math.max(0,...Object.values(t.stats).map(x=>x.n))||"—"}</td></tr>`).join("")}
+else{const k=mode=="all"?"all":mode;head=["#","الفريق","لعب","فاز","تعادل","خسر","له","عليه","فارق","نقاط"].concat(mode=="all"?["الشكل"]:[]);
+body=rows.map((t,i)=>{const b=t[k];return `<tr>${nm(t,mode=="all"?t.pos:i+1)}<td>${b.p}</td><td>${b.w}</td><td>${b.d}</td><td>${b.l}</td><td>${b.gf}</td><td>${b.ga}</td><td>${b.gd>0?"+":""}${b.gd}</td><td class="pt">${b.pts}</td>${mode=="all"?`<td>${formH(t.form)}</td>`:""}</tr>`}).join("")}
+const M={all:"الكل",home:"على أرضه",away:"خارج أرضه",stats:"متوسط الإحصاءات"};const sm=D.summary;
+$("#v").innerHTML=`<div id="stw"><div class="card"><div class="row"><b class="big">${crU(L.logo,L.name)}${esc(L.name)}</b><select id="sn" style="width:auto;margin:0">${D.seasons.map(x=>`<option ${x==D.season?"selected":""}>${esc(x)}</option>`).join("")}</select></div>
+<div class="mu">${D.played} مباراة منتهية${D.through?" · آخر مباراة "+esc(D.through):""}${sm.goals_per_match!=null?` · متوسط الأهداف ${sm.goals_per_match} · فوز المضيف ${sm.home_win_pct}% · تعادل ${sm.draw_pct}% · فوز الضيف ${sm.away_win_pct}%`:""}</div></div>
+<div class="chs">${Object.entries(M).map(([k,t])=>`<button class="ch ${k==mode?"on":""}" data-m="${k}">${t}</button>`).join("")}<button class="ch" id="upb">المباريات القادمة</button></div>
+${mode=="stats"&&D.stats_loading?`<div class="card mu">جارٍ تحميل إحصاءات المباريات (${D.stats_done}/${D.stats_total}). تتحدث الصفحة تلقائيًا.</div>`:""}
+<div class="tw"><table class="st"><thead><tr>${head.map(h=>`<th>${h}</th>`).join("")}</tr></thead><tbody>${body}</tbody></table></div>
+${mode=="stats"?`<div class="card mu">الأرقام «له / عليه» بمتوسط المباراة الواحدة في هذا الدوري فقط. «—» = غير متوفرة في المصدر لهذه المباريات، وعمود «مباريات» عدد المباريات التي توفرت إحصاءاتها.</div>`:""}
+<div class="card mu">${esc(D.note)}</div><button class="b" id="dsb">حالة البيانات</button> <button class="b" id="bkl">رجوع للدوريات</button><div id="dsr"></div></div>`;
+document.querySelectorAll("#stw .ch[data-m]").forEach(b=>b.onclick=()=>{LV.mode=b.dataset.m;stView();if(LV.mode=="stats"&&D.stats_loading)lgv(LV.id,D.season)});
+$("#upb").onclick=()=>up(LV.id);$("#dsb").onclick=()=>showStatus(LV.id);$("#bkl").onclick=leagues;$("#sn").onchange=e=>lgv(LV.id,e.target.value);fillLogos($("#stw"))}
+async function up(id){$("#v").innerHTML=ld("جارٍ جلب المباريات القادمة…");
+try{const r=await api("/api/league/"+id+"/upcoming"),L=(r.matches||[]).sort((a,b)=>new Date(a.time_utc)-new Date(b.time_utc));
+$("#v").innerHTML=`<h2>${esc(r.league?.name||"")} — القادمة (${L.length})</h2><button class="b" id="bk">رجوع للدوريات</button> <button class="b" id="bt2">الترتيب</button>`+(L.length?L.map(m=>`<div class="card"><div class="mu">${new Date(m.time_utc).toLocaleString("ar",{weekday:"short",day:"numeric",month:"short",hour:"2-digit",minute:"2-digit"})}</div><div class="row"><b>${esc(m.home_team.name)} × ${esc(m.away_team.name)}</b><button class="b" data-id="${esc(m.id)}">حلّل</button></div></div>`).join(""):ld("لا توجد مباريات قادمة مسجلة لهذا الدوري."));
+$("#bk").onclick=leagues;$("#bt2").onclick=()=>lgv(id);document.querySelectorAll("button.b[data-id]").forEach(b=>b.onclick=()=>{mid=b.dataset.id;cur="analysis";go()})}catch(e){$("#v").innerHTML=er(e)}}
+async function perf(){$("#v").innerHTML='<h2>اختبار أداء النموذج</h2><select id="bl"><option value="">اختر دوريًا…</option></select><div id="bo">'+ld("الاختبار يستغرق من 10 إلى 60 ثانية.")+"</div>";
+try{(await api("/api/leagues")).leagues.forEach(l=>$("#bl").insertAdjacentHTML("beforeend",`<option value="${esc(l.id)}">${esc(l.name)} (${esc(l.country_code)})</option>`))}catch(e){$("#bo").innerHTML=er(e);return}
+$("#bl").onchange=async e=>{if(!e.target.value)return;$("#bo").innerHTML=ld("جارٍ الاختبار…");
+try{const r=await api("/api/backtest/"+e.target.value);if(!r.result){$("#bo").innerHTML=`<div class="card er">${esc(r.reason)}</div>`;return}
+const R=r.result,N={baseline:"نموذج أساسي",poisson:"Poisson",poisson_decay:"Poisson + تحلل زمني",dixon_coles_decay:"Dixon-Coles + تحلل زمني"};
+$("#bo").innerHTML=`<div class="card"><b>${esc(r.league)}</b><div class="mu">${R.tested_matches} مباراة · ${esc(R.period[0])} إلى ${esc(R.period[1])}</div></div>`+
+Object.entries(R.models).map(([k,m])=>m?`<div class="card"><b>${N[k]||k}</b><div>Brier ${m.brier} · LogLoss ${m.log_loss} · دقة الأرجح ${m.accuracy}%</div></div>`:"").join("")+
+(R.goals_markets?Object.entries({over25:"أكثر من 2.5 هدف",btts:"كلا الفريقين يسجل"}).map(([k,t])=>{const g=R.goals_markets[k];return g?`<div class="card"><b>سوق ${t}</b><div>النموذج: Brier ${g.brier} · LogLoss ${g.log_loss}<br>المتوسط التاريخي: Brier ${g.baseline_brier} · LogLoss ${g.baseline_log_loss}</div><div class="mu">${g.log_loss<g.baseline_log_loss?"يتفوق على المتوسط":"لا يتفوق على المتوسط"} (${g.n} مباراة)</div></div>`:""}).join(""):"")+`<div class="card"><b>معايرة فوز أصحاب الأرض</b>`+R.calibration_dixon_coles_decay.map(c=>`<div class="mu">${c.range}: متوقع ${c.predicted}% · فعلي ${c.actual}% (${c.n})</div>`).join("")+`</div><div class="card mu">${esc(r.market_comparison)}. ${esc(r.note)}</div>`}catch(x){$("#bo").innerHTML=er(x)}}}
+go();
+</script></body></html>
