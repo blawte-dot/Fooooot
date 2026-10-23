@@ -2,7 +2,7 @@ name: refresh-data
 # يجلب إحصاءات المباريات ويختبر الأسواق على خوادم GitHub المجانية ويحفظ النتائج في data/ داخل المستودع.
 on:
   schedule:
-    - cron: "30 3,15 * * *"      # مرتان يوميًا (توقيت UTC)
+    - cron: "*/30 * * * *"        # كل 30 دقيقة (التشغيلات لا تتداخل: انظر concurrency)
   workflow_dispatch:             # أو يدويًا من تبويب Actions
 concurrency:
   group: refresh-data
@@ -38,10 +38,13 @@ jobs:
         run: python -m app.sitebuild
       - name: Save build report
         run: |
-          cp site/api/build.json data/site-report.json
-          git config user.name "data-bot"; git config user.email "data-bot@users.noreply.github.com"
-          git add data/site-report.json
-          if git diff --cached --quiet; then echo "no changes"; else git commit -m "data: site report [skip render]" && (git pull -q --rebase && git push || true); fi
+          # يُحفظ التقرير فقط عند وجود أخطاء، حتى لا يتضخم السجل بالتزامات كل نصف ساعة
+          if python -c "import json,sys;sys.exit(0 if json.load(open('site/api/build.json'))['errors'] else 1)"; then
+            cp site/api/build.json data/site-report.json
+            git config user.name "data-bot"; git config user.email "data-bot@users.noreply.github.com"
+            git add data/site-report.json
+            git commit -q -m "data: site report [skip render]" && (git pull -q --rebase && git push || true)
+          else echo "no errors"; fi
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site

@@ -1,13 +1,14 @@
 """يبني موقعًا ثابتًا (تطبيق PWA) من نتائج المحرك الإحصائي: يعمل على GitHub Actions ثم يُنشر على GitHub Pages.
 الهاتف يفتح ملفات JSON جاهزة فقط، فلا خادم ولا حساب ثقيل عليه. التشغيل: PITCHAPI_KEY=... python -m app.sitebuild"""
-import os, sys, json, time, shutil, zlib, struct, traceback
+import os, sys, json, time, shutil, zlib, struct, traceback, requests
 from datetime import date, datetime, timedelta, timezone
 from . import pitch_client as pc, service, persist
 
 OUT = os.environ.get("SITE_DIR", "site")
 DAYS = int(os.environ.get("SITE_DAYS", "5"))          # عدد الأيام القادمة المحسوبة مسبقًا
 MAX_MATCHES = int(os.environ.get("SITE_MAX", "120"))   # سقف المباريات التفصيلية
-BUDGET = int(os.environ.get("SITE_BUDGET_MIN", "45")) * 60
+BUDGET = int(os.environ.get("SITE_BUDGET_MIN", "25")) * 60
+PREV = os.environ.get("SITE_PREV_URL", "https://blawte-dot.github.io/Fooooot/")   # النسخة المنشورة سابقًا: احتياط لأي ملف يفشل بناؤه الآن
 DONE = {"finished", "ft", "final", "completed", "ended"}
 
 def w(rel, obj):
@@ -24,6 +25,15 @@ def png(size, rgb=(14, 22, 38), dot=(61, 220, 151)):
     raw = zlib.compress(b"".join(rows), 9)
     def ch(t, d): c = struct.pack(">I", len(d)) + t + d; return c + struct.pack(">I", zlib.crc32(t + d) & 0xffffffff)
     return b"\x89PNG\r\n\x1a\n" + ch(b"IHDR", struct.pack(">IIBBBBB", size, size, 8, 2, 0, 0, 0)) + ch(b"IDAT", raw) + ch(b"IEND", b"")
+
+def keep_prev(rel):
+    """يعيد استخدام الملف المنشور سابقًا إن وُجد (فلا تختفي مباراة بسبب فشل مؤقت)."""
+    try:
+        r = requests.get(PREV + rel, timeout=20)
+        if r.status_code == 200 and r.content[:1] in (b"{", b"["):
+            p = os.path.join(OUT, rel); os.makedirs(os.path.dirname(p), exist_ok=True); open(p, "wb").write(r.content); return True
+    except Exception: pass
+    return False
 
 def retry(fn, mid, tries=4):
     for k in range(tries):
@@ -49,7 +59,10 @@ def main(log=print):
         d = (today + timedelta(days=i)).isoformat()
         try:
             data = pc.get(f"/v1/date/{d}", {"status": "all"}, ttl=300); w(f"api/matches/{d}.json", data); stats["days"] += 1
-        except Exception as e: log(f"matches {d}: {e}"); continue
+        except Exception as e:
+            log(f"matches {d}: {e}")
+            if not keep_prev(f"api/matches/{d}.json"): continue
+            data = json.load(open(os.path.join(OUT, f"api/matches/{d}.json"), encoding="utf-8")); stats["days"] += 1
         try: w(f"api/famous/{d}.json", service.famous_matches(d))
         except Exception as e: log(f"famous {d}: {e}")
         for m in data.get("matches", []):
@@ -68,6 +81,7 @@ def main(log=print):
             except Exception as e:
                 stats["fail"][name] = stats["fail"].get(name, 0) + 1; msg = f"{name} {mid}: {type(e).__name__}: {str(e)[:160]}"; log(msg)
                 if len(stats["errors"]) < 40: stats["errors"].append(msg)
+                if keep_prev(f"api/{name}/{mid}.json"): stats.setdefault("reused", 0); stats["reused"] += 1
     built = [m for m in todo if os.path.exists(os.path.join(OUT, f"api/predict/{m}.json"))]; w("api/index.json", {"ids": built})
     # واجهة + مظهر التطبيق
     html = open("static/index.html", encoding="utf-8").read().replace("<script>", "<script>window.STATIC=true;</script>\n<script>", 1)
@@ -85,7 +99,7 @@ def main(log=print):
         "self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!=V).map(x=>caches.delete(x)))));self.clients.claim()});\n"
         "self.addEventListener('fetch',e=>{const u=new URL(e.request.url);if(u.origin!==location.origin)return;\n"
         " e.respondWith(fetch(e.request).then(r=>{if(r.ok){const c=r.clone();caches.open(V).then(x=>x.put(e.request,c))}return r}).catch(()=>caches.match(e.request)))});\n" % ver)
-    w("api/build.json", {"generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "matches_built": len(todo), "ok": stats["ok"], "fail": stats["fail"], "days": stats["days"], "statuses": stats["statuses"], "skipped_played": stats["skipped"], "errors": stats["errors"], "sample_ids": todo[:5]})
+    w("api/build.json", {"generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "matches_built": len(todo), "ok": stats["ok"], "fail": stats["fail"], "days": stats["days"], "statuses": stats["statuses"], "skipped_played": stats["skipped"], "errors": stats["errors"], "reused": stats.get("reused", 0), "sample_ids": todo[:5]})
     log(json.dumps(stats, ensure_ascii=False)); log(f"done in {int(time.time() - t0)}s")
     return 0 if stats["days"] else 1
 
