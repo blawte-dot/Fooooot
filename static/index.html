@@ -17,7 +17,8 @@ details.card summary{font-weight:700;cursor:pointer}.mr{display:grid;grid-templa
 <script>
 const $=s=>document.querySelector(s),esc=t=>String(t??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const T={today:"المباريات",analysis:"التحليل",team:"فريق",leagues:"الدوريات",perf:"الأداء"};let cur="today",day=new Date().toLocaleDateString("sv"),M=[],mid=null;
-async function api(p){const r=await fetch(p);let j;try{j=await r.json()}catch{throw new Error("استجابة غير صالحة من الخادم (قد يكون يستيقظ، أعد المحاولة)")}if(!r.ok){const e=new Error(j.error?.message||"خطأ");e.code=j.error?.code;throw e}return j}
+function sp(p){const u=new URL(p,location.href),q=u.searchParams,s=u.pathname;let m;if(s=="/api/leagues")return"api/leagues.json";if(m=s.match(/^\/api\/(predict|board|last7|market)\/([\w-]+)$/))return`api/${m[1]}/${m[2]}.json`;if(s=="/api/matches")return`api/matches/${q.get("date")}.json`;if(s=="/api/famous")return`api/famous/${q.get("date")}.json`;return null}
+async function api(p){if(window.STATIC){const f=sp(p);if(!f)throw new Error("هذه الميزة غير متاحة في التطبيق المستقل حاليًا");let r;try{r=await fetch(f)}catch{throw new Error("لا يوجد اتصال ولا نسخة محفوظة لهذه الصفحة")}if(!r.ok)throw new Error("لم تُحسب هذه المباراة مسبقًا. التطبيق يعرض المباريات القادمة القريبة في الدوريات الخمسة الكبرى ودوري الأبطال فقط");return r.json()}const r=await fetch(p);let j;try{j=await r.json()}catch{throw new Error("استجابة غير صالحة من الخادم (قد يكون يستيقظ، أعد المحاولة)")}if(!r.ok){const e=new Error(j.error?.message||"خطأ");e.code=j.error?.code;throw e}return j}
 const V={today,analysis,team,l50,l7:()=>l50(7),board,leagues,perf};
 function go(){$("#nav").innerHTML=Object.entries(T).map(([k,t])=>`<button class="${k==cur?"on":""}" data-k="${k}">${t}</button>`).join("");
 document.querySelectorAll("#nav button").forEach(b=>b.onclick=()=>{cur=b.dataset.k;go()});V[cur]();window.scrollTo(0,0)}
