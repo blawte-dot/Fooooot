@@ -36,6 +36,12 @@ jobs:
         env:
           PITCHAPI_KEY: ${{ secrets.PITCHAPI_KEY }}
         run: python -m app.sitebuild
+      - name: Save build report
+        run: |
+          cp site/api/build.json data/site-report.json
+          git config user.name "data-bot"; git config user.email "data-bot@users.noreply.github.com"
+          git add data/site-report.json
+          if git diff --cached --quiet; then echo "no changes"; else git commit -m "data: site report [skip render]" && (git pull -q --rebase && git push || true); fi
       - uses: actions/upload-pages-artifact@v3
         with:
           path: site
