@@ -1,6 +1,12 @@
 {
- "generated_at": "2026-10-23T08:33:34+00:00",
+ "generated_at": "2026-10-23T19:30:31+00:00",
  "leagues": {
+  "l_0275VP": {
+   "errors": [],
+   "matches": 377,
+   "name": "Ligue 2",
+   "with_stats": 377
+  },
   "l_0ALvwF": {
    "errors": [],
    "matches": 1971,
@@ -13,11 +19,47 @@
    "name": "LaLiga",
    "with_stats": 833
   },
+  "l_0Lpz1f": {
+   "errors": [],
+   "matches": 1006,
+   "name": "Saudi Pro League",
+   "with_stats": 699
+  },
+  "l_0S1uaf": {
+   "errors": [],
+   "matches": 1414,
+   "name": "Super Lig",
+   "with_stats": 712
+  },
+  "l_0aEfof": {
+   "errors": [],
+   "matches": 406,
+   "name": "Pro League",
+   "with_stats": 406
+  },
   "l_0bfbkO": {
    "errors": [],
    "matches": 807,
    "name": "Champions League",
    "with_stats": 431
+  },
+  "l_0eg6C9": {
+   "errors": [],
+   "matches": 2988,
+   "name": "MLS",
+   "with_stats": 1143
+  },
+  "l_0jy5yE": {
+   "errors": [],
+   "matches": 460,
+   "name": "Serie B",
+   "with_stats": 460
+  },
+  "l_1D8Xrl": {
+   "errors": [],
+   "matches": 1405,
+   "name": "Serie A",
+   "with_stats": 819
   },
   "l_1Isor4": {
    "errors": [],
@@ -25,17 +67,167 @@
    "name": "Bundesliga",
    "with_stats": 666
   },
+  "l_1dmt9H": {
+   "errors": [],
+   "matches": 817,
+   "name": "Serie A",
+   "with_stats": 680
+  },
+  "l_1pQOHK": {
+   "errors": [],
+   "matches": 326,
+   "name": "Challenger Pro League",
+   "with_stats": 325
+  },
+  "l_1qpFVw": {
+   "errors": [],
+   "matches": 633,
+   "name": "Indian Super League",
+   "with_stats": 262
+  },
+  "l_20pNSc": {
+   "errors": [],
+   "matches": 704,
+   "name": "Super League",
+   "with_stats": 520
+  },
+  "l_271pqa": {
+   "errors": [],
+   "matches": 743,
+   "name": "K League 2",
+   "with_stats": 586
+  },
+  "l_2EKrnc": {
+   "errors": [],
+   "matches": 1095,
+   "name": "K League 1",
+   "with_stats": 484
+  },
+  "l_2Mh0jT": {
+   "errors": [],
+   "matches": 306,
+   "name": "Premier League",
+   "with_stats": 306
+  },
+  "l_2WZ2tt": {
+   "errors": [],
+   "matches": 761,
+   "name": "Conference League",
+   "with_stats": 337
+  },
+  "l_2xBPKk": {
+   "errors": [],
+   "matches": 678,
+   "name": "Super Liga",
+   "with_stats": 647
+  },
+  "l_38d9HA": {
+   "errors": [],
+   "matches": 853,
+   "name": "Europa League",
+   "with_stats": 432
+  },
   "l_3FJFUl": {
    "errors": [],
    "matches": 1742,
    "name": "Ligue 1",
    "with_stats": 668
   },
+  "l_3Tn1kG": {
+   "errors": [],
+   "matches": 1272,
+   "name": "MLS Next Pro",
+   "with_stats": 981
+  },
+  "l_3UiOcj": {
+   "errors": [],
+   "matches": 342,
+   "name": "Premier League",
+   "with_stats": 271
+  },
+  "l_3hvsne": {
+   "errors": [],
+   "matches": 1595,
+   "name": "2. Bundesliga",
+   "with_stats": 659
+  },
+  "l_3kyHLd": {
+   "errors": [],
+   "matches": 576,
+   "name": "LaLiga2",
+   "with_stats": 576
+  },
+  "l_3qUkB8": {
+   "errors": [],
+   "matches": 1100,
+   "name": "Serie B",
+   "with_stats": 903
+  },
+  "l_3v84VE": {
+   "errors": [],
+   "matches": 1097,
+   "name": "Liga MX",
+   "with_stats": 552
+  },
+  "l_3xwVF2": {
+   "errors": [],
+   "matches": 285,
+   "name": "Super League 1",
+   "with_stats": 285
+  },
+  "l_3zsMpo": {
+   "errors": [],
+   "matches": 1029,
+   "name": "Bundesliga",
+   "with_stats": 430
+  },
+  "l_45VZuL": {
+   "errors": [],
+   "matches": 1717,
+   "name": "Liga Profesional",
+   "with_stats": 1197
+  },
+  "l_46aZMC": {
+   "errors": [],
+   "matches": 392,
+   "name": "Premier League",
+   "with_stats": 392
+  },
+  "l_4DWyTT": {
+   "errors": [],
+   "matches": 2920,
+   "name": "Championship",
+   "with_stats": 1213
+  },
+  "l_4H43wr": {
+   "errors": [],
+   "matches": 1632,
+   "name": "Eredivisie",
+   "with_stats": 674
+  },
+  "l_4MPd7x": {
+   "errors": [],
+   "matches": 840,
+   "name": "A-League",
+   "with_stats": 345
+  },
+  "l_4QexZg": {
+   "errors": [],
+   "matches": 1560,
+   "name": "Liga Portugal",
+   "with_stats": 667
+  },
   "l_4WFCIZ": {
    "errors": [],
    "matches": 1970,
    "name": "Premier League",
    "with_stats": 810
+  },
+  "l_4d6Bwl": {
+   "errors": [],
+   "matches": 1104,
+   "name": "Super League",
+   "with_stats": 492
   }
  },
  "v": 1
