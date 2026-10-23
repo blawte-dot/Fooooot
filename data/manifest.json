@@ -1,0 +1,42 @@
+{
+ "generated_at": "2026-10-23T08:33:34+00:00",
+ "leagues": {
+  "l_0ALvwF": {
+   "errors": [],
+   "matches": 1971,
+   "name": "Serie A",
+   "with_stats": 815
+  },
+  "l_0ErfuF": {
+   "errors": [],
+   "matches": 1988,
+   "name": "LaLiga",
+   "with_stats": 833
+  },
+  "l_0bfbkO": {
+   "errors": [],
+   "matches": 807,
+   "name": "Champions League",
+   "with_stats": 431
+  },
+  "l_1Isor4": {
+   "errors": [],
+   "matches": 1584,
+   "name": "Bundesliga",
+   "with_stats": 666
+  },
+  "l_3FJFUl": {
+   "errors": [],
+   "matches": 1742,
+   "name": "Ligue 1",
+   "with_stats": 668
+  },
+  "l_4WFCIZ": {
+   "errors": [],
+   "matches": 1970,
+   "name": "Premier League",
+   "with_stats": 810
+  }
+ },
+ "v": 1
+}
