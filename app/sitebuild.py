@@ -25,6 +25,13 @@ def png(size, rgb=(14, 22, 38), dot=(61, 220, 151)):
     def ch(t, d): c = struct.pack(">I", len(d)) + t + d; return c + struct.pack(">I", zlib.crc32(t + d) & 0xffffffff)
     return b"\x89PNG\r\n\x1a\n" + ch(b"IHDR", struct.pack(">IIBBBBB", size, size, 8, 2, 0, 0, 0)) + ch(b"IDAT", raw) + ch(b"IEND", b"")
 
+def retry(fn, mid, tries=4):
+    for k in range(tries):
+        try: return fn(mid)
+        except Exception as e:
+            if k < tries - 1 and ("too many" in str(e).lower() or "429" in str(e)): time.sleep(20 * (k + 1)); continue
+            raise
+
 def wait_board(mid, deadline):
     while True:
         r = service.board_match(mid)
@@ -57,10 +64,11 @@ def main(log=print):
     for name, fn in jobs:
         for mid in todo:
             if time.time() - t0 > BUDGET: log(f"budget reached during {name}"); break
-            try: w(f"api/{name}/{mid}.json", fn(mid)); stats["ok"][name] = stats["ok"].get(name, 0) + 1
+            try: w(f"api/{name}/{mid}.json", retry(fn, mid)); stats["ok"][name] = stats["ok"].get(name, 0) + 1
             except Exception as e:
                 stats["fail"][name] = stats["fail"].get(name, 0) + 1; msg = f"{name} {mid}: {type(e).__name__}: {str(e)[:160]}"; log(msg)
                 if len(stats["errors"]) < 40: stats["errors"].append(msg)
+    built = [m for m in todo if os.path.exists(os.path.join(OUT, f"api/predict/{m}.json"))]; w("api/index.json", {"ids": built})
     # واجهة + مظهر التطبيق
     html = open("static/index.html", encoding="utf-8").read().replace("<script>", "<script>window.STATIC=true;</script>\n<script>", 1)
     html = html.replace("</head>", '<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0e1626"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"></head>', 1)
