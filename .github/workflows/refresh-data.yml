@@ -1,20 +1,19 @@
 name: refresh-data
-# يجلب إحصاءات المباريات ويختبر الأسواق على خوادم GitHub المجانية ويحفظ النتائج في data/ داخل المستودع.
+# المسار الثقيل والبطيء: يجلب إحصاءات المباريات ويختبر الأسواق ويضبط المعاملات ويحفظها في data/. يتقدم تدريجيًا بين التشغيلات
+# (الدوريات الكبرى كل مرة، والمشهورة يوميًا، وبقية الدوريات كل 3 أيام) فلا يتجاوز الوقت المحدد.
 on:
   schedule:
-    - cron: "*/30 * * * *"        # كل 30 دقيقة (التشغيلات لا تتداخل: انظر concurrency)
-  workflow_dispatch:             # أو يدويًا من تبويب Actions
+    - cron: "7 */4 * * *"          # شبكة أمان؛ موقع site.yml يطلقه أيضًا إن مرّت 4 ساعات
+  workflow_dispatch:
 concurrency:
   group: refresh-data
   cancel-in-progress: false
 permissions:
   contents: write
-  pages: write
-  id-token: write
 jobs:
-  refresh:
+  data:
     runs-on: ubuntu-latest
-    timeout-minutes: 150
+    timeout-minutes: 120
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
@@ -25,36 +24,11 @@ jobs:
       - name: Build data
         env:
           PITCHAPI_KEY: ${{ secrets.PITCHAPI_KEY }}
+          PIPELINE_BUDGET_MIN: "40"
         run: python -m app.pipeline
       - name: Commit data
         run: |
           git config user.name "data-bot"
           git config user.email "data-bot@users.noreply.github.com"
           git add data
-          if git diff --cached --quiet; then echo "no changes"; else git commit -m "data: refresh [skip render]" && git push; fi
-      - name: Build site (static app)
-        env:
-          PITCHAPI_KEY: ${{ secrets.PITCHAPI_KEY }}
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-        run: python -m app.sitebuild
-      - name: Save build report
-        run: |
-          # يُحفظ التقرير فقط عند وجود أخطاء، حتى لا يتضخم السجل بالتزامات كل نصف ساعة
-          if python -c "import json,sys;sys.exit(0 if json.load(open('site/api/build.json'))['errors'] else 1)"; then
-            cp site/api/build.json data/site-report.json
-            git config user.name "data-bot"; git config user.email "data-bot@users.noreply.github.com"
-            git add data/site-report.json
-            git commit -q -m "data: site report [skip render]" && (git pull -q --rebase && git push || true)
-          else echo "no errors"; fi
-      - uses: actions/upload-pages-artifact@v3
-        with:
-          path: site
-  deploy:
-    needs: refresh
-    runs-on: ubuntu-latest
-    environment:
-      name: github-pages
-      url: ${{ steps.d.outputs.page_url }}
-    steps:
-      - id: d
-        uses: actions/deploy-pages@v4
+          if git diff --cached --quiet; then echo "no changes"; else git commit -m "data: refresh [skip render]" && (git pull -q --rebase && git push); fi

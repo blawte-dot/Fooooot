@@ -23,6 +23,21 @@ def is_ucl(l):
     n = (l.get("name") or "").lower()
     return "champions league" in n and not any(x in n for x in ("afc", "caf", "concacaf", "conmebol", "women", "asia", "africa", "u19", "youth", "oceania"))
 
+_BAD_LG = re.compile(r"women|femin|\bu\s?-?(?:17|18|19|20|21|23)\b|youth|reserve|friendl|amateur|\bii\b|\bb team\b", re.I)
+_FAM_LG = re.compile(r"europa league|conference league|eredivisie|primeira liga|liga portugal|^championship$|s[uü]per lig|scottish premiership|pro league|major league soccer|\bmls\b|brasileir|serie a|liga profesional|roshn|liga mx|libertadores|sudamericana|champions league|premier league|la ?liga|bundesliga|ligue 1|world cup|\beuro\b|nations league|africa cup|copa america|fa cup|copa del rey|dfb|coppa italia|coupe de france|serie b|ligue 2|\bj1\b|k league|a-league|super league|botola|ligue professionnelle", re.I)
+_FAM_CC = {"DZ", "SA", "EG", "MA", "TN"}      # الجزائر والسعودية ومصر والمغرب وتونس
+
+def wanted_league(l):
+    """كل الدوريات ما عدا السيدات والشباب والاحتياط والودية."""
+    return not _BAD_LG.search(l.get("name") or "")
+
+def is_famous_league(l):
+    return bool(_FAM_LG.search(l.get("name") or "")) or (l.get("country_code") or "").upper() in _FAM_CC
+
+def league_tier(l):
+    """0 = الخمس الكبرى + دوري الأبطال (كل شيء) · 1 = مشهورة (إحصاءات كاملة) · 2 = بقية الدوريات (نتائج فقط)."""
+    return 0 if (big5_label(l) or is_ucl(l)) else 1 if is_famous_league(l) else 2
+
 _FAMOUS = ["real madrid", "barcelona", "manchester city", "manchester united", "liverpool", "arsenal", "chelsea", "tottenham",
            "bayern", "paris saint", "paris sg", "psg", "juventus", "inter", "internazionale", "milan", "napoli", "atletico madrid",
            "dortmund", "leverkusen", "benfica", "porto", "ajax", "sporting cp", "galatasaray", "fenerbahce", "al hilal", "al nassr",

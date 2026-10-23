@@ -1,0 +1,67 @@
+name: site
+# المسار السريع والمتواصل: يبني صفحات التطبيق الجاهزة من آخر data/ وينشرها على GitHub Pages ثم يطلق الدورة التالية بنفسه.
+# النشر ذري: النسخة المنشورة تبقى تعمل حتى تجهز الجديدة بالكامل، فلا ينقطع التصفح.
+on:
+  schedule:
+    - cron: "*/30 * * * *"        # شبكة أمان فقط (جدولة GitHub غير موثوقة)
+  workflow_dispatch:
+concurrency:
+  group: site
+  cancel-in-progress: false
+permissions:
+  contents: write
+  actions: write
+  pages: write
+  id-token: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Build site (static app)
+        env:
+          PITCHAPI_KEY: ${{ secrets.PITCHAPI_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+        run: python -m app.sitebuild
+      - name: Save build report
+        run: |
+          # يُحفظ التقرير فقط عند وجود أخطاء، حتى لا يتضخم السجل بالتزامات متكررة
+          if python -c "import json,sys;sys.exit(0 if json.load(open('site/api/build.json'))['errors'] else 1)"; then
+            cp site/api/build.json data/site-report.json
+            git config user.name "data-bot"; git config user.email "data-bot@users.noreply.github.com"
+            git add data/site-report.json
+            git commit -q -m "data: site report [skip render]" && (git pull -q --rebase && git push || true)
+          else echo "no errors"; fi
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: site
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.d.outputs.page_url }}
+    steps:
+      - id: d
+        uses: actions/deploy-pages@v4
+  next:
+    needs: [build, deploy]
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start next cycle (and keep the data pipeline alive)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sleep ${{ needs.build.result == 'success' && 120 || 600 }}
+          last=$(gh run list --workflow refresh-data.yml --repo ${{ github.repository }} --limit 1 --json createdAt --jq '.[0].createdAt // empty')
+          age=999999
+          if [ -n "$last" ]; then age=$(( $(date +%s) - $(date -d "$last" +%s) )); fi
+          if [ "$age" -gt 14400 ]; then gh workflow run refresh-data.yml --repo ${{ github.repository }} --ref main; fi
+          gh workflow run site.yml --repo ${{ github.repository }} --ref main

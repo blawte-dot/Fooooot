@@ -8,7 +8,7 @@ class AIError(Exception):
     def __init__(self, code, message, status=502):
         super().__init__(message); self.code, self.status = code, status
 
-_AI = cache.TTLCache(100); _hits, _mu = [], threading.Lock()
+_AI = cache.TTLCache(100); _hits, _mu = [], threading.Lock(); _LAST = {}
 URL = "https://generativelanguage.googleapis.com/v1beta/models/{}:generateContent"
 PER_IP, GLOBAL = int(os.environ.get("AI_PER_IP_HOUR", "8")), int(os.environ.get("AI_GLOBAL_HOUR", "40"))
 
@@ -51,14 +51,19 @@ def _post(model, body, key):
 def _generate(body):
     key = os.environ.get("GEMINI_API_KEY", "").strip()
     if not key: raise AIError("NO_AI_KEY", "متغير البيئة GEMINI_API_KEY غير مضبوط", 503)
-    model = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash").strip()
-    try:
-        st, j = _post(model, body, key)
-        if st == 400 and "responseSchema" in body.get("generationConfig", {}):     # صيغة المخطط تتغير بين الإصدارات: نكتفي بالتعليمات
-            b2 = {**body, "generationConfig": {k: v for k, v in body["generationConfig"].items() if k not in ("responseSchema", "responseMimeType")}}
-            st, j = _post(model, b2, key)
-        if st in (429, 500, 502, 503, 504): time.sleep(2); st, j = _post(model, body, key)
-    except requests.RequestException: raise AIError("AI_TIMEOUT", "تعذر الاتصال بـ Gemini", 504)
+    first = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash").strip()
+    models = [first] + [m.strip() for m in os.environ.get("GEMINI_FALLBACK", "gemini-2.5-flash").split(",") if m.strip() and m.strip() != first]
+    st, j = 0, {}
+    for model in models:                       # الحصة المجانية لكل نموذج على حدة: عند 429/404/400 نجرّب الاحتياطي
+        try:
+            st, j = _post(model, body, key)
+            if st == 400 and "responseSchema" in body.get("generationConfig", {}):     # صيغة المخطط تتغير بين الإصدارات: نكتفي بالتعليمات
+                b2 = {**body, "generationConfig": {k: v for k, v in body["generationConfig"].items() if k not in ("responseSchema", "responseMimeType")}}
+                st, j = _post(model, b2, key)
+            if st in (429, 500, 502, 503, 504): time.sleep(4); st, j = _post(model, body, key)
+        except requests.RequestException: raise AIError("AI_TIMEOUT", "تعذر الاتصال بـ Gemini", 504)
+        if st == 200: _LAST["model"] = model; break
+        if st not in (400, 404, 429, 500, 502, 503, 504): break
     if st == 429: raise AIError("AI_RATE_LIMIT", "حد استخدام Gemini المجاني استُنفد مؤقتًا، أعد المحاولة بعد قليل", 429)
     if st in (401, 403): raise AIError("AI_AUTH", "مفتاح Gemini غير صالح أو غير مسموح له", 502)
     if st != 200: raise AIError("AI_ERROR", f"تعذر الحصول على رد من Gemini (رمز {st})", 502)
@@ -134,7 +139,7 @@ def clean(out, ctx):
     res["unverified_numbers"] = unverified_numbers(texts, ctx)
     return res
 
-def _json(text):
+def _json(text, cand=None):
     t = re.sub(r"^```(?:json)?\s*|\s*```$", "", text.strip())
     try: return json.loads(t)
     except ValueError:
@@ -142,16 +147,16 @@ def _json(text):
         if m:
             try: return json.loads(m.group(0))
             except ValueError: pass
-    raise AIError("AI_BAD_JSON", "رد Gemini لم يأتِ بالصيغة المطلوبة، أعد المحاولة", 502)
+    raise AIError("AI_BAD_JSON", "رد Gemini لم يأتِ بالصيغة المطلوبة، أعد المحاولة" + (f" ({cand.get('finishReason')})" if cand else ""), 502)
 
 def analyze(match_id, ip):
     def run():
         _allow(ip)
         ctx = build_context(service.predict_match(match_id), service.peek_board(match_id))
         body = {"systemInstruction": {"parts": [{"text": SYSTEM}]}, "contents": [{"role": "user", "parts": [{"text": json.dumps(ctx, ensure_ascii=False)}]}],
-                "generationConfig": {"temperature": 0.2, "maxOutputTokens": 2048, "responseMimeType": "application/json", "responseSchema": SCHEMA}}
-        text, _ = _generate(body)
-        return {"match": ctx["match"], "analysis": clean(_json(text), ctx), "model": os.environ.get("GEMINI_MODEL", "gemini-3.5-flash"),
+                "generationConfig": {"temperature": 0.2, "maxOutputTokens": 8192, "responseMimeType": "application/json", "responseSchema": SCHEMA}}
+        text, cand = _generate(body)
+        return {"match": ctx["match"], "analysis": clean(_json(text, cand), ctx), "model": _LAST.get("model") or os.environ.get("GEMINI_MODEL", "gemini-3.5-flash"),
                 "note": "الأرقام والاحتمالات من المحرك الإحصائي. الذكاء الاصطناعي يشرح ويكشف الشكوك ولا يعدّل الاحتمالات، وقد يخطئ."}
     return _AI.get_or(("a", match_id), 1800, run)
 
@@ -160,7 +165,7 @@ def news(match_id, ip):
         _allow(ip)
         m = service.predict_match(match_id)["match"]
         body = {"contents": [{"role": "user", "parts": [{"text": f"ابحث عن آخر أخبار الإصابات والغيابات والتشكيلة المتوقعة لفريقي {m['home']} و{m['away']} قبل مباراتهما القادمة في {m['league']}. أجب بنقاط قصيرة بالعربية مع ذكر تاريخ كل خبر إن وُجد. إن لم تجد شيئًا موثوقًا فقل ذلك. لا تتوقع نتيجة ولا تنصح بالمراهنة."}]}],
-                "tools": [{"google_search": {}}], "generationConfig": {"temperature": 0.1, "maxOutputTokens": 1200}}
+                "tools": [{"google_search": {}}], "generationConfig": {"temperature": 0.1, "maxOutputTokens": 4096}}
         text, cand = _generate(body)
         src = []
         for g in ((cand.get("groundingMetadata") or {}).get("groundingChunks") or []):
@@ -202,7 +207,7 @@ def _run_dossier(match_id, job):
         except Exception: f = None
         if f: ctx["espn"] = {"venue": f.get("venue"), "form": f.get("form"), "records": f.get("records"), "market_prob": ((f.get("market") or {}).get("ml") or {}).get("prob")}
         body = {"systemInstruction": {"parts": [{"text": DSYS}]}, "contents": [{"role": "user", "parts": [{"text": json.dumps(ctx, ensure_ascii=False)}]}],
-                "tools": [{"google_search": {}}], "generationConfig": {"temperature": 0.2, "maxOutputTokens": 3500}}
+                "tools": [{"google_search": {}}], "generationConfig": {"temperature": 0.2, "maxOutputTokens": 8192}}
         text, cand = _generate(body)
         src = [{"title": str((g.get("web") or {}).get("title", ""))[:120], "uri": g["web"]["uri"]} for g in ((cand.get("groundingMetadata") or {}).get("groundingChunks") or [])
                if str((g.get("web") or {}).get("uri", "")).startswith("https://")][:8]

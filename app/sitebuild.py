@@ -2,11 +2,12 @@
 الهاتف يفتح ملفات JSON جاهزة فقط، فلا خادم ولا حساب ثقيل عليه. التشغيل: PITCHAPI_KEY=... python -m app.sitebuild"""
 import os, sys, json, time, shutil, zlib, struct, traceback, requests
 from datetime import date, datetime, timedelta, timezone
-from . import pitch_client as pc, service, persist
+from . import pitch_client as pc, service, persist, xg as xgmod
 
 OUT = os.environ.get("SITE_DIR", "site")
 DAYS = int(os.environ.get("SITE_DAYS", "5"))          # عدد الأيام القادمة المحسوبة مسبقًا
-MAX_MATCHES = int(os.environ.get("SITE_MAX", "120"))   # سقف المباريات التفصيلية
+MAX_MATCHES = int(os.environ.get("SITE_MAX", "450"))
+MAX_T2 = int(os.environ.get("SITE_MAX_T2", "200"))      # سقف مباريات بقية الدوريات (نتائج فقط)   # سقف المباريات التفصيلية
 BUDGET = int(os.environ.get("SITE_BUDGET_MIN", "25")) * 60
 PREV = os.environ.get("SITE_PREV_URL", "https://blawte-dot.github.io/Fooooot/")   # النسخة المنشورة سابقًا: احتياط لأي ملف يفشل بناؤه الآن
 DONE = {"finished", "ft", "final", "completed", "ended"}
@@ -42,8 +43,8 @@ def retry(fn, mid, tries=4):
             if k < tries - 1 and ("too many" in str(e).lower() or "429" in str(e)): time.sleep(20 * (k + 1)); continue
             raise
 
-AI_MAX = int(os.environ.get("SITE_AI_MAX", "10"))            # سقف طلبات Gemini في التشغيل الواحد (الحصة المجانية محدودة)
-AI_TTL = {"ai": 6, "ai-news": 6, "ai-dossier": 24}            # ساعات الاحتفاظ بنتيجة سابقة قبل إعادة الحساب
+AI_MAX = int(os.environ.get("SITE_AI_MAX", "6"))            # سقف طلبات Gemini في التشغيل الواحد (الحصة المجانية محدودة)
+AI_TTL = {"ai": 8, "ai-news": 8, "ai-dossier": 24}            # ساعات الاحتفاظ بنتيجة سابقة قبل إعادة الحساب
 
 def prev_fresh(rel, hours):
     """نتيجة Gemini المنشورة سابقًا إن كانت أحدث من المدة المحددة: تُعاد بدل استهلاك طلب جديد."""
@@ -61,7 +62,7 @@ def ai_phase(todo, stats, log, deadline):
     if not os.environ.get("GEMINI_API_KEY"): log("ai: no key, skipped"); return
     os.environ.setdefault("AI_PER_IP_HOUR", "100000"); os.environ.setdefault("AI_GLOBAL_HOUR", "100000")
     from . import ai
-    used = 0; stats["ai"] = {"new": 0, "reused": 0, "fail": 0}
+    used = 0; stats["ai"] = {"new": 0, "reused": 0, "fail": 0}; blocked = set()
     for mid in todo:
         if used >= AI_MAX or time.time() > deadline: break
         if not os.path.exists(os.path.join(OUT, f"api/predict/{mid}.json")): continue
@@ -69,20 +70,94 @@ def ai_phase(todo, stats, log, deadline):
         except Exception: pass
         for name, fn in (("ai", lambda i: ai.analyze(i, "ci")), ("ai-news", lambda i: ai.news(i, "ci")), ("ai-dossier", None)):
             rel = f"api/{name}/{mid}.json"
+            if name in blocked: continue
             if prev_fresh(rel, AI_TTL[name]): stats["ai"]["reused"] += 1; continue
             if used >= AI_MAX or time.time() > deadline: break
-            try:
-                if name == "ai-dossier":
-                    res = ai.dossier(mid, "ci"); t1 = time.time()
-                    while res.get("state") == "running" and time.time() - t1 < 240: time.sleep(6); res = ai.dossier(mid, "ci")
-                    if res.get("state") != "done": raise RuntimeError(res.get("error") or "dossier not finished")
-                else: res = fn(mid)
-                w(rel, {**res, "_gen": datetime.now(timezone.utc).isoformat(timespec="seconds")}); used += 1; stats["ai"]["new"] += 1; time.sleep(6)
-            except Exception as e:
-                used += 1; stats["ai"]["fail"] += 1; msg = f"{name} {mid}: {type(e).__name__}: {str(e)[:160]}"; log(msg)
-                if len(stats["errors"]) < 40: stats["errors"].append(msg)
-                keep_prev(rel)
-                if "AI_RATE_LIMIT" in msg or "حد استخدام" in str(e) or "AI_AUTH" in msg or "غير صالح" in str(e): log("ai: stopping (limit/auth)"); return
+            for attempt in (1, 2):
+                try:
+                    if name == "ai-dossier":
+                        res = ai.dossier(mid, "ci"); t1 = time.time()
+                        while res.get("state") == "running" and time.time() - t1 < 240: time.sleep(6); res = ai.dossier(mid, "ci")
+                        if res.get("state") != "done": raise RuntimeError(res.get("error") or "dossier not finished")
+                    else: res = fn(mid)
+                    w(rel, {**res, "_gen": datetime.now(timezone.utc).isoformat(timespec="seconds")}); used += 1; stats["ai"]["new"] += 1; time.sleep(15); break
+                except Exception as e:
+                    code = getattr(e, "code", "")
+                    if code == "AI_RATE_LIMIT" and attempt == 1: log("ai: rate limited, waiting 75s"); time.sleep(75); continue
+                    used += 1; stats["ai"]["fail"] += 1; msg = f"{name} {mid}: {type(e).__name__}: {str(e)[:160]}"; log(msg)
+                    if len(stats["errors"]) < 40: stats["errors"].append(msg)
+                    keep_prev(rel)
+                    if code == "AI_AUTH": log("ai: key rejected, stopping"); return
+                    if code == "AI_RATE_LIMIT": blocked.add(name); log(f"ai: {name} rate-limited, skipping it this run")
+                    break
+
+
+X_LAST50, X_TEAM50 = int(os.environ.get("SITE_LAST50_MAX", "3")), int(os.environ.get("SITE_TEAM50_MAX", "4"))
+
+def _cov(res):
+    """نسبة المباريات التي لها إحصاءات تفصيلية: تمنع نشر نتيجة ناقصة بسبب فشل مؤقت في الجلب."""
+    sides = [res.get("home"), res.get("away")] if "home" in res else [res.get("data")]; out = []
+    for d in sides:
+        if not d or not d.get("n"): return 0
+        out.append(max([m["n"] for k, m in (d.get("metrics") or {}).items() if k != "goals"] or [0]) / d["n"])
+    return min(out) if out else 0
+
+def teams_index():
+    service.BLOCK_INDEX = True; service._idx.update(state="idle", teams={}, leagues=[], error=None); service._start_index()
+    if service._idx["state"] != "ready": raise RuntimeError(service._idx.get("error") or "فشل بناء فهرس الفرق")
+    byid = {l["id"]: l for l in service._idx["leagues"]}
+    lab = lambda e: next((service.big5_label(byid[l]) for l in e["comps"] if l in byid and service.big5_label(byid[l])), None)
+    def ids(e): o = sorted(e["comps"], key=e["comps"].get, reverse=True); return o[:5] + [l for l in o[5:] if l in byid and service.is_ucl(byid[l])]
+    out = [{"id": tid, "name": e["name"], "competitions": [byid[l]["name"] for l in ids(e)[:3] if l in byid], "comp_ids": ids(e), "big5": lab(e), "n": sum(e["comps"].values())}
+           for tid, e in service._idx["teams"].items()]
+    if sum(1 for t in out if t["big5"]) < 90: raise RuntimeError("فهرس الفرق ناقص (أقل من 90 فريقًا من الخمس الكبرى)")
+    return {"teams": out}
+
+def extras_phase(todo, mteams, target, leagues, tier, have, logos, stats, log, deadline):
+    """الدوريات (ترتيب، قادمة، حالة البيانات، أداء) + فهرس الفرق + آخر 50 للمباريات والفرق. كل شيء تدريجي ومحفوظ، فلا يتكرر الحساب الثقيل."""
+    x = stats["x"] = {"new": 0, "reused": 0, "fail": 0}; now = lambda: datetime.now(timezone.utc).isoformat(timespec="seconds")
+    def cached(rel, hours, fn, key):
+        if hours and prev_fresh(rel, hours): x["reused"] += 1; return True
+        if time.time() > deadline: keep_prev(rel); return False
+        try: res = fn(); w(rel, {**res, "_gen": now()}); x["new"] += 1; return True
+        except Exception as e:
+            x["fail"] += 1; msg = f"{key}: {type(e).__name__}: {str(e)[:160]}"; log(msg)
+            if len(stats["errors"]) < 40: stats["errors"].append(msg)
+            keep_prev(rel); return False
+    w("api/logos.json", logos)
+    for l in leagues:
+        lid = l["id"]
+        if lid not in target: continue
+        cached(f"api/standings/{lid}.json", 0, lambda: service.standings(lid), f"standings {lid}")
+        cached(f"api/league/{lid}/upcoming.json", 0, lambda: (lambda d: {"league": d.get("league"), "matches": d.get("matches", [])})(pc.get(f"/v1/leagues/{lid}/matches", {"status": "upcoming"}, ttl=600)), f"upcoming {lid}")
+        if tier.get(lid, 2) <= 1 and lid in have:
+            cached(f"api/data-status/{lid}.json", 6, lambda: service.data_status(lid), f"data-status {lid}")
+            cached(f"api/backtest/{lid}.json", 12, lambda: service.backtest_league(lid), f"backtest {lid}")
+    cached("api/teams.json", 24, teams_index, "teams-index")
+    try: tix = {t["id"]: t for t in json.load(open(os.path.join(OUT, "api/teams.json"), encoding="utf-8"))["teams"]}
+    except Exception: tix = {}
+    n = 0
+    for mid in todo:
+        if n >= X_LAST50 or time.time() > deadline: break
+        rel = f"api/last50/{mid}.json"
+        if prev_fresh(rel, 24): x["reused"] += 1; continue
+        def run(mid=mid):
+            res = service.last50_match(mid)
+            if _cov(res) < 0.4: raise RuntimeError("إحصاءات ناقصة (ربما فشل جلب مؤقت)")
+            return res
+        cached(rel, 0, run, f"last50 {mid}"); n += 1; time.sleep(4)
+    seen, n = set(), 0
+    for mid in todo:
+        for tid, nm in mteams.get(mid, []):
+            if not tid or tid in seen or tid not in tix: continue
+            seen.add(tid); rel = f"api/team50/{tid}.json"
+            if prev_fresh(rel, 24): x["reused"] += 1; continue
+            if n >= X_TEAM50 or time.time() > deadline: continue
+            def run(tid=tid, nm=nm):
+                res = service.team50(tid, "main", tix[tid]["comp_ids"], nm)
+                if _cov(res) < 0.4: raise RuntimeError("إحصاءات ناقصة (ربما فشل جلب مؤقت)")
+                return res
+            cached(rel, 0, run, f"team50 {tid}"); n += 1; time.sleep(4)
 
 def wait_board(mid, deadline):
     while True:
@@ -94,8 +169,20 @@ def wait_board(mid, deadline):
 def main(log=print):
     t0 = time.time(); persist.load()
     leagues = pc.get("/v1/leagues", ttl=6 * 3600)["leagues"]
-    w("api/leagues.json", {"leagues": [{**l, "big5": service.big5_label(l), "ucl": service.is_ucl(l)} for l in leagues]})
-    target = {l["id"] for l in leagues if service.big5_label(l) or service.is_ucl(l)}
+    wl = [l for l in leagues if service.wanted_league(l)]; tier = {l["id"]: service.league_tier(l) for l in wl}; target = set(tier)
+    w("api/leagues.json", {"leagues": [{**l, "big5": service.big5_label(l), "ucl": service.is_ucl(l), "famous": service.is_famous_league(l), "tier": tier[l["id"]]} for l in wl]})
+    have = set(persist._docs([persist.BUNDLED]).keys())
+    _ens, _gp = xgmod.ensure, service.get_params
+    def ensure_g(lg, hist, ref, *a, **k):      # لا نجلب إحصاءات لدوري لم تُجهَّز بياناته بعد (آلاف الطلبات): نعمل بالنتائج فقط
+        return _ens(lg, hist, ref, *a, **k) if (lg in have and tier.get(lg, 2) <= 1) else {"running": False, "total": 0, "done": 0, "espn_filled": None}
+    def gp_g(lg, hist, use_xg=False):          # ولا نبدأ ضبطًا ثقيلًا في الخلفية: معاملات افتراضية تُعلَّم «غير مضبوطة»
+        if lg in have or (lg, use_xg) in service._params: return _gp(lg, hist, use_xg)
+        return dict(service.DEFAULT), "tuning"
+    xgmod.ensure, service.get_params = ensure_g, gp_g
+    logos, mteams, mtier = {}, {}, {}
+    try:
+        r = requests.get(PREV + "api/logos.json", timeout=20); logos = r.json() if r.status_code == 200 else {}
+    except Exception: logos = {}
     today = datetime.now(timezone.utc).date(); todo, stats = [], {"days": 0, "ok": {}, "fail": {}, "statuses": {}, "skipped": 0, "errors": []}
     for i in range(0, DAYS):
         d = (today + timedelta(days=i)).isoformat()
@@ -108,23 +195,41 @@ def main(log=print):
         try: w(f"api/famous/{d}.json", service.famous_matches(d))
         except Exception as e: log(f"famous {d}: {e}")
         for m in data.get("matches", []):
+            for sd in ("home_team", "away_team"):
+                t = m.get(sd) or {}
+                if t.get("id") and t.get("image_url"): logos[t["id"]] = t["image_url"]
             lid = (m.get("league") or {}).get("id")
             st = str(m.get("status", "")).lower(); stats["statuses"][st] = stats["statuses"].get(st, 0) + 1
             played = m.get("score_home") is not None and m.get("score_away") is not None
-            if lid in target and not played and st not in DONE and m.get("id"): todo.append(m["id"])
+            if lid in target and not played and st not in DONE and m.get("id"):
+                todo.append(m["id"]); mtier[m["id"]] = tier[lid]; mteams[m["id"]] = [((m.get("home_team") or {}).get("id"), (m.get("home_team") or {}).get("name")), ((m.get("away_team") or {}).get("id"), (m.get("away_team") or {}).get("name"))]
             elif lid in target: stats["skipped"] += 1
-    todo = list(dict.fromkeys(todo))[:MAX_MATCHES]; log(f"matches to build: {len(todo)}")
-    jobs = (("predict", service.predict_match), ("last7", lambda i: service.last50_match(i, 7)), ("market", service.market_view),
-            ("board", lambda i: wait_board(i, t0 + BUDGET)))
-    for name, fn in jobs:
+    todo = sorted(dict.fromkeys(todo), key=lambda m: mtier[m]); t2 = [m for m in todo if mtier[m] == 2][:MAX_T2]; todo = ([m for m in todo if mtier[m] < 2] + t2)[:MAX_MATCHES]
+    log(f"matches to build: {len(todo)} (tier0={sum(mtier[m] == 0 for m in todo)}, tier1={sum(mtier[m] == 1 for m in todo)}, tier2={len(t2)})")
+    stats["tiers"] = {"t0": sum(v == 0 for v in tier.values()), "t1": sum(v == 1 for v in tier.values()), "t2": sum(v == 2 for v in tier.values()), "with_data": len(have)}
+    stats["t1_names"] = sorted(l["name"] for l in wl if tier[l["id"]] == 1)[:60]; stats["t2_names_sample"] = sorted(l["name"] for l in wl if tier[l["id"]] == 2)[:40]
+    jobs = (("predict", service.predict_match, 2), ("market", service.market_view, 2), ("last7", lambda i: service.last50_match(i, 7), 1),
+            ("board", lambda i: wait_board(i, t0 + BUDGET), 1))
+    for name, fn, mx in jobs:
         for mid in todo:
-            if time.time() - t0 > BUDGET: log(f"budget reached during {name}"); break
+            if mtier[mid] > mx: continue
+            if time.time() - t0 > BUDGET:
+                if keep_prev(f"api/{name}/{mid}.json"): stats["reused"] = stats.get("reused", 0) + 1
+                continue
             try: w(f"api/{name}/{mid}.json", retry(fn, mid)); stats["ok"][name] = stats["ok"].get(name, 0) + 1
             except Exception as e:
                 stats["fail"][name] = stats["fail"].get(name, 0) + 1; msg = f"{name} {mid}: {type(e).__name__}: {str(e)[:160]}"; log(msg)
                 if len(stats["errors"]) < 40: stats["errors"].append(msg)
                 if keep_prev(f"api/{name}/{mid}.json"): stats.setdefault("reused", 0); stats["reused"] += 1
-    ai_phase(todo, stats, log, t0 + BUDGET + 600)
+    av = 0
+    for mid in todo:
+        try: av += bool(json.load(open(os.path.join(OUT, f"api/market/{mid}.json"), encoding="utf-8")).get("available"))
+        except Exception: pass
+    stats["market_available"] = av
+    try: stats["espn_probe"] = requests.get("https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard", timeout=15, headers={"User-Agent": "Mozilla/5.0 (MatchPredict)"}).status_code
+    except Exception as e: stats["espn_probe"] = type(e).__name__
+    ai_phase([m for m in todo if mtier[m] == 0], stats, log, t0 + BUDGET + 600)
+    extras_phase(todo, mteams, target, wl, tier, have, logos, stats, log, t0 + BUDGET + 1080)
     built = [m for m in todo if os.path.exists(os.path.join(OUT, f"api/predict/{m}.json"))]; w("api/index.json", {"ids": built})
     # واجهة + مظهر التطبيق
     html = open("static/index.html", encoding="utf-8").read().replace("<script>", "<script>window.STATIC=true;</script>\n<script>", 1)
@@ -142,7 +247,7 @@ def main(log=print):
         "self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!=V).map(x=>caches.delete(x)))));self.clients.claim()});\n"
         "self.addEventListener('fetch',e=>{const u=new URL(e.request.url);if(u.origin!==location.origin)return;\n"
         " e.respondWith(fetch(e.request).then(r=>{if(r.ok){const c=r.clone();caches.open(V).then(x=>x.put(e.request,c))}return r}).catch(()=>caches.match(e.request)))});\n" % ver)
-    w("api/build.json", {"generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "matches_built": len(todo), "ok": stats["ok"], "fail": stats["fail"], "days": stats["days"], "statuses": stats["statuses"], "skipped_played": stats["skipped"], "errors": stats["errors"], "ai": stats.get("ai"), "reused": stats.get("reused", 0), "sample_ids": todo[:5]})
+    w("api/build.json", {"generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "matches_built": len(todo), "ok": stats["ok"], "fail": stats["fail"], "days": stats["days"], "statuses": stats["statuses"], "skipped_played": stats["skipped"], "errors": stats["errors"], "ai": stats.get("ai"), "tiers": stats.get("tiers"), "t1_names": stats.get("t1_names"), "t2_names_sample": stats.get("t2_names_sample"), "extras": stats.get("x"), "market_available": stats.get("market_available"), "espn_probe": stats.get("espn_probe"), "reused": stats.get("reused", 0), "sample_ids": todo[:5]})
     log(json.dumps(stats, ensure_ascii=False)); log(f"done in {int(time.time() - t0)}s")
     return 0 if stats["days"] else 1
 
