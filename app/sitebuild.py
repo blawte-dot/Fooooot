@@ -42,6 +42,48 @@ def retry(fn, mid, tries=4):
             if k < tries - 1 and ("too many" in str(e).lower() or "429" in str(e)): time.sleep(20 * (k + 1)); continue
             raise
 
+AI_MAX = int(os.environ.get("SITE_AI_MAX", "10"))            # سقف طلبات Gemini في التشغيل الواحد (الحصة المجانية محدودة)
+AI_TTL = {"ai": 6, "ai-news": 6, "ai-dossier": 24}            # ساعات الاحتفاظ بنتيجة سابقة قبل إعادة الحساب
+
+def prev_fresh(rel, hours):
+    """نتيجة Gemini المنشورة سابقًا إن كانت أحدث من المدة المحددة: تُعاد بدل استهلاك طلب جديد."""
+    try:
+        r = requests.get(PREV + rel, timeout=20)
+        if r.status_code != 200: return False
+        j = r.json(); g = datetime.fromisoformat(j.get("_gen", "1970-01-01T00:00:00+00:00"))
+        if datetime.now(timezone.utc) - g < timedelta(hours=hours):
+            p = os.path.join(OUT, rel); os.makedirs(os.path.dirname(p), exist_ok=True); open(p, "wb").write(r.content); return True
+    except Exception: pass
+    return False
+
+def ai_phase(todo, stats, log, deadline):
+    """يحسب رأي Gemini (تحليل، أخبار، دراسة شاملة) للمباريات الأقرب أولًا، ضمن سقف الطلبات. المفتاح من GEMINI_API_KEY (سر GitHub) ولا يظهر في الموقع."""
+    if not os.environ.get("GEMINI_API_KEY"): log("ai: no key, skipped"); return
+    os.environ.setdefault("AI_PER_IP_HOUR", "100000"); os.environ.setdefault("AI_GLOBAL_HOUR", "100000")
+    from . import ai
+    used = 0; stats["ai"] = {"new": 0, "reused": 0, "fail": 0}
+    for mid in todo:
+        if used >= AI_MAX or time.time() > deadline: break
+        if not os.path.exists(os.path.join(OUT, f"api/predict/{mid}.json")): continue
+        try: service.board_match(mid)            # يضمن وجود لوحة الأسواق في الذاكرة ليستفيد منها التحليل
+        except Exception: pass
+        for name, fn in (("ai", lambda i: ai.analyze(i, "ci")), ("ai-news", lambda i: ai.news(i, "ci")), ("ai-dossier", None)):
+            rel = f"api/{name}/{mid}.json"
+            if prev_fresh(rel, AI_TTL[name]): stats["ai"]["reused"] += 1; continue
+            if used >= AI_MAX or time.time() > deadline: break
+            try:
+                if name == "ai-dossier":
+                    res = ai.dossier(mid, "ci"); t1 = time.time()
+                    while res.get("state") == "running" and time.time() - t1 < 240: time.sleep(6); res = ai.dossier(mid, "ci")
+                    if res.get("state") != "done": raise RuntimeError(res.get("error") or "dossier not finished")
+                else: res = fn(mid)
+                w(rel, {**res, "_gen": datetime.now(timezone.utc).isoformat(timespec="seconds")}); used += 1; stats["ai"]["new"] += 1; time.sleep(6)
+            except Exception as e:
+                used += 1; stats["ai"]["fail"] += 1; msg = f"{name} {mid}: {type(e).__name__}: {str(e)[:160]}"; log(msg)
+                if len(stats["errors"]) < 40: stats["errors"].append(msg)
+                keep_prev(rel)
+                if "AI_RATE_LIMIT" in msg or "حد استخدام" in str(e) or "AI_AUTH" in msg or "غير صالح" in str(e): log("ai: stopping (limit/auth)"); return
+
 def wait_board(mid, deadline):
     while True:
         r = service.board_match(mid)
@@ -82,6 +124,7 @@ def main(log=print):
                 stats["fail"][name] = stats["fail"].get(name, 0) + 1; msg = f"{name} {mid}: {type(e).__name__}: {str(e)[:160]}"; log(msg)
                 if len(stats["errors"]) < 40: stats["errors"].append(msg)
                 if keep_prev(f"api/{name}/{mid}.json"): stats.setdefault("reused", 0); stats["reused"] += 1
+    ai_phase(todo, stats, log, t0 + BUDGET + 600)
     built = [m for m in todo if os.path.exists(os.path.join(OUT, f"api/predict/{m}.json"))]; w("api/index.json", {"ids": built})
     # واجهة + مظهر التطبيق
     html = open("static/index.html", encoding="utf-8").read().replace("<script>", "<script>window.STATIC=true;</script>\n<script>", 1)
@@ -99,7 +142,7 @@ def main(log=print):
         "self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!=V).map(x=>caches.delete(x)))));self.clients.claim()});\n"
         "self.addEventListener('fetch',e=>{const u=new URL(e.request.url);if(u.origin!==location.origin)return;\n"
         " e.respondWith(fetch(e.request).then(r=>{if(r.ok){const c=r.clone();caches.open(V).then(x=>x.put(e.request,c))}return r}).catch(()=>caches.match(e.request)))});\n" % ver)
-    w("api/build.json", {"generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "matches_built": len(todo), "ok": stats["ok"], "fail": stats["fail"], "days": stats["days"], "statuses": stats["statuses"], "skipped_played": stats["skipped"], "errors": stats["errors"], "reused": stats.get("reused", 0), "sample_ids": todo[:5]})
+    w("api/build.json", {"generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "matches_built": len(todo), "ok": stats["ok"], "fail": stats["fail"], "days": stats["days"], "statuses": stats["statuses"], "skipped_played": stats["skipped"], "errors": stats["errors"], "ai": stats.get("ai"), "reused": stats.get("reused", 0), "sample_ids": todo[:5]})
     log(json.dumps(stats, ensure_ascii=False)); log(f"done in {int(time.time() - t0)}s")
     return 0 if stats["days"] else 1
 

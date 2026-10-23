@@ -35,6 +35,7 @@ jobs:
       - name: Build site (static app)
         env:
           PITCHAPI_KEY: ${{ secrets.PITCHAPI_KEY }}
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python -m app.sitebuild
       - name: Save build report
         run: |
