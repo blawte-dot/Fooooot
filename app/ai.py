@@ -42,7 +42,33 @@ def _allow(ip):
             raise AIError("AI_LIMIT", "بلغتَ حد طلبات الذكاء الاصطناعي لهذه الساعة، أعد المحاولة لاحقًا", 429)
         _hits.append((now, ip))
 
+_MODELS = {}
+PREF = ["gemini-3.5-flash", "gemini-3-flash", "gemini-3.1-flash", "gemini-flash-latest", "gemini-2.5-flash", "gemini-2.0-flash"]
+
+def list_models():
+    """النماذج التي يسمح بها المفتاح فعلًا (لتجنّب 404 على نموذج غير موجود)."""
+    key = os.environ.get("GEMINI_API_KEY", "").strip()
+    r = requests.get("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200", headers={"x-goog-api-key": key}, timeout=30)
+    if r.status_code != 200: raise AIError("AI_ERROR", f"list models {r.status_code}: {r.text[:150]}", 502)
+    names = [m["name"].split("/")[-1] for m in r.json().get("models", []) if "generateContent" in (m.get("supportedGenerationMethods") or [])]
+    _MODELS["names"] = names; return names
+
+def _pick_models():
+    env = os.environ.get("GEMINI_MODEL", "").strip(); names = _MODELS.get("names")
+    if names:
+        extra = [n for n in names if "flash" in n and not any(x in n for x in ("lite", "image", "tts", "live", "audio", "thinking")) and n not in PREF][:2]
+        order = ([env] if env in names else []) + [m for m in PREF if m in names and m != env] + extra
+        return order or names[:1]
+    fb = [m.strip() for m in os.environ.get("GEMINI_FALLBACK", "gemini-2.5-flash").split(",") if m.strip()]
+    first = env or "gemini-3.5-flash"; return [first] + [m for m in fb if m != first]
+
+def _msg(j):
+    try: return str((j.get("error") or {}).get("message", ""))[:140]
+    except Exception: return ""
+
 def _post(model, body, key):
+    if "2.5-flash" in model and "generationConfig" in body and "thinkingConfig" not in body["generationConfig"]:
+        body = {**body, "generationConfig": {**body["generationConfig"], "thinkingConfig": {"thinkingBudget": 0}}}    # بلا تفكير داخلي يستهلك حد المخرجات فيقطع JSON
     r = requests.post(URL.format(model), headers={"x-goog-api-key": key, "Content-Type": "application/json"}, json=body, timeout=75)
     try: j = r.json()
     except ValueError: j = {}
@@ -51,8 +77,7 @@ def _post(model, body, key):
 def _generate(body):
     key = os.environ.get("GEMINI_API_KEY", "").strip()
     if not key: raise AIError("NO_AI_KEY", "متغير البيئة GEMINI_API_KEY غير مضبوط", 503)
-    first = os.environ.get("GEMINI_MODEL", "gemini-3.5-flash").strip()
-    models = [first] + [m.strip() for m in os.environ.get("GEMINI_FALLBACK", "gemini-2.5-flash").split(",") if m.strip() and m.strip() != first]
+    models = _pick_models()
     st, j = 0, {}
     for model in models:                       # الحصة المجانية لكل نموذج على حدة: عند 429/404/400 نجرّب الاحتياطي
         try:
@@ -64,9 +89,9 @@ def _generate(body):
         except requests.RequestException: raise AIError("AI_TIMEOUT", "تعذر الاتصال بـ Gemini", 504)
         if st == 200: _LAST["model"] = model; break
         if st not in (400, 404, 429, 500, 502, 503, 504): break
-    if st == 429: raise AIError("AI_RATE_LIMIT", "حد استخدام Gemini المجاني استُنفد مؤقتًا، أعد المحاولة بعد قليل", 429)
+    if st == 429: raise AIError("AI_RATE_LIMIT", f"حد استخدام Gemini المجاني استُنفد مؤقتًا، أعد المحاولة بعد قليل [{model}: {_msg(j)}]", 429)
     if st in (401, 403): raise AIError("AI_AUTH", "مفتاح Gemini غير صالح أو غير مسموح له", 502)
-    if st != 200: raise AIError("AI_ERROR", f"تعذر الحصول على رد من Gemini (رمز {st})", 502)
+    if st != 200: raise AIError("AI_ERROR", f"تعذر الحصول على رد من Gemini (رمز {st}: {_msg(j)}) [{model}]", 502)
     c = (j.get("candidates") or [{}])[0]
     text = "".join(p.get("text", "") for p in (c.get("content") or {}).get("parts", []))
     if not text.strip(): raise AIError("AI_EMPTY", "رد Gemini فارغ (ربما حُجب المحتوى)", 502)

@@ -62,6 +62,10 @@ def ai_phase(todo, stats, log, deadline):
     if not os.environ.get("GEMINI_API_KEY"): log("ai: no key, skipped"); return
     os.environ.setdefault("AI_PER_IP_HOUR", "100000"); os.environ.setdefault("AI_GLOBAL_HOUR", "100000")
     from . import ai
+    try: stats["ai_models"] = ai.list_models()[:40]
+    except Exception as e:
+        log(f"ai models: {e}")
+        if len(stats["errors"]) < 40: stats["errors"].append(f"ai-models: {str(e)[:170]}")
     used = 0; stats["ai"] = {"new": 0, "reused": 0, "fail": 0}; blocked = set()
     for mid in todo:
         if used >= AI_MAX or time.time() > deadline: break
@@ -119,7 +123,7 @@ def extras_phase(todo, mteams, target, leagues, tier, have, logos, stats, log, d
     def cached(rel, hours, fn, key):
         if hours and prev_fresh(rel, hours): x["reused"] += 1; return True
         if time.time() > deadline: keep_prev(rel); return False
-        try: res = fn(); w(rel, {**res, "_gen": now()}); x["new"] += 1; return True
+        try: res = retry(lambda _x: fn(), None); w(rel, {**res, "_gen": now()}); x["new"] += 1; return True
         except Exception as e:
             x["fail"] += 1; msg = f"{key}: {type(e).__name__}: {str(e)[:160]}"; log(msg)
             if len(stats["errors"]) < 40: stats["errors"].append(msg)
@@ -180,6 +184,9 @@ def main(log=print):
         return dict(service.DEFAULT), "tuning"
     xgmod.ensure, service.get_params = ensure_g, gp_g
     logos, mteams, mtier = {}, {}, {}
+    try: GEN = requests.get(PREV + "api/gen.json", timeout=20).json()      # متى حُسب كل ملف آخر مرة: ندوّر الأقدم أولًا فتصل كل المباريات دورها
+    except Exception: GEN = {}
+    if not isinstance(GEN, dict): GEN = {}
     try:
         r = requests.get(PREV + "api/logos.json", timeout=20); logos = r.json() if r.status_code == 200 else {}
     except Exception: logos = {}
@@ -210,17 +217,22 @@ def main(log=print):
     stats["t1_names"] = sorted(l["name"] for l in wl if tier[l["id"]] == 1)[:60]; stats["t2_names_sample"] = sorted(l["name"] for l in wl if tier[l["id"]] == 2)[:40]
     jobs = (("predict", service.predict_match, 2), ("market", service.market_view, 2), ("last7", lambda i: service.last50_match(i, 7), 1),
             ("board", lambda i: wait_board(i, t0 + BUDGET), 1))
-    for name, fn, mx in jobs:
-        for mid in todo:
-            if mtier[mid] > mx: continue
-            if time.time() - t0 > BUDGET:
-                if keep_prev(f"api/{name}/{mid}.json"): stats["reused"] = stats.get("reused", 0) + 1
-                continue
-            try: w(f"api/{name}/{mid}.json", retry(fn, mid)); stats["ok"][name] = stats["ok"].get(name, 0) + 1
-            except Exception as e:
-                stats["fail"][name] = stats["fail"].get(name, 0) + 1; msg = f"{name} {mid}: {type(e).__name__}: {str(e)[:160]}"; log(msg)
-                if len(stats["errors"]) < 40: stats["errors"].append(msg)
-                if keep_prev(f"api/{name}/{mid}.json"): stats.setdefault("reused", 0); stats["reused"] += 1
+    for lvl in (0, 1, 2):                       # الدوريات الكبرى أولًا وبكل أجزائها، ثم المشهورة، ثم البقية (نتائج فقط)
+        mids = [m for m in todo if mtier[m] == lvl]
+        if lvl: mids.sort(key=lambda m: GEN.get(f"predict/{m}", 0))
+        dl = t0 + BUDGET * (0.6 if lvl == 0 else 1.0)
+        for mid in mids:
+            for name, fn, mx in jobs:
+                if lvl > mx: continue
+                rel = f"api/{name}/{mid}.json"
+                if time.time() > dl:
+                    if keep_prev(rel): stats["reused"] = stats.get("reused", 0) + 1
+                    continue
+                try: w(rel, retry(fn, mid)); GEN[f"{name}/{mid}"] = int(time.time()); stats["ok"][name] = stats["ok"].get(name, 0) + 1
+                except Exception as e:
+                    stats["fail"][name] = stats["fail"].get(name, 0) + 1; msg = f"{name} {mid}: {type(e).__name__}: {str(e)[:160]}"; log(msg)
+                    if len(stats["errors"]) < 40: stats["errors"].append(msg)
+                    if keep_prev(rel): stats["reused"] = stats.get("reused", 0) + 1
     av = 0
     for mid in todo:
         try: av += bool(json.load(open(os.path.join(OUT, f"api/market/{mid}.json"), encoding="utf-8")).get("available"))
@@ -228,9 +240,25 @@ def main(log=print):
     stats["market_available"] = av
     try: stats["espn_probe"] = requests.get("https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard", timeout=15, headers={"User-Agent": "Mozilla/5.0 (MatchPredict)"}).status_code
     except Exception as e: stats["espn_probe"] = type(e).__name__
+    try:    # تشخيص ESPN: لماذا لا تُطابَق المباراة؟
+        from . import espn
+        dbg = []
+        for mid in [m for m in todo if mtier[m] == 0][:3]:
+            mm = pc.get(f"/v1/matches/{mid}", ttl=300); lg = next((l for l in leagues if l["id"] == mm["league"]["id"]), None); slug = service._espn_slug(lg) if lg else None
+            d = date.fromisoformat(mm["date"]); evs = espn.day_events(slug, d - timedelta(days=1), d + timedelta(days=1)) if slug else []
+            names = []
+            for e in evs[:4]:
+                try: names.append([x["team"].get("displayName") for x in e["competitions"][0]["competitors"]])
+                except Exception: pass
+            dbg.append({"slug": slug, "date": mm["date"], "ours": [mm["home_team"]["name"], mm["away_team"]["name"]], "norm": [espn.norm(mm["home_team"]["name"]), espn.norm(mm["away_team"]["name"])], "events": len(evs), "sample": names, "found": bool(slug and espn.find_event(slug, d, mm["home_team"]["name"], mm["away_team"]["name"]))})
+        stats["espn_debug"] = dbg
+    except Exception as e: stats["espn_debug"] = f"{type(e).__name__}: {str(e)[:120]}"
+    ARAB = {"DZ", "MA", "TN", "EG", "SA", "AE", "QA", "JO", "KW", "IQ"}
+    stats["arab_leagues"] = [[l["name"], l.get("country_code"), tier.get(l["id"], "مستبعد")] for l in leagues if (l.get("country_code") or "").upper() in ARAB][:40]
     ai_phase([m for m in todo if mtier[m] == 0], stats, log, t0 + BUDGET + 600)
     extras_phase(todo, mteams, target, wl, tier, have, logos, stats, log, t0 + BUDGET + 1080)
     built = [m for m in todo if os.path.exists(os.path.join(OUT, f"api/predict/{m}.json"))]; w("api/index.json", {"ids": built})
+    ids = set(todo); w("api/gen.json", {k: v for k, v in GEN.items() if k.split("/", 1)[1] in ids})
     # واجهة + مظهر التطبيق
     html = open("static/index.html", encoding="utf-8").read().replace("<script>", "<script>window.STATIC=true;</script>\n<script>", 1)
     html = html.replace("</head>", '<link rel="manifest" href="manifest.webmanifest"><meta name="theme-color" content="#0e1626"><link rel="icon" href="icon-192.png"><link rel="apple-touch-icon" href="icon-192.png"></head>', 1)
@@ -247,7 +275,7 @@ def main(log=print):
         "self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!=V).map(x=>caches.delete(x)))));self.clients.claim()});\n"
         "self.addEventListener('fetch',e=>{const u=new URL(e.request.url);if(u.origin!==location.origin)return;\n"
         " e.respondWith(fetch(e.request).then(r=>{if(r.ok){const c=r.clone();caches.open(V).then(x=>x.put(e.request,c))}return r}).catch(()=>caches.match(e.request)))});\n" % ver)
-    w("api/build.json", {"generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "matches_built": len(todo), "ok": stats["ok"], "fail": stats["fail"], "days": stats["days"], "statuses": stats["statuses"], "skipped_played": stats["skipped"], "errors": stats["errors"], "ai": stats.get("ai"), "tiers": stats.get("tiers"), "t1_names": stats.get("t1_names"), "t2_names_sample": stats.get("t2_names_sample"), "extras": stats.get("x"), "market_available": stats.get("market_available"), "espn_probe": stats.get("espn_probe"), "reused": stats.get("reused", 0), "sample_ids": todo[:5]})
+    w("api/build.json", {"generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "matches_built": len(todo), "ok": stats["ok"], "fail": stats["fail"], "days": stats["days"], "statuses": stats["statuses"], "skipped_played": stats["skipped"], "errors": stats["errors"], "ai": stats.get("ai"), "ai_models": stats.get("ai_models"), "espn_debug": stats.get("espn_debug"), "arab_leagues": stats.get("arab_leagues"), "tiers": stats.get("tiers"), "t1_names": stats.get("t1_names"), "t2_names_sample": stats.get("t2_names_sample"), "extras": stats.get("x"), "market_available": stats.get("market_available"), "espn_probe": stats.get("espn_probe"), "reused": stats.get("reused", 0), "sample_ids": todo[:5]})
     log(json.dumps(stats, ensure_ascii=False)); log(f"done in {int(time.time() - t0)}s")
     return 0 if stats["days"] else 1
 
