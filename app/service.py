@@ -184,7 +184,7 @@ def backtest_league(league_id):
     return res
 
 
-def last50_match(match_id):
+def last50_match(match_id, n=50):
     m = pc.get(f"/v1/matches/{match_id}", ttl=300)
     ref = date.fromisoformat(m["date"]); lg = m["league"]["id"]
     leagues = pc.get("/v1/leagues", ttl=6 * 3600)["leagues"]; byid = {l["id"]: l for l in leagues}
@@ -193,7 +193,7 @@ def last50_match(match_id):
     for l in ids:
         try: allh += [(*h, "ucl" if is_ucl(l) else "league", l["name"]) for h in history(l["id"], _all_seasons(leagues, l["id"]), ref)]
         except pc.PitchError: pass
-    res = last50.build(m, allh, ref)
+    res = last50.build(m, allh, ref, n)
     res["competitions_used"] = [l["name"] for l in ids]
     if not any(is_ucl(l) for l in leagues): res["note"] += " لم أجد دوري أبطال أوروبا في كتالوج المصدر الحالي، فلم يُحسب."
     if ids and is_ucl(ids[0]): res["note"] += " المباراة في دوري الأبطال، فالمحسوب هنا مباريات دوري الأبطال فقط (دوريات الفرق المحلية غير محددة)."
@@ -202,6 +202,10 @@ def last50_match(match_id):
         res["outlook"] = {"home": pr["home"], "draw": pr["draw"], "away": pr["away"], "xg_home": pr["xg_home"], "xg_away": pr["xg_away"],
                           "confidence": p["confidence"]["level"]} if pr else {"reason": p.get("reason")}
     except Exception: res["outlook"] = None
+    if n <= 10:
+        b = peek_board(match_id)   # أفضل اختيارات المحرك الإحصائي إن كانت لوحة الأسواق جاهزة (بلا حساب ثقيل جديد)
+        res["engine_picks"] = (b or {}).get("picks")
+        res["engine_ready"] = b is not None
     return res
 
 def logos(ids):

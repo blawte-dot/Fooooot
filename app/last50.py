@@ -84,11 +84,11 @@ def _metric(name, vals):
         if name in LINES: out["lines"], out["team_lines"] = _cnt(t, LINES[name][0]), _cnt(f, LINES[name][1])
     return out
 
-def _games(allh, team, ref):
+def _games(allh, team, ref, n=N):
     seen, g = set(), []
     for x in sorted((x for x in allh if team in (x[1], x[2]) and x[0] < ref), reverse=True):
         if x[5] not in seen: seen.add(x[5]); g.append(x)
-    return g[:N]
+    return g[:n]
 
 def _team(games, team, stats):
     z = lambda: {"W": 0, "D": 0, "L": 0}
@@ -111,16 +111,30 @@ def _team(games, team, stats):
             "gf": gfs, "ga": gas, "points": 3 * res["W"] + res["D"], "btts": btts, "clean_sheets": clean, "rows": rows,
             "metrics": {k: _metric(k, v) for k, v in vals.items()}}
 
-def build(m, allh, ref):
+LAB = {"goals": "الأهداف", "corners": "الركنيات", "yellow": "البطاقات الصفراء", "shots": "التسديدات", "sot": "التسديدات على المرمى"}
+
+def _picks(comb, H, A, m, n):
+    """أعلى الخطوط تكرارًا عند الفريقين معًا في العينة الأخيرة (وصفي بحت؛ العينة صغيرة)."""
+    out = []
+    for k, c in comb.items():
+        for l in c.get("lines", []):
+            tot = l["home_n"] + l["away_n"]
+            if not tot: continue
+            for side, hits in (("أكثر من", l["home"] + l["away"]), ("أقل من", tot - l["home"] - l["away"])):
+                rate = round(100 * hits / tot)
+                if rate >= 75: out.append({"market": LAB.get(k, k), "text": f"المجموع {side} {l['line']}", "hits": hits, "of": tot, "rate": rate})
+    return sorted(out, key=lambda x: (-x["rate"], -x["of"]))[:8]
+
+def build(m, allh, ref, n=N):
     hid, aid = m["home_team"]["id"], m["away_team"]["id"]
-    gh, ga = _games(allh, hid, ref), _games(allh, aid, ref)
+    gh, ga = _games(allh, hid, ref, n), _games(allh, aid, ref, n)
     todo = {g[5]: (g[1], g[2]) for g in gh + ga}
     with ThreadPoolExecutor(8) as ex: got = list(ex.map(lambda kv: _match_stats(kv[0], *kv[1]), todo.items()))
     stats = dict(zip(todo, got)); H, A = _team(gh, hid, stats), _team(ga, aid, stats)
     comb = {}
     for k in H["metrics"]:
         hm, am = H["metrics"][k], A["metrics"].get(k)
-        if not am or hm["n"] < 10 or am["n"] < 10: continue
+        if not am or hm["n"] < min(10, n) or am["n"] < min(10, n): continue
         eh, ea = (hm["for_avg"] + am["against_avg"]) / 2, (am["for_avg"] + hm["against_avg"]) / 2
         c = {"expected_total": round(eh + ea, 2), "expected_home": round(eh, 2), "expected_away": round(ea, 2)}
         if "lines" in hm and "lines" in am:
@@ -134,7 +148,8 @@ def build(m, allh, ref):
     return {"match": {"id": m["id"], "home": m["home_team"]["name"], "away": m["away_team"]["name"], "league": m["league"]["name"],
                       "home_logo": m["home_team"].get("image_url"), "away_logo": m["away_team"].get("image_url")},
             "home": H, "away": A, "combined": comb, "available_stat_keys": sample,
-            "note": "تحليل وصفي لآخر 50 مباراة لكل فريق من الدوري ودوري الأبطال (إن وُجدت)، وليس نموذجًا احتماليًا."}
+            "n": n, "picks": _picks(comb, H, A, m, n) if n <= 10 else None,
+            "note": f"تحليل وصفي لآخر {n} مباراة لكل فريق من الدوري ودوري الأبطال (إن وُجدت)، وليس نموذجًا احتماليًا."}
 
 def _keys(mid):
     try: return [f'{it.get("key")} | {it.get("title")}' for it in _items(pc.get(f"/v1/matches/{mid}/stats", ttl=24 * 3600) or {})][:80]

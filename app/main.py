@@ -45,6 +45,11 @@ def last50(match_id):
     if not service.ID_RE.match(match_id): return {"error": {"code": "INVALID_PARAMETER", "message": "معرّف غير صالح"}}, 400
     return service.last50_match(match_id)
 
+@app.get("/api/last7/<match_id>")
+def last7(match_id):
+    if not service.ID_RE.match(match_id): return {"error": {"code": "INVALID_PARAMETER", "message": "معرّف غير صالح"}}, 400
+    return service.last50_match(match_id, 7)
+
 @app.get("/api/teams")
 def teams(): return service.search_teams(request.args.get("q", ""), request.args.get("big5") == "1")
 
