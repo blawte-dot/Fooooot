@@ -26,6 +26,7 @@ def once(log=print):
             try: evs = pc.get(f"/v1/matches/{m['id']}/events", ttl=30).get("events") or []
             except Exception: evs = []
             st = review.live_state(m, snaps.get(m["id"]), evs)
+            diag.setdefault("events", {"n": len(evs), "types": sorted({str(e.get("event_type")) for e in evs})[:15], "keys": sorted(evs[0].keys()) if evs else None, "match_id": m["id"], "time_utc": m.get("time_utc")})
             out[m["id"]] = {**st, "home": (m.get("home_team") or {}).get("name"), "away": (m.get("away_team") or {}).get("name"), "league": (m.get("league") or {}).get("name"), "status": m.get("status")}
     return {"ts": review.now(), "matches": out, "diag": diag}
 

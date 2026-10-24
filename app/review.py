@@ -12,12 +12,23 @@ RED_W = (0.78, 1.25)    # تقدير شائع: الفريق الذي طُرد ي
 
 def now(): return datetime.now(timezone.utc).isoformat(timespec="seconds")
 
+FIN = {"finished", "ft", "final", "completed", "ended"}
+PRE = {"not_started", "scheduled", "upcoming", "tbd", "ns", "postponed", "cancelled", "canceled", ""}
+
 def phase_of(m):
-    """pre / live / post من حقل الحالة والنتيجة. أي حالة غير معروفة مع نتيجة جارية تُعدّ مباشرًا."""
-    st = str(m.get("status", "")).lower().replace(" ", "_")
-    played = m.get("score_home") is not None and m.get("score_away") is not None
-    if st in ("finished", "ft", "final", "completed", "ended"): return "post"
-    if st in ("not_started", "scheduled", "upcoming", "tbd", "ns", "postponed", "cancelled", "canceled") or (not st): return "pre" if not played else "post"
+    """pre / live / post / stale. المصدر لا يحدّث الحالة أثناء المباراة (تبقى not_started)، فالمباراة التي مضى على وقتها time_utc أقل من 150 دقيقة وليست منتهية تُعدّ جارية.
+    ما تجاوز 150 دقيقة بلا نتيجة = stale (بيانات لم تُحدَّث بعد)."""
+    st = str(m.get("status", "")).lower().replace(" ", "_"); played = m.get("score_home") is not None and m.get("score_away") is not None
+    if st in FIN: return "post"
+    if st in PRE:
+        if played: return "post"
+        k = _iso(m.get("time_utc"))
+        if k and k.tzinfo:
+            mins = (datetime.now(timezone.utc) - k).total_seconds() / 60
+            if st in ("postponed", "cancelled", "canceled"): return "pre"
+            if 0 <= mins <= 150: return "live"
+            if mins > 150: return "stale"
+        return "pre"
     return "live" if st not in LIVE_NOT else "pre"
 
 # ---------- لقطة ما قبل المباراة ----------
@@ -102,7 +113,7 @@ def minute_of(m, evs=None):
     for k in ("minute", "elapsed", "current_minute", "match_minute", "clock", "time"):
         v = m.get(k)
         if v is not None and re.match(r"^\s*\d+", str(v)): return int(re.match(r"\s*(\d+)", str(v)).group(1)), k
-    for k in ("kickoff", "kickoff_time", "start_time", "starts_at", "datetime", "scheduled_at", "date_time", "utc_date"):
+    for k in ("time_utc", "kickoff", "kickoff_time", "start_time", "starts_at", "datetime", "scheduled_at", "date_time", "utc_date"):
         d = _iso(m.get(k))
         if d and d.tzinfo:
             mins = (datetime.now(timezone.utc) - d).total_seconds() / 60
@@ -119,10 +130,25 @@ def reds_of(m, evs):
             elif e.get("team_id") == aid: ra += 1
     return rh, ra
 
+def goals_from_events(m, evs):
+    """نتيجة تقريبية من أحداث الأهداف إن لم يوفّر المصدر نتيجة جارية. تُرجع (مضيف، ضيف) أو None إن لم تتوفر أحداث."""
+    if not evs: return None
+    hid, aid = (m.get("home_team") or {}).get("id"), (m.get("away_team") or {}).get("id"); sh = sa = 0
+    for e in evs:
+        t = str(e.get("event_type", "")).lower().replace("_", "").replace(" ", "")
+        if "goal" not in t or any(x in t for x in ("disallow", "cancel", "missed", "var", "nogoal")): continue
+        own = "own" in t; tid = e.get("team_id")
+        if tid == hid: sa, sh = (sa + 1, sh) if own else (sa, sh + 1)
+        elif tid == aid: sh, sa = (sh + 1, sa) if own else (sh, sa + 1)
+    return sh, sa
+
 def live_state(m, snap, evs=None):
-    sh, sa = int(m.get("score_home") or 0), int(m.get("score_away") or 0); minute, src = minute_of(m, evs); rh, ra = reds_of(m, evs)
-    out = {"state": "live", "score": [sh, sa], "minute": minute, "minute_src": src, "reds": [rh, ra], "ts": now(), "pre": snap["p"] if snap else None}
-    if snap and minute is not None: out["inplay"] = inplay(sh, sa, minute, snap["xg"][0], snap["xg"][1], rh, ra)
+    minute, src = minute_of(m, evs); rh, ra = reds_of(m, evs)
+    if m.get("score_home") is not None and m.get("score_away") is not None: sc, ssrc = (int(m["score_home"]), int(m["score_away"])), "المصدر"
+    else:
+        sc = goals_from_events(m, evs); ssrc = "أحداث الأهداف (قد تكون ناقصة أو متأخرة)"
+    out = {"state": "live", "score": list(sc) if sc else None, "score_src": ssrc if sc else None, "minute": minute, "minute_src": src, "reds": [rh, ra], "ts": now(), "pre": snap["p"] if snap else None}
+    if snap and sc and minute is not None: out["inplay"] = inplay(sc[0], sc[1], minute, snap["xg"][0], snap["xg"][1], rh, ra)
     return out
 
 # ---------- السجل التراكمي ----------

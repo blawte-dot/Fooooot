@@ -32,3 +32,14 @@ def test_phase_and_minute():
     assert R.phase_of({"status": "finished", "score_home": 1, "score_away": 0}) == "post" and R.phase_of({"status": "not_started"}) == "pre"
     assert R.phase_of({"status": "inprogress", "score_home": 0, "score_away": 0}) == "live"
     assert R.minute_of({"minute": "63'"})[0] == 63 and R.minute_of({}, [{"minute": 38}, {"minute": 12}]) == (38, "آخر حدث (حد أدنى)")
+
+def test_time_based_live_detection_and_events_score():
+    from datetime import datetime, timedelta, timezone
+    iso = lambda mins: (datetime.now(timezone.utc) - timedelta(minutes=mins)).strftime("%Y-%m-%dT%H:%M:%SZ")
+    assert R.phase_of({"status": "not_started", "time_utc": iso(30)}) == "live" and R.phase_of({"status": "not_started", "time_utc": iso(200)}) == "stale"
+    assert R.phase_of({"status": "not_started", "time_utc": iso(-120)}) == "pre" and R.phase_of({"status": "finished", "time_utc": iso(300)}) == "post"
+    m = {"status": "not_started", "time_utc": iso(75), "home_team": {"id": "h"}, "away_team": {"id": "a"}}
+    evs = [{"event_type": "goal", "team_id": "h", "minute": 10}, {"event_type": "own_goal", "team_id": "h", "minute": 30}, {"event_type": "yellow_card", "team_id": "a", "minute": 33}]
+    assert R.goals_from_events(m, evs) == (1, 1)
+    st = R.live_state(m, {"p": [50, 25, 25], "xg": [1.5, 1.0]}, evs); assert st["score"] == [1, 1] and 55 <= st["minute"] <= 62 and st["inplay"]["p"][1] > 20
+    assert R.live_state(m, None, [])["score"] is None
