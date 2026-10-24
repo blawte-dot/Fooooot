@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-23T23:08:18+00:00",
+ "generated_at": "2026-10-24T03:08:12+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -66,6 +66,12 @@
    "matches": 460,
    "name": "Serie B",
    "with_stats": 460
+  },
+  "l_0kSJLz": {
+   "errors": [],
+   "matches": 730,
+   "name": "Liga I",
+   "with_stats": 0
   },
   "l_0uqFK8": {
    "errors": [],
@@ -193,6 +199,12 @@
    "name": "K League 2",
    "with_stats": 586
   },
+  "l_2ApGa4": {
+   "errors": [],
+   "matches": 1681,
+   "name": "J. League",
+   "with_stats": 0
+  },
   "l_2EKrnc": {
    "errors": [],
    "matches": 1095,
@@ -300,6 +312,12 @@
    "matches": 1100,
    "name": "Serie B",
    "with_stats": 903
+  },
+  "l_3uNwVX": {
+   "errors": [],
+   "matches": 902,
+   "name": "Liga 1",
+   "with_stats": 0
   },
   "l_3v84VE": {
    "errors": [],
