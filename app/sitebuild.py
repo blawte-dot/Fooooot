@@ -67,23 +67,22 @@ def ai_phase(todo, stats, log, deadline):
         log(f"ai models: {e}")
         if len(stats["errors"]) < 40: stats["errors"].append(f"ai-models: {str(e)[:170]}")
     used = 0; stats["ai"] = {"new": 0, "reused": 0, "fail": 0}; blocked = set()
-    for mid in todo:
-        if used >= AI_MAX or time.time() > deadline: break
-        if not os.path.exists(os.path.join(OUT, f"api/predict/{mid}.json")): continue
-        try: service.board_match(mid)            # يضمن وجود لوحة الأسواق في الذاكرة ليستفيد منها التحليل
-        except Exception: pass
-        for name, fn in (("ai", lambda i: ai.analyze(i, "ci")), ("ai-news", lambda i: ai.news(i, "ci")), ("ai-dossier", None)):
+    mids = [m for m in todo if os.path.exists(os.path.join(OUT, f"api/predict/{m}.json"))]
+    for name in ("ai", "ai-news", "ai-dossier"):            # التحليل أولًا لكل المباريات (الأرخص)، ثم الأخبار، ثم الدراسة الشاملة
+        for mid in mids:
+            if used >= AI_MAX or time.time() > deadline or name in blocked: break
             rel = f"api/{name}/{mid}.json"
-            if name in blocked: continue
             if prev_fresh(rel, AI_TTL[name]): stats["ai"]["reused"] += 1; continue
-            if used >= AI_MAX or time.time() > deadline: break
+            try: service.board_match(mid)        # يضمن وجود لوحة الأسواق في الذاكرة ليستفيد منها التحليل
+            except Exception: pass
             for attempt in (1, 2):
                 try:
                     if name == "ai-dossier":
                         res = ai.dossier(mid, "ci"); t1 = time.time()
                         while res.get("state") == "running" and time.time() - t1 < 240: time.sleep(6); res = ai.dossier(mid, "ci")
                         if res.get("state") != "done": raise RuntimeError(res.get("error") or "dossier not finished")
-                    else: res = fn(mid)
+                    elif name == "ai": res = ai.analyze(mid, "ci")
+                    else: res = ai.news(mid, "ci")
                     w(rel, {**res, "_gen": datetime.now(timezone.utc).isoformat(timespec="seconds")}); used += 1; stats["ai"]["new"] += 1; time.sleep(15); break
                 except Exception as e:
                     code = getattr(e, "code", "")
@@ -94,7 +93,6 @@ def ai_phase(todo, stats, log, deadline):
                     if code == "AI_AUTH": log("ai: key rejected, stopping"); return
                     if code == "AI_RATE_LIMIT": blocked.add(name); log(f"ai: {name} rate-limited, skipping it this run")
                     break
-
 
 X_LAST50, X_TEAM50 = int(os.environ.get("SITE_LAST50_MAX", "3")), int(os.environ.get("SITE_TEAM50_MAX", "4"))
 
@@ -250,10 +248,15 @@ def main(log=print):
             for e in evs[:4]:
                 try: names.append([x["team"].get("displayName") for x in e["competitions"][0]["competitors"]])
                 except Exception: pass
-            dbg.append({"slug": slug, "date": mm["date"], "ours": [mm["home_team"]["name"], mm["away_team"]["name"]], "norm": [espn.norm(mm["home_team"]["name"]), espn.norm(mm["away_team"]["name"])], "events": len(evs), "sample": names, "found": bool(slug and espn.find_event(slug, d, mm["home_team"]["name"], mm["away_team"]["name"]))})
+            pr = {}
+            for k, u in (("range", f"{espn.BASE}/{slug}/scoreboard?dates={(d - timedelta(days=1)):%Y%m%d}-{(d + timedelta(days=1)):%Y%m%d}&limit=300"), ("day", f"{espn.BASE}/{slug}/scoreboard?dates={d:%Y%m%d}"), ("default", f"{espn.BASE}/{slug}/scoreboard")):
+                try: rr = requests.get(u, timeout=15, headers={"User-Agent": "Mozilla/5.0 (MatchPredict)"}); pr[k] = [rr.status_code, len((rr.json() or {}).get("events", [])) if rr.status_code == 200 else rr.text[:80]]
+                except Exception as ex: pr[k] = type(ex).__name__
+            dbg.append({"probe": pr, "slug": slug, "date": mm["date"], "ours": [mm["home_team"]["name"], mm["away_team"]["name"]], "norm": [espn.norm(mm["home_team"]["name"]), espn.norm(mm["away_team"]["name"])], "events": len(evs), "sample": names, "found": bool(slug and espn.find_event(slug, d, mm["home_team"]["name"], mm["away_team"]["name"]))})
         stats["espn_debug"] = dbg
     except Exception as e: stats["espn_debug"] = f"{type(e).__name__}: {str(e)[:120]}"
-    ARAB = {"DZ", "MA", "TN", "EG", "SA", "AE", "QA", "JO", "KW", "IQ"}
+    ARAB = {"DZ", "MA", "TN", "EG", "SA", "AE", "QA", "JO", "KW", "IQ", "DZA", "MAR", "TUN", "EGY", "SAU", "ARE", "QAT", "JOR", "KWT", "IRQ"}
+    stats["country_codes"] = sorted({str(l.get("country_code")) for l in leagues})[:80]
     stats["arab_leagues"] = [[l["name"], l.get("country_code"), tier.get(l["id"], "مستبعد")] for l in leagues if (l.get("country_code") or "").upper() in ARAB][:40]
     ai_phase([m for m in todo if mtier[m] == 0], stats, log, t0 + BUDGET + 600)
     extras_phase(todo, mteams, target, wl, tier, have, logos, stats, log, t0 + BUDGET + 1080)
@@ -275,7 +278,7 @@ def main(log=print):
         "self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!=V).map(x=>caches.delete(x)))));self.clients.claim()});\n"
         "self.addEventListener('fetch',e=>{const u=new URL(e.request.url);if(u.origin!==location.origin)return;\n"
         " e.respondWith(fetch(e.request).then(r=>{if(r.ok){const c=r.clone();caches.open(V).then(x=>x.put(e.request,c))}return r}).catch(()=>caches.match(e.request)))});\n" % ver)
-    w("api/build.json", {"generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "matches_built": len(todo), "ok": stats["ok"], "fail": stats["fail"], "days": stats["days"], "statuses": stats["statuses"], "skipped_played": stats["skipped"], "errors": stats["errors"], "ai": stats.get("ai"), "ai_models": stats.get("ai_models"), "espn_debug": stats.get("espn_debug"), "arab_leagues": stats.get("arab_leagues"), "tiers": stats.get("tiers"), "t1_names": stats.get("t1_names"), "t2_names_sample": stats.get("t2_names_sample"), "extras": stats.get("x"), "market_available": stats.get("market_available"), "espn_probe": stats.get("espn_probe"), "reused": stats.get("reused", 0), "sample_ids": todo[:5]})
+    w("api/build.json", {"generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "matches_built": len(todo), "ok": stats["ok"], "fail": stats["fail"], "days": stats["days"], "statuses": stats["statuses"], "skipped_played": stats["skipped"], "errors": stats["errors"], "ai": stats.get("ai"), "ai_models": stats.get("ai_models"), "espn_debug": stats.get("espn_debug"), "arab_leagues": stats.get("arab_leagues"), "country_codes": stats.get("country_codes"), "tiers": stats.get("tiers"), "t1_names": stats.get("t1_names"), "t2_names_sample": stats.get("t2_names_sample"), "extras": stats.get("x"), "market_available": stats.get("market_available"), "espn_probe": stats.get("espn_probe"), "reused": stats.get("reused", 0), "sample_ids": todo[:5]})
     log(json.dumps(stats, ensure_ascii=False)); log(f"done in {int(time.time() - t0)}s")
     return 0 if stats["days"] else 1
 

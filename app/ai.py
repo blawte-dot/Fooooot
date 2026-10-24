@@ -58,7 +58,9 @@ def _pick_models():
     if names:
         extra = [n for n in names if "flash" in n and not any(x in n for x in ("lite", "image", "tts", "live", "audio", "thinking")) and n not in PREF][:2]
         order = ([env] if env in names else []) + [m for m in PREF if m in names and m != env] + extra
-        return order or names[:1]
+        last = _LAST.get("model")
+        if last in order: order = [last] + [m for m in order if m != last]      # النموذج الذي نجح للتو أولًا: لا نستنزف حصص كل النماذج
+        return (order or names[:1])[:4]
     fb = [m.strip() for m in os.environ.get("GEMINI_FALLBACK", "gemini-2.5-flash").split(",") if m.strip()]
     first = env or "gemini-3.5-flash"; return [first] + [m for m in fb if m != first]
 

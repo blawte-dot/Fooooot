@@ -112,7 +112,12 @@ def _norm_probs(decs):
     return [round(100 * i / s, 1) for i in imp], round(100 * (s - 1), 1)
 
 def day_events(slug, d0, d1):
-    return (_get(f"{BASE}/{slug}/scoreboard?dates={d0:%Y%m%d}-{d1:%Y%m%d}&limit=300", ttl=600) or {}).get("events", [])
+    evs = (_get(f"{BASE}/{slug}/scoreboard?dates={d0:%Y%m%d}-{d1:%Y%m%d}&limit=300", ttl=600) or {}).get("events", [])
+    if evs: return evs
+    out, cur = [], d0          # احتياط: بعض الردود الفارغة تأتي مع نطاق التواريخ، فنسأل يومًا يومًا
+    while cur <= d1:
+        out += (_get(f"{BASE}/{slug}/scoreboard?dates={cur:%Y%m%d}", ttl=600) or {}).get("events", []); cur += timedelta(days=1)
+    return out
 
 def find_event(slug, day, hname, aname):
     hn, an, best = norm(hname), norm(aname), None
