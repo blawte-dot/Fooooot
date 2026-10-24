@@ -11,7 +11,7 @@ def once(log=print):
     tier = {l["id"]: service.league_tier(l) for l in leagues if service.wanted_league(l)}
     try: snaps = json.load(open(SNAPS, encoding="utf-8"))
     except Exception: snaps = {}
-    today = datetime.now(timezone.utc).date(); out = {}; diag = {"statuses": {}, "sample": None}
+    today = datetime.now(timezone.utc).date(); out = {}; diag = {"statuses": {}, "sample": None, "pre": None, "post": None}
     for d in (today - timedelta(days=1), today):
         try: ms = pc.get(f"/v1/date/{d.isoformat()}", {"status": "all"}, ttl=45).get("matches", [])
         except Exception as e: log(f"date {d}: {e}"); continue
@@ -19,6 +19,8 @@ def once(log=print):
             lid = (m.get("league") or {}).get("id")
             if lid in tier and tier[lid] <= 1:
                 k = str(m.get("status")); diag["statuses"][k] = diag["statuses"].get(k, 0) + 1
+                for kk, ph_ in (("pre", "pre"), ("post", "post")):
+                    if diag[kk] is None and review.phase_of(m) == ph_: diag[kk] = {x: m[x] for x in list(m)[:30] if not isinstance(m[x], (dict, list))}
                 if diag["sample"] is None and review.phase_of(m) == "live": diag["sample"] = {x: m[x] for x in list(m)[:30] if not isinstance(m[x], (dict, list))}
             if lid not in tier or tier[lid] > 1 or not m.get("id") or review.phase_of(m) != "live": continue
             try: evs = pc.get(f"/v1/matches/{m['id']}/events", ttl=30).get("events") or []
