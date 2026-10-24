@@ -1,0 +1,39 @@
+name: live
+# حلقة المباشر: تحدّث live.json كل دقائق أثناء المباريات (فرع live)، وتطلق الدورة التالية بنفسها. لا تعيد بناء الموقع.
+on:
+  schedule:
+    - cron: "*/20 * * * *"        # شبكة أمان فقط
+  workflow_dispatch:
+concurrency:
+  group: live
+  cancel-in-progress: false
+permissions:
+  contents: write
+  actions: write
+jobs:
+  live:
+    runs-on: ubuntu-latest
+    timeout-minutes: 60
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+          cache: pip
+      - run: pip install -r requirements.txt
+      - name: Live loop
+        env:
+          PITCHAPI_KEY: ${{ secrets.PITCHAPI_KEY }}
+          GITHUB_TOKEN: ${{ github.token }}
+        run: python -m app.livebuild --minutes 45
+  next:
+    needs: live
+    if: ${{ always() }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Start next live cycle
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          sleep ${{ needs.live.result == 'success' && 15 || 300 }}
+          gh workflow run live.yml --repo ${{ github.repository }} --ref main

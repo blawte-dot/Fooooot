@@ -168,6 +168,63 @@ def wait_board(mid, deadline):
         if not busy or time.time() > deadline: return r
         time.sleep(15)
 
+ARCH = os.environ.get("ARCH_DIR", "data/archive"); RECENT_MAX = int(os.environ.get("SITE_RECENT_MAX", "60"))
+
+def _jl(path, default):
+    try: return json.load(open(path, encoding="utf-8"))
+    except Exception: return default
+
+def _out(rel): return _jl(os.path.join(OUT, rel), None)
+
+def recent_phase(todo, recent, mdate, mtier, archive, tr, stats, log, deadline):
+    """قبل/أثناء/بعد: لقطات التوقع قبل الانطلاق، حالة مباشرة، ومراجعة بعد النهاية مقابل ما حدث فعلًا + سجل أداء تراكمي."""
+    from . import review, last50
+    ph = stats["phase"] = {"snap_new": 0, "post": 0, "live": 0, "reused": 0, "nosnap": 0, "retro": 0, "tr_added": 0}
+    strip = lambda d: {k: v for k, v in d.items() if k != "ts"}
+    for mid in todo:                                   # لقطات ما قبل المباراة (المباريات التي لم تبدأ فقط، ولا تُعدَّل بعد البداية)
+        if mtier.get(mid, 2) > 1: continue
+        p = _out(f"api/predict/{mid}.json")
+        if not p: continue
+        sn = review.snapshot(p, _out(f"api/board/{mid}.json"), mdate.get(mid))
+        if sn and not (archive.get(mid) and strip(archive[mid]) == strip(sn) and not archive[mid].get("retro")): archive[mid] = sn; ph["snap_new"] += 1
+    order = sorted(recent.items(), key=lambda kv: (review.phase_of(kv[1]) != "live", mtier.get(kv[0], 2)))[:RECENT_MAX]
+    for mid, m in order:
+        if time.time() > deadline: log("phase: deadline"); break
+        for name in ("predict", "market", "last7", "board", "ai"):          # نسخة ما قبل المباراة تبقى متاحة بعد انطلاقها
+            if not os.path.exists(os.path.join(OUT, f"api/{name}/{mid}.json")): keep_prev(f"api/{name}/{mid}.json")
+        snap = archive.get(mid)
+        if not snap:                                     # لا لقطة محفوظة (بداية النظام): تقدير بأثر رجعي يُعلَّم ولا يدخل السجل
+            p = _out(f"api/predict/{mid}.json")
+            if not p:
+                try: p = service.predict_match(mid); w(f"api/predict/{mid}.json", p)
+                except Exception: p = None
+            snap = review.snapshot(p, _out(f"api/board/{mid}.json"), m.get("date")) if p else None
+            if snap: snap["retro"] = True; ph["retro"] += 1
+        kind = review.phase_of(m); rel = f"api/phase/{mid}.json"; hid, aid = (m.get("home_team") or {}).get("id"), (m.get("away_team") or {}).get("id")
+        if kind == "post":
+            if keep_prev(rel):
+                pj = _out(rel)
+                if pj and pj.get("state") == "post" and (pj.get("stats_ok") or pj.get("no_snapshot")): ph["reused"] += 1; continue
+            if not snap: w(rel, {"state": "post", "score": [m["score_home"], m["score_away"]], "no_snapshot": True}); ph["nosnap"] += 1; continue
+            try: stt = retry(lambda _x: last50._match_stats(mid, hid, aid), None)
+            except Exception: stt = {}
+            rev = review.review(snap, m, stt); w(rel, {**rev, "_gen": review.now()}); ph["post"] += 1
+            need_stats = any(x["group"] not in ("goals", "result") for x in rev["picks"])
+            if (rev["stats_ok"] or not need_stats) and review.update_tr(tr, mid, rev, snap): ph["tr_added"] += 1
+        elif kind == "live":
+            try: evs = pc.get(f"/v1/matches/{mid}/events", ttl=60).get("events") or []
+            except Exception: evs = []
+            st_ = review.live_state(m, snap, evs); w(rel, st_); ph["live"] += 1
+            stats.setdefault("live_sample", {"keys": sorted(m.keys()), "status": m.get("status"), "minute": st_.get("minute"), "src": st_.get("minute_src"), "event_keys": sorted((evs[0] or {}).keys()) if evs else None})
+    fin = next((m for m in recent.values() if review.phase_of(m) == "post"), None)
+    if fin: stats["post_sample_keys"] = sorted(fin.keys())
+    w("api/trackrecord.json", review.tr_view(tr))
+    keep = set(todo) | set(recent); cut = (datetime.now(timezone.utc).date() - timedelta(days=21)).isoformat()
+    pruned = {k: v for k, v in archive.items() if k in keep or str(v.get("date") or "9999")[:10] >= cut}
+    os.makedirs(ARCH, exist_ok=True)
+    json.dump(pruned, open(os.path.join(ARCH, "snapshots.json"), "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"), sort_keys=True)
+    json.dump(tr, open(os.path.join(ARCH, "trackrecord.json"), "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"), sort_keys=True)
+
 def main(log=print):
     t0 = time.time(); persist.load()
     leagues = pc.get("/v1/leagues", ttl=6 * 3600)["leagues"]
@@ -182,6 +239,8 @@ def main(log=print):
         return dict(service.DEFAULT), "tuning"
     xgmod.ensure, service.get_params = ensure_g, gp_g
     logos, mteams, mtier = {}, {}, {}
+    from . import review
+    archive = _jl(os.path.join(ARCH, "snapshots.json"), {}); tr = _jl(os.path.join(ARCH, "trackrecord.json"), None) or review.new_tr(); recent, mdate = {}, {}
     try: GEN = requests.get(PREV + "api/gen.json", timeout=20).json()      # متى حُسب كل ملف آخر مرة: ندوّر الأقدم أولًا فتصل كل المباريات دورها
     except Exception: GEN = {}
     if not isinstance(GEN, dict): GEN = {}
@@ -189,7 +248,7 @@ def main(log=print):
         r = requests.get(PREV + "api/logos.json", timeout=20); logos = r.json() if r.status_code == 200 else {}
     except Exception: logos = {}
     today = datetime.now(timezone.utc).date(); todo, stats = [], {"days": 0, "ok": {}, "fail": {}, "statuses": {}, "skipped": 0, "errors": []}
-    for i in range(0, DAYS):
+    for i in range(-1, DAYS):
         d = (today + timedelta(days=i)).isoformat()
         try:
             data = pc.get(f"/v1/date/{d}", {"status": "all"}, ttl=300); w(f"api/matches/{d}.json", data); stats["days"] += 1
@@ -206,8 +265,10 @@ def main(log=print):
             lid = (m.get("league") or {}).get("id")
             st = str(m.get("status", "")).lower(); stats["statuses"][st] = stats["statuses"].get(st, 0) + 1
             played = m.get("score_home") is not None and m.get("score_away") is not None
-            if lid in target and not played and st not in DONE and m.get("id"):
-                todo.append(m["id"]); mtier[m["id"]] = tier[lid]; mteams[m["id"]] = [((m.get("home_team") or {}).get("id"), (m.get("home_team") or {}).get("name")), ((m.get("away_team") or {}).get("id"), (m.get("away_team") or {}).get("name"))]
+            kind = review.phase_of(m)
+            if lid in target and m.get("id") and tier[lid] <= 1 and kind in ("live", "post") and (played or kind == "live"): recent[m["id"]] = m; mtier[m["id"]] = tier[lid]
+            if i >= 0 and lid in target and not played and st not in DONE and kind == "pre" and m.get("id"):
+                todo.append(m["id"]); mtier[m["id"]] = tier[lid]; mdate[m["id"]] = m.get("date"); mteams[m["id"]] = [((m.get("home_team") or {}).get("id"), (m.get("home_team") or {}).get("name")), ((m.get("away_team") or {}).get("id"), (m.get("away_team") or {}).get("name"))]
             elif lid in target: stats["skipped"] += 1
     todo = sorted(dict.fromkeys(todo), key=lambda m: mtier[m]); t2 = [m for m in todo if mtier[m] == 2][:MAX_T2]; todo = ([m for m in todo if mtier[m] < 2] + t2)[:MAX_MATCHES]
     log(f"matches to build: {len(todo)} (tier0={sum(mtier[m] == 0 for m in todo)}, tier1={sum(mtier[m] == 1 for m in todo)}, tier2={len(t2)})")
@@ -238,6 +299,9 @@ def main(log=print):
     stats["market_available"] = av
     try: stats["espn_probe"] = requests.get("https://site.api.espn.com/apis/site/v2/sports/soccer/eng.1/scoreboard", timeout=15, headers={"User-Agent": "Mozilla/5.0 (MatchPredict)"}).status_code
     except Exception as e: stats["espn_probe"] = type(e).__name__
+    try: recent_phase(todo, recent, mdate, mtier, archive, tr, stats, log, t0 + BUDGET + 300)
+    except Exception as e:
+        log(f"phase: {type(e).__name__}: {e}"); stats["errors"].append(f"phase: {type(e).__name__}: {str(e)[:150]}")
     try:    # تشخيص ESPN: لماذا لا تُطابَق المباراة؟
         from . import espn
         dbg = []
@@ -260,7 +324,7 @@ def main(log=print):
     stats["arab_leagues"] = [[l["name"], l.get("country_code"), tier.get(l["id"], "مستبعد")] for l in leagues if (l.get("country_code") or "").upper() in ARAB][:40]
     ai_phase([m for m in todo if mtier[m] == 0], stats, log, t0 + BUDGET + 600)
     extras_phase(todo, mteams, target, wl, tier, have, logos, stats, log, t0 + BUDGET + 1080)
-    built = [m for m in todo if os.path.exists(os.path.join(OUT, f"api/predict/{m}.json"))]; w("api/index.json", {"ids": built})
+    built = [m for m in list(todo) + list(recent) if os.path.exists(os.path.join(OUT, f"api/predict/{m}.json"))]; w("api/index.json", {"ids": built})
     ids = set(todo); w("api/gen.json", {k: v for k, v in GEN.items() if k.split("/", 1)[1] in ids})
     # واجهة + مظهر التطبيق
     html = open("static/index.html", encoding="utf-8").read().replace("<script>", "<script>window.STATIC=true;</script>\n<script>", 1)
@@ -278,7 +342,7 @@ def main(log=print):
         "self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!=V).map(x=>caches.delete(x)))));self.clients.claim()});\n"
         "self.addEventListener('fetch',e=>{const u=new URL(e.request.url);if(u.origin!==location.origin)return;\n"
         " e.respondWith(fetch(e.request).then(r=>{if(r.ok){const c=r.clone();caches.open(V).then(x=>x.put(e.request,c))}return r}).catch(()=>caches.match(e.request)))});\n" % ver)
-    w("api/build.json", {"generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "matches_built": len(todo), "ok": stats["ok"], "fail": stats["fail"], "days": stats["days"], "statuses": stats["statuses"], "skipped_played": stats["skipped"], "errors": stats["errors"], "ai": stats.get("ai"), "ai_models": stats.get("ai_models"), "espn_debug": stats.get("espn_debug"), "arab_leagues": stats.get("arab_leagues"), "country_codes": stats.get("country_codes"), "tiers": stats.get("tiers"), "t1_names": stats.get("t1_names"), "t2_names_sample": stats.get("t2_names_sample"), "extras": stats.get("x"), "market_available": stats.get("market_available"), "espn_probe": stats.get("espn_probe"), "reused": stats.get("reused", 0), "sample_ids": todo[:5]})
+    w("api/build.json", {"generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "matches_built": len(todo), "ok": stats["ok"], "fail": stats["fail"], "days": stats["days"], "statuses": stats["statuses"], "skipped_played": stats["skipped"], "errors": stats["errors"], "ai": stats.get("ai"), "ai_models": stats.get("ai_models"), "espn_debug": stats.get("espn_debug"), "arab_leagues": stats.get("arab_leagues"), "country_codes": stats.get("country_codes"), "tiers": stats.get("tiers"), "t1_names": stats.get("t1_names"), "t2_names_sample": stats.get("t2_names_sample"), "extras": stats.get("x"), "phase": stats.get("phase"), "live_sample": stats.get("live_sample"), "post_sample_keys": stats.get("post_sample_keys"), "market_available": stats.get("market_available"), "espn_probe": stats.get("espn_probe"), "reused": stats.get("reused", 0), "sample_ids": todo[:5]})
     log(json.dumps(stats, ensure_ascii=False)); log(f"done in {int(time.time() - t0)}s")
     return 0 if stats["days"] else 1
 

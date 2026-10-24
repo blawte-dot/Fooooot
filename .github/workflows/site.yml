@@ -29,6 +29,11 @@ jobs:
           PITCHAPI_KEY: ${{ secrets.PITCHAPI_KEY }}
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
         run: python -m app.sitebuild
+      - name: Save archive (pre-match snapshots + track record)
+        run: |
+          git config user.name "data-bot"; git config user.email "data-bot@users.noreply.github.com"
+          git add data/archive
+          if git diff --cached --quiet; then echo "archive unchanged"; else git commit -q -m "data: archive [skip render]" && (git pull -q --rebase && git push || true); fi
       - name: Save build report
         run: |
           # يُحفظ التقرير فقط عند وجود أخطاء، حتى لا يتضخم السجل بالتزامات متكررة
