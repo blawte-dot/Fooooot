@@ -43,7 +43,7 @@ def _allow(ip):
         _hits.append((now, ip))
 
 _MODELS = {}
-PREF = ["gemini-3.5-flash", "gemini-3-flash", "gemini-3.1-flash", "gemini-flash-latest", "gemini-2.5-flash", "gemini-2.0-flash"]
+PREF = ["gemini-3.8-flash", "gemini-3.7-flash", "gemini-3.6-flash", "gemini-3.5-flash", "gemini-flash-latest", "gemini-3.1-flash-lite", "gemini-3.5-flash-lite"]   # 2.5 لم يعد متاحًا للمشاريع الجديدة
 
 def list_models():
     """النماذج التي يسمح بها المفتاح فعلًا (لتجنّب 404 على نموذج غير موجود)."""
@@ -68,13 +68,21 @@ def _msg(j):
     try: return str((j.get("error") or {}).get("message", ""))[:140]
     except Exception: return ""
 
-def _post(model, body, key):
-    if "2.5-flash" in model and "generationConfig" in body and "thinkingConfig" not in body["generationConfig"]:
-        body = {**body, "generationConfig": {**body["generationConfig"], "thinkingConfig": {"thinkingBudget": 0}}}    # بلا تفكير داخلي يستهلك حد المخرجات فيقطع JSON
+def _raw(model, body, key):
     r = requests.post(URL.format(model), headers={"x-goog-api-key": key, "Content-Type": "application/json"}, json=body, timeout=75)
     try: j = r.json()
     except ValueError: j = {}
     return r.status_code, j
+
+def _post(model, body, key):
+    gc = body.get("generationConfig")
+    if gc is not None and "thinkingConfig" not in gc:       # تفكير قليل أو معدوم: أسرع، ولا يستهلك حد المخرجات فيقطع JSON
+        tc = {"thinkingBudget": 0} if "2.5-flash" in model else ({"thinkingLevel": "low"} if "gemini-3" in model else None)
+        if tc: body = {**body, "generationConfig": {**gc, "thinkingConfig": tc}}
+    st, j = _raw(model, body, key)
+    if st == 400 and "thinking" in _msg(j).lower() and "thinkingConfig" in body.get("generationConfig", {}):
+        st, j = _raw(model, {**body, "generationConfig": {k: v for k, v in body["generationConfig"].items() if k != "thinkingConfig"}}, key)
+    return st, j
 
 def _generate(body):
     key = os.environ.get("GEMINI_API_KEY", "").strip()
@@ -88,9 +96,10 @@ def _generate(body):
                 b2 = {**body, "generationConfig": {k: v for k, v in body["generationConfig"].items() if k not in ("responseSchema", "responseMimeType")}}
                 st, j = _post(model, b2, key)
             if st in (429, 500, 502, 503, 504): time.sleep(4); st, j = _post(model, body, key)
-        except requests.RequestException: raise AIError("AI_TIMEOUT", "تعذر الاتصال بـ Gemini", 504)
+        except requests.RequestException: st = 0; continue          # مهلة أو انقطاع: نجرّب النموذج التالي بدل الاستسلام
         if st == 200: _LAST["model"] = model; break
         if st not in (400, 404, 429, 500, 502, 503, 504): break
+    if st == 0: raise AIError("AI_TIMEOUT", "تعذر الاتصال بـ Gemini (انتهت المهلة)", 504)
     if st == 429: raise AIError("AI_RATE_LIMIT", f"حد استخدام Gemini المجاني استُنفد مؤقتًا، أعد المحاولة بعد قليل [{model}: {_msg(j)}]", 429)
     if st in (401, 403): raise AIError("AI_AUTH", "مفتاح Gemini غير صالح أو غير مسموح له", 502)
     if st != 200: raise AIError("AI_ERROR", f"تعذر الحصول على رد من Gemini (رمز {st}: {_msg(j)}) [{model}]", 502)

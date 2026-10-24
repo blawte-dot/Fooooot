@@ -255,7 +255,7 @@ def main(log=print):
             dbg.append({"probe": pr, "slug": slug, "date": mm["date"], "ours": [mm["home_team"]["name"], mm["away_team"]["name"]], "norm": [espn.norm(mm["home_team"]["name"]), espn.norm(mm["away_team"]["name"])], "events": len(evs), "sample": names, "found": bool(slug and espn.find_event(slug, d, mm["home_team"]["name"], mm["away_team"]["name"]))})
         stats["espn_debug"] = dbg
     except Exception as e: stats["espn_debug"] = f"{type(e).__name__}: {str(e)[:120]}"
-    ARAB = {"DZ", "MA", "TN", "EG", "SA", "AE", "QA", "JO", "KW", "IQ", "DZA", "MAR", "TUN", "EGY", "SAU", "ARE", "QAT", "JOR", "KWT", "IRQ"}
+    ARAB = {"DZ", "MA", "TN", "EG", "SA", "AE", "QA", "JO", "KW", "IQ", "DZA", "MAR", "TUN", "EGY", "SAU", "ARE", "QAT", "JOR", "KWT", "IRQ", "KSA", "UAE", "ALG", "MAR", "TUN", "JOR", "KUW", "OMA", "BHR", "LBA", "SDN"}
     stats["country_codes"] = sorted({str(l.get("country_code")) for l in leagues})[:80]
     stats["arab_leagues"] = [[l["name"], l.get("country_code"), tier.get(l["id"], "مستبعد")] for l in leagues if (l.get("country_code") or "").upper() in ARAB][:40]
     ai_phase([m for m in todo if mtier[m] == 0], stats, log, t0 + BUDGET + 600)
