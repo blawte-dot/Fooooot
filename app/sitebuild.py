@@ -211,6 +211,7 @@ def recent_phase(todo, recent, mdate, mtier, archive, tr, stats, log, deadline):
             rev = review.review(snap, m, stt); w(rel, {**rev, "_gen": review.now()}); ph["post"] += 1
             need_stats = any(x["group"] not in ("goals", "result") for x in rev["picks"])
             if (rev["stats_ok"] or not need_stats) and review.update_tr(tr, mid, rev, snap): ph["tr_added"] += 1
+        elif kind == "pending": w(rel, {"state": "pending", "ts": review.now()}); ph["pending"] = ph.get("pending", 0) + 1
         elif kind == "live":
             try: evs = pc.get(f"/v1/matches/{mid}/events", ttl=60).get("events") or []
             except Exception: evs = []
@@ -266,7 +267,7 @@ def main(log=print):
             st = str(m.get("status", "")).lower(); stats["statuses"][st] = stats["statuses"].get(st, 0) + 1
             played = m.get("score_home") is not None and m.get("score_away") is not None
             kind = review.phase_of(m)
-            if lid in target and m.get("id") and tier[lid] <= 1 and kind in ("live", "post") and (played or kind == "live"): recent[m["id"]] = m; mtier[m["id"]] = tier[lid]
+            if lid in target and m.get("id") and tier[lid] <= 1 and kind in ("live", "post", "pending") and (played or kind in ("live", "pending")): recent[m["id"]] = m; mtier[m["id"]] = tier[lid]
             if i >= 0 and lid in target and not played and st not in DONE and kind == "pre" and m.get("id"):
                 todo.append(m["id"]); mtier[m["id"]] = tier[lid]; mdate[m["id"]] = m.get("date"); mteams[m["id"]] = [((m.get("home_team") or {}).get("id"), (m.get("home_team") or {}).get("name")), ((m.get("away_team") or {}).get("id"), (m.get("away_team") or {}).get("name"))]
             elif lid in target: stats["skipped"] += 1

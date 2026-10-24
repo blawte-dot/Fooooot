@@ -36,7 +36,7 @@ def test_phase_and_minute():
 def test_time_based_live_detection_and_events_score():
     from datetime import datetime, timedelta, timezone
     iso = lambda mins: (datetime.now(timezone.utc) - timedelta(minutes=mins)).strftime("%Y-%m-%dT%H:%M:%SZ")
-    assert R.phase_of({"status": "not_started", "time_utc": iso(30)}) == "live" and R.phase_of({"status": "not_started", "time_utc": iso(200)}) == "stale"
+    assert R.phase_of({"status": "not_started", "time_utc": iso(30)}) == "live" and R.phase_of({"status": "not_started", "time_utc": iso(200)}) == "pending" and R.phase_of({"status": "not_started", "time_utc": iso(400)}) == "stale"
     assert R.phase_of({"status": "not_started", "time_utc": iso(-120)}) == "pre" and R.phase_of({"status": "finished", "time_utc": iso(300)}) == "post"
     m = {"status": "not_started", "time_utc": iso(75), "home_team": {"id": "h"}, "away_team": {"id": "a"}}
     evs = [{"event_type": "goal", "team_id": "h", "minute": 10}, {"event_type": "own_goal", "team_id": "h", "minute": 30}, {"event_type": "yellow_card", "team_id": "a", "minute": 33}]

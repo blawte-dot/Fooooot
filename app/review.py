@@ -16,8 +16,8 @@ FIN = {"finished", "ft", "final", "completed", "ended"}
 PRE = {"not_started", "scheduled", "upcoming", "tbd", "ns", "postponed", "cancelled", "canceled", ""}
 
 def phase_of(m):
-    """pre / live / post / stale. المصدر لا يحدّث الحالة أثناء المباراة (تبقى not_started)، فالمباراة التي مضى على وقتها time_utc أقل من 150 دقيقة وليست منتهية تُعدّ جارية.
-    ما تجاوز 150 دقيقة بلا نتيجة = stale (بيانات لم تُحدَّث بعد)."""
+    """pre / live / post / pending / stale. المصدر لا يحدّث الحالة أثناء المباراة (تبقى not_started)، فالمباراة التي مضى على time_utc أقل من 118 دقيقة وليست منتهية تُعدّ جارية؛
+    وما بين 118 و240 دقيقة بلا نتيجة = pending (انتهت على الأرجح)، وبعدها stale."""
     st = str(m.get("status", "")).lower().replace(" ", "_"); played = m.get("score_home") is not None and m.get("score_away") is not None
     if st in FIN: return "post"
     if st in PRE:
@@ -26,8 +26,9 @@ def phase_of(m):
         if k and k.tzinfo:
             mins = (datetime.now(timezone.utc) - k).total_seconds() / 60
             if st in ("postponed", "cancelled", "canceled"): return "pre"
-            if 0 <= mins <= 150: return "live"
-            if mins > 150: return "stale"
+            if 0 <= mins <= 118: return "live"              # 45 + استراحة + 45 + وقت بدل الضائع
+            if mins <= 240: return "pending"                # انتهت على الأرجح والمصدر لم يعلن النتيجة بعد
+            return "stale"
         return "pre"
     return "live" if st not in LIVE_NOT else "pre"
 
