@@ -9,8 +9,13 @@ SNAPS = os.environ.get("ARCH_FILE", "data/archive/snapshots.json")
 def once(log=print):
     leagues = pc.get("/v1/leagues", ttl=6 * 3600)["leagues"]
     tier = {l["id"]: service.league_tier(l) for l in leagues if service.wanted_league(l)}
-    try: snaps = json.load(open(SNAPS, encoding="utf-8"))
-    except Exception: snaps = {}
+    snaps = {}
+    try: snaps.update(json.load(open(SNAPS, encoding="utf-8")))
+    except Exception: pass
+    import glob
+    for f in sorted(glob.glob(os.path.join(os.path.dirname(SNAPS) or ".", "s-*.json"))):
+        try: snaps.update(json.load(open(f, encoding="utf-8")))
+        except Exception: pass
     today = datetime.now(timezone.utc).date(); out = {}; diag = {"statuses": {}, "sample": None, "pre": None, "post": None}
     for d in (today - timedelta(days=1), today):
         try: ms = pc.get(f"/v1/date/{d.isoformat()}", {"status": "all"}, ttl=45).get("matches", [])

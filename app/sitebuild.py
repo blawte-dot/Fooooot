@@ -176,6 +176,29 @@ def _jl(path, default):
 
 def _out(rel): return _jl(os.path.join(OUT, rel), None)
 
+def _load_arch():
+    """لقطات التوقع: ملف لكل يوم مباراة (s-YYYY-MM-DD.json) فلا يُعاد التزام الأرشيف كله مع كل تغيير. يدعم الملف القديم الواحد ويدمجه."""
+    import glob
+    d = {}; old = _jl(os.path.join(ARCH, "snapshots.json"), None)
+    if isinstance(old, dict): d.update(old)
+    for f in sorted(glob.glob(os.path.join(ARCH, "s-*.json"))): d.update(_jl(f, {}))
+    return d
+
+def _save_arch(archive):
+    import glob
+    os.makedirs(ARCH, exist_ok=True); by = {}
+    for k, v in archive.items(): by.setdefault((str(v.get("date") or v.get("ts") or "unknown")[:10]), {})[k] = v
+    keep = set()
+    for day, items in by.items():
+        f = os.path.join(ARCH, f"s-{day}.json"); keep.add(f); new = json.dumps(items, ensure_ascii=False, separators=(",", ":"), sort_keys=True)
+        try: old = open(f, encoding="utf-8").read()
+        except OSError: old = None
+        if old != new: open(f, "w", encoding="utf-8").write(new)
+    for f in glob.glob(os.path.join(ARCH, "s-*.json")):
+        if f not in keep: os.remove(f)
+    legacy = os.path.join(ARCH, "snapshots.json")
+    if os.path.exists(legacy): os.remove(legacy)
+
 def recent_phase(todo, recent, mdate, mtier, archive, tr, stats, log, deadline):
     """قبل/أثناء/بعد: لقطات التوقع قبل الانطلاق، حالة مباشرة، ومراجعة بعد النهاية مقابل ما حدث فعلًا + سجل أداء تراكمي."""
     from . import review, last50
@@ -221,9 +244,9 @@ def recent_phase(todo, recent, mdate, mtier, archive, tr, stats, log, deadline):
     if fin: stats["post_sample_keys"] = sorted(fin.keys())
     w("api/trackrecord.json", review.tr_view(tr))
     keep = set(todo) | set(recent); cut = (datetime.now(timezone.utc).date() - timedelta(days=21)).isoformat()
-    pruned = {k: v for k, v in archive.items() if k in keep or str(v.get("date") or "9999")[:10] >= cut}
+    pruned = {k: v for k, v in archive.items() if k in keep or str(v.get("date") or v.get("ts") or "9999")[:10] >= cut}
+    _save_arch(pruned)
     os.makedirs(ARCH, exist_ok=True)
-    json.dump(pruned, open(os.path.join(ARCH, "snapshots.json"), "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"), sort_keys=True)
     json.dump(tr, open(os.path.join(ARCH, "trackrecord.json"), "w", encoding="utf-8"), ensure_ascii=False, separators=(",", ":"), sort_keys=True)
 
 def main(log=print):
@@ -241,7 +264,7 @@ def main(log=print):
     xgmod.ensure, service.get_params = ensure_g, gp_g
     logos, mteams, mtier = {}, {}, {}
     from . import review
-    archive = _jl(os.path.join(ARCH, "snapshots.json"), {}); tr = _jl(os.path.join(ARCH, "trackrecord.json"), None) or review.new_tr(); recent, mdate = {}, {}
+    archive = _load_arch(); tr = _jl(os.path.join(ARCH, "trackrecord.json"), None) or review.new_tr(); recent, mdate = {}, {}
     try: GEN = requests.get(PREV + "api/gen.json", timeout=20).json()      # متى حُسب كل ملف آخر مرة: ندوّر الأقدم أولًا فتصل كل المباريات دورها
     except Exception: GEN = {}
     if not isinstance(GEN, dict): GEN = {}
