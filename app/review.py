@@ -26,6 +26,7 @@ def phase_of(m):
         if k and k.tzinfo:
             mins = (datetime.now(timezone.utc) - k).total_seconds() / 60
             if st in ("postponed", "cancelled", "canceled"): return "pre"
+            if mins < 0: return "pre"                      # لم تبدأ بعد
             if 0 <= mins <= 118: return "live"              # 45 + استراحة + 45 + وقت بدل الضائع
             if mins <= 240: return "pending"                # انتهت على الأرجح والمصدر لم يعلن النتيجة بعد
             return "stale"
