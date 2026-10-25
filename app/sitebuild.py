@@ -43,6 +43,7 @@ def retry(fn, mid, tries=4):
             if k < tries - 1 and ("too many" in str(e).lower() or "429" in str(e)): time.sleep(20 * (k + 1)); continue
             raise
 
+AI_V = 2
 AI_MAX = int(os.environ.get("SITE_AI_MAX", "6"))            # سقف طلبات Gemini في التشغيل الواحد (الحصة المجانية محدودة)
 AI_TTL = {"ai": 8, "ai-news": 8, "ai-dossier": 24}            # ساعات الاحتفاظ بنتيجة سابقة قبل إعادة الحساب
 
@@ -51,7 +52,9 @@ def prev_fresh(rel, hours):
     try:
         r = requests.get(PREV + rel, timeout=20)
         if r.status_code != 200: return False
-        j = r.json(); g = datetime.fromisoformat(j.get("_gen", "1970-01-01T00:00:00+00:00"))
+        j = r.json()
+        if j.get("_v") != AI_V: return False          # نتائج الإصدار القديم كررت عبارة خاطئة عن Elo وxG
+        g = datetime.fromisoformat(j.get("_gen", "1970-01-01T00:00:00+00:00"))
         if datetime.now(timezone.utc) - g < timedelta(hours=hours):
             p = os.path.join(OUT, rel); os.makedirs(os.path.dirname(p), exist_ok=True); open(p, "wb").write(r.content); return True
     except Exception: pass
@@ -83,7 +86,7 @@ def ai_phase(todo, stats, log, deadline):
                         if res.get("state") != "done": raise RuntimeError(res.get("error") or "dossier not finished")
                     elif name == "ai": res = ai.analyze(mid, "ci")
                     else: res = ai.news(mid, "ci")
-                    w(rel, {**res, "_gen": datetime.now(timezone.utc).isoformat(timespec="seconds")}); used += 1; stats["ai"]["new"] += 1; time.sleep(15); break
+                    w(rel, {**res, "_v": AI_V, "_gen": datetime.now(timezone.utc).isoformat(timespec="seconds")}); used += 1; stats["ai"]["new"] += 1; time.sleep(15); break
                 except Exception as e:
                     code = getattr(e, "code", "")
                     if code == "AI_RATE_LIMIT" and attempt == 1: log("ai: rate limited, waiting 75s"); time.sleep(75); continue

@@ -43,3 +43,8 @@ def test_time_based_live_detection_and_events_score():
     assert R.goals_from_events(m, evs) == (1, 1)
     st = R.live_state(m, {"p": [50, 25, 25], "xg": [1.5, 1.0]}, evs); assert st["score"] == [1, 1] and 55 <= st["minute"] <= 62 and st["inplay"]["p"][1] > 20
     assert R.live_state(m, None, [])["score"] is None
+
+def test_not_used_reflects_actual_usage():
+    from app import service
+    assert service.not_used(0.15, 0.3) == ["الإصابات والغيابات والتشكيلة"]
+    assert service.not_used(0, 0) == ["Elo", "xG التاريخي", "الإصابات والغيابات والتشكيلة"] and service.not_used(0.2, 0) == ["xG التاريخي", "الإصابات والغيابات والتشكيلة"]

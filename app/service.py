@@ -123,6 +123,10 @@ def confidence(sc, horizon, status, pdc, pe):
 def _all_seasons(leagues, lid):
     return sorted(next((l["seasons"] for l in leagues if l["id"] == lid), []), reverse=True)
 
+def not_used(elo_weight, alpha):
+    """ما لم يدخل حساب هذه المباراة فعلًا: Elo إن كان وزنه صفرًا، وxG إن كان معامله صفرًا، والإصابات والتشكيلة دائمًا (لا مصدر لها)."""
+    return (["Elo"] if not elo_weight else []) + (["xG التاريخي"] if not alpha else []) + ["الإصابات والغيابات والتشكيلة"]
+
 def _predict_match(match_id):
     m = pc.get(f"/v1/matches/{match_id}", ttl=300)
     ref = date.fromisoformat(m["date"]); lg = m["league"]["id"]
@@ -167,6 +171,7 @@ def _predict_match(match_id):
     h, d, a = model.round_to_100(list(final))
     r1 = lambda t: [round(x * 100) for x in t] if t else None
     res["engine"] = {"dixon_coles": r1(pdc), "elo": r1(pe), "final": [h, d, a], "elo_weight": round(1 - w, 2) if pe else 0, "temperature": T}
+    res["not_used"] = not_used(res["engine"]["elo_weight"], alpha)      # القائمة تعكس ما استُخدم فعلًا لهذه المباراة (لا نصًا ثابتًا)
     res["confidence"] = confidence(res["scope"], res["horizon_days"], status, pdc, pe)
     res["features"] = {"home": {"overall": stats.form(fit_hist, hid, ref), "venue": stats.form(fit_hist, hid, ref, venue=True)},
                        "away": {"overall": stats.form(fit_hist, aid, ref), "venue": stats.form(fit_hist, aid, ref, venue=False)},

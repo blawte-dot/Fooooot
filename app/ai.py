@@ -116,7 +116,7 @@ def build_context(p, b):
                      "confidence": (p.get("confidence") or {}).get("level"), "confidence_reasons": (p.get("confidence") or {}).get("reasons"),
                      "training_matches": p.get("n_matches"), "home_n": (p.get("scope") or {}).get("home_n"), "away_n": (p.get("scope") or {}).get("away_n")},
            "form": {"home": form((f.get("home") or {}).get("overall")), "away": form((f.get("away") or {}).get("overall"))},
-           "h2h": (f.get("h2h") or {}).get("record"), "not_used_by_model": p.get("not_used"), "data_gaps": [] , "events": []}
+           "h2h": (f.get("h2h") or {}).get("record"), "not_used_by_model": p.get("not_used"), "used_by_model": {"elo_weight": (p.get("engine") or {}).get("elo_weight"), "xg_alpha": (p.get("xg") or {}).get("alpha")}, "data_gaps": [] , "events": []}
     if not pr: ctx["data_gaps"].append(p.get("reason") or "لا يوجد توقع لهذه المباراة")
     if b:
         ev = b.get("events") or []
