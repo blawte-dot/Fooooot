@@ -351,6 +351,11 @@ def main(log=print):
     stats["arab_leagues"] = [[l["name"], l.get("country_code"), tier.get(l["id"], "مستبعد")] for l in leagues if (l.get("country_code") or "").upper() in ARAB][:40]
     ai_phase([m for m in todo if mtier[m] == 0], stats, log, t0 + BUDGET + 600)
     extras_phase(todo, mteams, target, wl, tier, have, logos, stats, log, t0 + BUDGET + 1080)
+    try:    # اختيارات الرهان بشرط السعر (ESPN) من أفضل أسواق Gemini ومن المحرك
+        from . import bets
+        items = [bets.for_match(m, _out(f"api/predict/{m}.json"), _out(f"api/ai/{m}.json"), _out(f"api/board/{m}.json"), _out(f"api/market/{m}.json")) for m in todo if mtier.get(m, 2) == 0]
+        pk = bets.collect(items); pk["generated_at"] = review.now(); w("api/picks.json", pk); stats["picks"] = {"matches": len(pk["matches"]), "gemini": sum(len(i["gemini"]) for i in pk["matches"]), "engine": sum(len(i["engine"]) for i in pk["matches"])}
+    except Exception as e: stats["errors"].append(f"picks: {type(e).__name__}: {str(e)[:150]}")
     built = [m for m in list(todo) + list(recent) if os.path.exists(os.path.join(OUT, f"api/predict/{m}.json"))]; w("api/index.json", {"ids": built})
     ids = set(todo); w("api/gen.json", {k: v for k, v in GEN.items() if k.split("/", 1)[1] in ids})
     # واجهة + مظهر التطبيق
@@ -369,7 +374,7 @@ def main(log=print):
         "self.addEventListener('activate',e=>{e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!=V).map(x=>caches.delete(x)))));self.clients.claim()});\n"
         "self.addEventListener('fetch',e=>{const u=new URL(e.request.url);if(u.origin!==location.origin)return;\n"
         " e.respondWith(fetch(e.request).then(r=>{if(r.ok){const c=r.clone();caches.open(V).then(x=>x.put(e.request,c))}return r}).catch(()=>caches.match(e.request)))});\n" % ver)
-    w("api/build.json", {"generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "matches_built": len(todo), "ok": stats["ok"], "fail": stats["fail"], "days": stats["days"], "statuses": stats["statuses"], "skipped_played": stats["skipped"], "errors": stats["errors"], "ai": stats.get("ai"), "ai_models": stats.get("ai_models"), "espn_debug": stats.get("espn_debug"), "arab_leagues": stats.get("arab_leagues"), "country_codes": stats.get("country_codes"), "tiers": stats.get("tiers"), "t1_names": stats.get("t1_names"), "t2_names_sample": stats.get("t2_names_sample"), "extras": stats.get("x"), "phase": stats.get("phase"), "live_sample": stats.get("live_sample"), "post_sample_keys": stats.get("post_sample_keys"), "market_available": stats.get("market_available"), "espn_probe": stats.get("espn_probe"), "reused": stats.get("reused", 0), "sample_ids": todo[:5]})
+    w("api/build.json", {"generated_at": datetime.now(timezone.utc).isoformat(timespec="seconds"), "matches_built": len(todo), "ok": stats["ok"], "fail": stats["fail"], "days": stats["days"], "statuses": stats["statuses"], "skipped_played": stats["skipped"], "errors": stats["errors"], "ai": stats.get("ai"), "ai_models": stats.get("ai_models"), "espn_debug": stats.get("espn_debug"), "arab_leagues": stats.get("arab_leagues"), "country_codes": stats.get("country_codes"), "tiers": stats.get("tiers"), "t1_names": stats.get("t1_names"), "t2_names_sample": stats.get("t2_names_sample"), "extras": stats.get("x"), "phase": stats.get("phase"), "picks": stats.get("picks"), "live_sample": stats.get("live_sample"), "post_sample_keys": stats.get("post_sample_keys"), "market_available": stats.get("market_available"), "espn_probe": stats.get("espn_probe"), "reused": stats.get("reused", 0), "sample_ids": todo[:5]})
     log(json.dumps(stats, ensure_ascii=False)); log(f"done in {int(time.time() - t0)}s")
     return 0 if stats["days"] else 1
 

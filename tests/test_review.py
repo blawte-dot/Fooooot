@@ -48,3 +48,17 @@ def test_not_used_reflects_actual_usage():
     from app import service
     assert service.not_used(0.15, 0.3) == ["الإصابات والغيابات والتشكيلة"]
     assert service.not_used(0, 0) == ["Elo", "xG التاريخي", "الإصابات والغيابات والتشكيلة"] and service.not_used(0.2, 0) == ["xG التاريخي", "الإصابات والغيابات والتشكيلة"]
+
+
+def test_bets_odds_filter():
+    from app import bets
+    mk = {"source": "DK", "market": {"ml": {"dec": {"home": 1.45, "draw": 4.2, "away": 6.5}, "prob": {"home": 66.0, "draw": 22.0, "away": 12.0}}, "total": {"line": 2.5, "over": {"dec": 1.28, "prob": 74.0}, "under": {"dec": 3.5, "prob": 26.0}}}}
+    pred = {"match": {"home": "A", "away": "B", "league": "L", "time_utc": "t"}}
+    ev = lambda l, p, c="نعم": {"label": l, "p": p, "grade": "جيد", "call": c, "reason": "r"}
+    ai = {"best_supported_markets": [ev("فوز A", 68.0), ev("المجموع أكثر من 2.5", 78.0), ev("المجموع أكثر من 3.5", 40.0), ev("تعادل", 24.0, "لا")]}
+    r = bets.for_match("m1", pred, ai, {"events": [ev("B أو تعادل", 70.0)]}, mk)
+    assert [x["label"] for x in r["gemini"]] == ["فوز A"] and r["gemini"][0]["breakeven"] == 69.0 and r["gemini"][0]["gap"] == 2.0
+    whys = {x["label"]: x["why"] for x in r["excluded"]}
+    assert "ليس أعلى" in whys["المجموع أكثر من 2.5"] and "لا سعر" in whys["المجموع أكثر من 3.5"] and "حكم المحرك" in whys["تعادل"]
+    assert bets.for_match("m2", pred, ai, None, {"market": None}) is None
+    assert bets.collect([r])["matches"][0]["id"] == "m1" and bets.collect([{**r, "gemini": [], "engine": []}])["matches"] == []
