@@ -60,7 +60,7 @@ def prev_fresh(rel, hours):
     except Exception: pass
     return False
 
-def ai_phase(todo, stats, log, deadline):
+def ai_phase(todo, stats, log, deadline, mdate=None):
     """يحسب رأي Gemini (تحليل، أخبار، دراسة شاملة) للمباريات الأقرب أولًا، ضمن سقف الطلبات. المفتاح من GEMINI_API_KEY (سر GitHub) ولا يظهر في الموقع."""
     if not os.environ.get("GEMINI_API_KEY"): log("ai: no key, skipped"); return
     os.environ.setdefault("AI_PER_IP_HOUR", "100000"); os.environ.setdefault("AI_GLOBAL_HOUR", "100000")
@@ -71,6 +71,7 @@ def ai_phase(todo, stats, log, deadline):
         if len(stats["errors"]) < 40: stats["errors"].append(f"ai-models: {str(e)[:170]}")
     used = 0; stats["ai"] = {"new": 0, "reused": 0, "fail": 0}; blocked = set()
     mids = [m for m in todo if os.path.exists(os.path.join(OUT, f"api/predict/{m}.json"))]
+    if mdate: mids.sort(key=lambda m: str(mdate.get(m) or "9"))      # الأقرب موعدًا أولًا (الفرز ثابت فيحفظ الترتيب داخل اليوم)
     for name in ("ai", "ai-news", "ai-dossier"):            # التحليل أولًا لكل المباريات (الأرخص)، ثم الأخبار، ثم الدراسة الشاملة
         for mid in mids:
             if used >= AI_MAX or time.time() > deadline or name in blocked: break
@@ -349,7 +350,7 @@ def main(log=print):
     ARAB = {"DZ", "MA", "TN", "EG", "SA", "AE", "QA", "JO", "KW", "IQ", "DZA", "MAR", "TUN", "EGY", "SAU", "ARE", "QAT", "JOR", "KWT", "IRQ", "KSA", "UAE", "ALG", "MAR", "TUN", "JOR", "KUW", "OMA", "BHR", "LBA", "SDN"}
     stats["country_codes"] = sorted({str(l.get("country_code")) for l in leagues})[:80]
     stats["arab_leagues"] = [[l["name"], l.get("country_code"), tier.get(l["id"], "مستبعد")] for l in leagues if (l.get("country_code") or "").upper() in ARAB][:40]
-    ai_phase([m for m in todo if mtier[m] == 0], stats, log, t0 + BUDGET + 600)
+    ai_phase([m for m in todo if mtier[m] == 0], stats, log, t0 + BUDGET + 600, mdate)
     extras_phase(todo, mteams, target, wl, tier, have, logos, stats, log, t0 + BUDGET + 1080)
     try:    # اختيارات الرهان بشرط السعر (ESPN) من أفضل أسواق Gemini ومن المحرك
         from . import bets

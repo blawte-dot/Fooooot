@@ -60,7 +60,9 @@ def _pick_models():
         order = ([env] if env in names else []) + [m for m in PREF if m in names and m != env] + extra
         last = _LAST.get("model")
         if last in order: order = [last] + [m for m in order if m != last]      # النموذج الذي نجح للتو أولًا: لا نستنزف حصص كل النماذج
-        return (order or names[:1])[:4]
+        lites = [m for m in PREF if "lite" in m and m in names and m != env]
+        main = [m for m in order if m not in lites]
+        return ((main[:3] + [m for m in lites if m not in main[:3]][:2]) or names[:1])      # نماذج lite لها حصة مجانية أكبر: تبقى احتياطًا أخيرًا ولا تُقصيها الحدود
     fb = [m.strip() for m in os.environ.get("GEMINI_FALLBACK", "gemini-2.5-flash").split(",") if m.strip()]
     first = env or "gemini-3.5-flash"; return [first] + [m for m in fb if m != first]
 
@@ -88,7 +90,7 @@ def _generate(body):
     key = os.environ.get("GEMINI_API_KEY", "").strip()
     if not key: raise AIError("NO_AI_KEY", "متغير البيئة GEMINI_API_KEY غير مضبوط", 503)
     models = _pick_models()
-    st, j = 0, {}
+    st, j = 0, {}; tried = []
     for model in models:                       # الحصة المجانية لكل نموذج على حدة: عند 429/404/400 نجرّب الاحتياطي
         try:
             st, j = _post(model, body, key)
@@ -97,10 +99,11 @@ def _generate(body):
                 st, j = _post(model, b2, key)
             if st in (429, 500, 502, 503, 504): time.sleep(4); st, j = _post(model, body, key)
         except requests.RequestException: st = 0; continue          # مهلة أو انقطاع: نجرّب النموذج التالي بدل الاستسلام
+        tried.append(f"{model}:{st}")
         if st == 200: _LAST["model"] = model; break
         if st not in (400, 404, 429, 500, 502, 503, 504): break
     if st == 0: raise AIError("AI_TIMEOUT", "تعذر الاتصال بـ Gemini (انتهت المهلة)", 504)
-    if st == 429: raise AIError("AI_RATE_LIMIT", f"حد استخدام Gemini المجاني استُنفد مؤقتًا، أعد المحاولة بعد قليل [{model}: {_msg(j)}]", 429)
+    if st == 429: raise AIError("AI_RATE_LIMIT", f"حد استخدام Gemini المجاني استُنفد مؤقتًا، أعد المحاولة بعد قليل [{" ".join(tried)}: {_msg(j)}]", 429)
     if st in (401, 403): raise AIError("AI_AUTH", "مفتاح Gemini غير صالح أو غير مسموح له", 502)
     if st != 200: raise AIError("AI_ERROR", f"تعذر الحصول على رد من Gemini (رمز {st}: {_msg(j)}) [{model}]", 502)
     c = (j.get("candidates") or [{}])[0]
