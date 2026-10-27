@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-27T01:10:29+00:00",
+ "generated_at": "2026-10-27T04:58:08+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -69,7 +69,7 @@
   },
   "l_0kSJLz": {
    "errors": [],
-   "matches": 730,
+   "matches": 736,
    "name": "Liga I",
    "with_stats": 0
   },
@@ -117,7 +117,7 @@
   },
   "l_1TTHxD": {
    "errors": [],
-   "matches": 472,
+   "matches": 478,
    "name": "Besta deild",
    "with_stats": 0
   },
@@ -141,7 +141,7 @@
   },
   "l_1XsMdH": {
    "errors": [],
-   "matches": 1350,
+   "matches": 1356,
    "name": "Allsvenskan",
    "with_stats": 0
   },
@@ -201,7 +201,7 @@
   },
   "l_2ApGa4": {
    "errors": [],
-   "matches": 1681,
+   "matches": 1691,
    "name": "J. League",
    "with_stats": 0
   },
@@ -213,7 +213,7 @@
   },
   "l_2L6d1F": {
    "errors": [],
-   "matches": 1668,
+   "matches": 1676,
    "name": "First Division A",
    "with_stats": 0
   },
@@ -273,9 +273,9 @@
   },
   "l_3Tn1kG": {
    "errors": [],
-   "matches": 1275,
+   "matches": 1276,
    "name": "MLS Next Pro",
-   "with_stats": 984
+   "with_stats": 985
   },
   "l_3UiOcj": {
    "errors": [],
@@ -321,7 +321,7 @@
   },
   "l_3uNwVX": {
    "errors": [],
-   "matches": 902,
+   "matches": 909,
    "name": "Liga 1",
    "with_stats": 0
   },
