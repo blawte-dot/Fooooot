@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-27T18:31:37+00:00",
+ "generated_at": "2026-10-27T20:42:01+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -9,9 +9,9 @@
   },
   "l_0ALvwF": {
    "errors": [],
-   "matches": 1981,
+   "matches": 1982,
    "name": "Serie A",
-   "with_stats": 825
+   "with_stats": 826
   },
   "l_0ErfuF": {
    "errors": [],
@@ -63,9 +63,9 @@
   },
   "l_0jy5yE": {
    "errors": [],
-   "matches": 470,
+   "matches": 471,
    "name": "Serie B",
-   "with_stats": 470
+   "with_stats": 471
   },
   "l_0kSJLz": {
    "errors": [],
