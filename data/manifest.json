@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-10-26T02:47:46+00:00",
+ "generated_at": "2026-10-27T01:10:29+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
-   "matches": 384,
+   "matches": 386,
    "name": "Ligue 2",
-   "with_stats": 384
+   "with_stats": 386
   },
   "l_0ALvwF": {
    "errors": [],
@@ -15,13 +15,13 @@
   },
   "l_0ErfuF": {
    "errors": [],
-   "matches": 1997,
+   "matches": 1998,
    "name": "LaLiga",
-   "with_stats": 842
+   "with_stats": 843
   },
   "l_0F4I4F": {
    "errors": [],
-   "matches": 639,
+   "matches": 646,
    "name": "1. Liga",
    "with_stats": 0
   },
@@ -33,9 +33,9 @@
   },
   "l_0S1uaf": {
    "errors": [],
-   "matches": 1419,
+   "matches": 1422,
    "name": "Super Lig",
-   "with_stats": 717
+   "with_stats": 720
   },
   "l_0aEfof": {
    "errors": [],
@@ -45,7 +45,7 @@
   },
   "l_0ahLw8": {
    "errors": [],
-   "matches": 2356,
+   "matches": 2368,
    "name": "League One",
    "with_stats": 0
   },
@@ -57,9 +57,9 @@
   },
   "l_0eg6C9": {
    "errors": [],
-   "matches": 3002,
+   "matches": 3003,
    "name": "MLS",
-   "with_stats": 1158
+   "with_stats": 1159
   },
   "l_0jy5yE": {
    "errors": [],
@@ -75,27 +75,27 @@
   },
   "l_0uqFK8": {
    "errors": [],
-   "matches": 1344,
+   "matches": 1352,
    "name": "Eliteserien",
    "with_stats": 0
   },
   "l_16Sq13": {
    "errors": [],
-   "matches": 529,
+   "matches": 536,
    "name": "Ligat ha'Al",
    "with_stats": 0
   },
   "l_1BFfna": {
    "errors": [],
-   "matches": 880,
+   "matches": 889,
    "name": "1. Lig",
    "with_stats": 0
   },
   "l_1D8Xrl": {
    "errors": [],
-   "matches": 1413,
+   "matches": 1414,
    "name": "Serie A",
-   "with_stats": 827
+   "with_stats": 828
   },
   "l_1Isor4": {
    "errors": [],
@@ -111,7 +111,7 @@
   },
   "l_1LMdEO": {
    "errors": [],
-   "matches": 1193,
+   "matches": 1199,
    "name": "Premiership",
    "with_stats": 0
   },
@@ -123,13 +123,13 @@
   },
   "l_1TVRZW": {
    "errors": [],
-   "matches": 675,
+   "matches": 679,
    "name": "Primera Division",
    "with_stats": 0
   },
   "l_1W6idJ": {
    "errors": [],
-   "matches": 2366,
+   "matches": 2378,
    "name": "League Two",
    "with_stats": 0
   },
@@ -147,9 +147,9 @@
   },
   "l_1dmt9H": {
    "errors": [],
-   "matches": 823,
+   "matches": 825,
    "name": "Serie A",
-   "with_stats": 686
+   "with_stats": 688
   },
   "l_1eJSA7": {
    "errors": [],
@@ -165,19 +165,19 @@
   },
   "l_1qpFVw": {
    "errors": [],
-   "matches": 636,
+   "matches": 637,
    "name": "Indian Super League",
-   "with_stats": 265
+   "with_stats": 266
   },
   "l_1rPvVD": {
    "errors": [],
-   "matches": 452,
+   "matches": 456,
    "name": "1. Division",
    "with_stats": 0
   },
   "l_1xXulJ": {
    "errors": [],
-   "matches": 1231,
+   "matches": 1240,
    "name": "Primera A",
    "with_stats": 0
   },
@@ -189,7 +189,7 @@
   },
   "l_214sqK": {
    "errors": [],
-   "matches": 405,
+   "matches": 412,
    "name": "Ekstraklasa",
    "with_stats": 0
   },
@@ -207,9 +207,9 @@
   },
   "l_2EKrnc": {
    "errors": [],
-   "matches": 1097,
+   "matches": 1101,
    "name": "K League 1",
-   "with_stats": 486
+   "with_stats": 490
   },
   "l_2L6d1F": {
    "errors": [],
@@ -231,7 +231,7 @@
   },
   "l_2tFk9k": {
    "errors": [],
-   "matches": 409,
+   "matches": 413,
    "name": "HNL",
    "with_stats": 0
   },
@@ -249,25 +249,25 @@
   },
   "l_3CB6qX": {
    "errors": [],
-   "matches": 653,
+   "matches": 655,
    "name": "Saudi First Division",
    "with_stats": 0
   },
   "l_3Ci5Cg": {
    "errors": [],
-   "matches": 509,
+   "matches": 512,
    "name": "Veikkausliiga",
    "with_stats": 0
   },
   "l_3FJFUl": {
    "errors": [],
-   "matches": 1750,
+   "matches": 1751,
    "name": "Ligue 1",
-   "with_stats": 676
+   "with_stats": 677
   },
   "l_3Kf7Ni": {
    "errors": [],
-   "matches": 620,
+   "matches": 628,
    "name": "USL League One",
    "with_stats": 0
   },
@@ -285,13 +285,13 @@
   },
   "l_3fglZv": {
    "errors": [],
-   "matches": 886,
+   "matches": 896,
    "name": "J3 League",
    "with_stats": 0
   },
   "l_3hW1NO": {
    "errors": [],
-   "matches": 280,
+   "matches": 288,
    "name": "Thai League 1",
    "with_stats": 0
   },
@@ -303,21 +303,21 @@
   },
   "l_3kyHLd": {
    "errors": [],
-   "matches": 586,
+   "matches": 587,
    "name": "LaLiga2",
-   "with_stats": 586
+   "with_stats": 587
   },
   "l_3qNjzC": {
    "errors": [],
-   "matches": 671,
+   "matches": 679,
    "name": "Liga de Primera",
    "with_stats": 0
   },
   "l_3qUkB8": {
    "errors": [],
-   "matches": 1107,
+   "matches": 1108,
    "name": "Serie B",
-   "with_stats": 910
+   "with_stats": 911
   },
   "l_3uNwVX": {
    "errors": [],
@@ -327,13 +327,13 @@
   },
   "l_3v84VE": {
    "errors": [],
-   "matches": 1102,
+   "matches": 1106,
    "name": "Liga MX",
-   "with_stats": 557
+   "with_stats": 561
   },
   "l_3wr44B": {
    "errors": [],
-   "matches": 304,
+   "matches": 306,
    "name": "Qatar Stars League",
    "with_stats": 0
   },
@@ -345,7 +345,7 @@
   },
   "l_3yVUAO": {
    "errors": [],
-   "matches": 1161,
+   "matches": 1173,
    "name": "USL Championship",
    "with_stats": 0
   },
@@ -357,13 +357,13 @@
   },
   "l_45VZuL": {
    "errors": [],
-   "matches": 1726,
+   "matches": 1730,
    "name": "Liga Profesional",
-   "with_stats": 1206
+   "with_stats": 1210
   },
   "l_45xKXM": {
    "errors": [],
-   "matches": 525,
+   "matches": 530,
    "name": "Virsliga",
    "with_stats": 0
   },
@@ -375,19 +375,19 @@
   },
   "l_47077Y": {
    "errors": [],
-   "matches": 861,
+   "matches": 870,
    "name": "3. Liga",
    "with_stats": 0
   },
   "l_49KZaB": {
    "errors": [],
-   "matches": 879,
+   "matches": 880,
    "name": "Eerste Divisie",
    "with_stats": 0
   },
   "l_49Zmno": {
    "errors": [],
-   "matches": 1030,
+   "matches": 1035,
    "name": "Superligaen",
    "with_stats": 0
   },
@@ -399,7 +399,7 @@
   },
   "l_4FPF2L": {
    "errors": [],
-   "matches": 484,
+   "matches": 489,
    "name": "Division Profesional",
    "with_stats": 0
   },
@@ -417,15 +417,15 @@
   },
   "l_4MU9Yh": {
    "errors": [],
-   "matches": 451,
+   "matches": 457,
    "name": "1. liga",
    "with_stats": 0
   },
   "l_4QexZg": {
    "errors": [],
-   "matches": 1567,
+   "matches": 1569,
    "name": "Liga Portugal",
-   "with_stats": 674
+   "with_stats": 676
   },
   "l_4V6jPs": {
    "errors": [],
@@ -441,7 +441,7 @@
   },
   "l_4auCPk": {
    "errors": [],
-   "matches": 413,
+   "matches": 415,
    "name": "Challenge League",
    "with_stats": 0
   },
@@ -453,7 +453,7 @@
   },
   "l_4dzm4e": {
    "errors": [],
-   "matches": 735,
+   "matches": 742,
    "name": "Primera Division",
    "with_stats": 0
   }
