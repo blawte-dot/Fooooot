@@ -94,7 +94,7 @@ def ai_phase(todo, stats, log, deadline):
                     if len(stats["errors"]) < 40: stats["errors"].append(msg)
                     keep_prev(rel)
                     if code == "AI_AUTH": log("ai: key rejected, stopping"); return
-                    if code == "AI_RATE_LIMIT": blocked.add(name); log(f"ai: {name} rate-limited, skipping it this run")
+                    if code == "AI_RATE_LIMIT": log("ai: quota exhausted, stopping all Gemini calls this run"); return
                     break
 
 X_LAST50, X_TEAM50 = int(os.environ.get("SITE_LAST50_MAX", "3")), int(os.environ.get("SITE_TEAM50_MAX", "4"))
