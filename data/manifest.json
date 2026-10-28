@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-28T00:42:42+00:00",
+ "generated_at": "2026-10-28T04:52:39+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -315,9 +315,9 @@
   },
   "l_3qUkB8": {
    "errors": [],
-   "matches": 1108,
+   "matches": 1110,
    "name": "Serie B",
-   "with_stats": 911
+   "with_stats": 913
   },
   "l_3uNwVX": {
    "errors": [],
@@ -357,9 +357,9 @@
   },
   "l_45VZuL": {
    "errors": [],
-   "matches": 1730,
+   "matches": 1732,
    "name": "Liga Profesional",
-   "with_stats": 1210
+   "with_stats": 1212
   },
   "l_45xKXM": {
    "errors": [],
