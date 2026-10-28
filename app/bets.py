@@ -15,6 +15,14 @@ def odds_for(label, market, home, away):
         side = t.get("over" if m.group(1) == "أكثر" else "under") or {}; return side.get("dec"), side.get("prob")
     return None, None
 
+def _reason(ev, odds, fair):
+    """سبب الاختيار من أرقام فعلية فقط: تعليل المحرك/Gemini إن وُجد، ثم مقارنة احتمال المحرك بنسبة التعادل المالي وبالسوق."""
+    base = (ev.get("reason") or ev.get("why") or "").strip(); p = ev["p"]; be = round(100 / odds, 1)
+    parts = [base] if base else []
+    parts.append(f"احتمال المحرك {p}% مقابل {be}% يلزم لتعادل الربح والخسارة عند السعر {odds}" + (" (فوق الحد)." if p > be else " (تحت الحد: السعر لا يعوّض المخاطرة بحسب المحرك)."))
+    if fair is not None: parts.append(f"السوق يقدّر {fair}% بعد إزالة الهامش" + ("، والفارق صغير فالتقدير متقارب." if abs(p - fair) < 5 else "، والفارق كبير فقد ينقصنا خبر (إصابة/إيقاف)."))
+    return " ".join(parts)
+
 def judge(ev, market, home, away, min_odds=MIN_ODDS):
     """ev: حدث من المحرك {label,p,grade,call,...}. يُرجع (pick, سبب_الاستبعاد)."""
     odds, fair = odds_for(ev["label"], market, home, away)
@@ -22,7 +30,7 @@ def judge(ev, market, home, away, min_odds=MIN_ODDS):
     if odds is None: return None, "لا سعر منشور لهذا السوق (المتاح 1X2 وخط المجموع فقط)"
     if not odds > min_odds: return None, f"السعر {odds} ليس أعلى من {min_odds}"
     return {"label": ev["label"], "p": ev["p"], "grade": ev.get("grade"), "odds": odds, "breakeven": round(100 / odds, 1),
-            "fair": fair, "gap": None if fair is None else round(ev["p"] - fair, 1), "reason": ev.get("reason", "")}, None
+            "fair": fair, "gap": None if fair is None else round(ev["p"] - fair, 1), "reason": _reason(ev, odds, fair)}, None
 
 def for_match(mid, pred, ai, board, market):
     m = (pred or {}).get("match") or {}; home, away = m.get("home"), m.get("away")
@@ -41,6 +49,6 @@ def for_match(mid, pred, ai, board, market):
 
 def collect(items, min_odds=MIN_ODDS):
     items = [i for i in items if i and (i["gemini"] or i["engine"])]
-    key = lambda i: max([x["p"] - x["breakeven"] for x in i["gemini"] + i["engine"]] or [0])
+    key = lambda i: max([x["p"] for x in i["gemini"] + i["engine"]] or [0])      # الأعلى احتمالًا أولًا (السعر فوق الحد دائمًا)
     return {"min_odds": min_odds, "matches": sorted(items, key=key, reverse=True),
             "note": "ليست نصيحة رهان ولا ضمانًا ولا وعدًا بربح. الأسعار من ESPN/DraftKings وللمباريات القادمة في الدوريات الخمسة الكبرى ودوري الأبطال فقط. «نسبة التعادل المالي» أقل احتمال يلزم تحقق الحدث ليتعادل الرهان. الاختيارات من أحداث اجتازت اختبار المحرك الإحصائي، لكن الاحتمالات تقديرية وقد تخطئ، والسوق عادةً أدق."}
