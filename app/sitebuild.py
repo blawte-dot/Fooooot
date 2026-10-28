@@ -302,7 +302,7 @@ def main(log=print):
     log(f"matches to build: {len(todo)} (tier0={sum(mtier[m] == 0 for m in todo)}, tier1={sum(mtier[m] == 1 for m in todo)}, tier2={len(t2)})")
     stats["tiers"] = {"t0": sum(v == 0 for v in tier.values()), "t1": sum(v == 1 for v in tier.values()), "t2": sum(v == 2 for v in tier.values()), "with_data": len(have)}
     stats["t1_names"] = sorted(l["name"] for l in wl if tier[l["id"]] == 1)[:60]; stats["t2_names_sample"] = sorted(l["name"] for l in wl if tier[l["id"]] == 2)[:40]
-    jobs = (("predict", service.predict_match, 2), ("market", service.market_view, 2), ("last7", lambda i: service.last50_match(i, 7), 1), ("last10", lambda i: service.last50_match(i, 10), 1),
+    jobs = (("predict", service.predict_match, 2), ("market", service.market_view, 2), ("last10", lambda i: service.last50_match(i, 10), 1),
             ("board", lambda i: wait_board(i, t0 + BUDGET), 1))
     for lvl in (0, 1, 2):                       # الدوريات الكبرى أولًا وبكل أجزائها، ثم المشهورة، ثم البقية (نتائج فقط)
         mids = [m for m in todo if mtier[m] == lvl]
