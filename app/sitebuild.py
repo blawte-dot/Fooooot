@@ -217,7 +217,7 @@ def recent_phase(todo, recent, mdate, mtier, archive, tr, stats, log, deadline):
     order = sorted(recent.items(), key=lambda kv: (review.phase_of(kv[1]) != "live", mtier.get(kv[0], 2)))[:RECENT_MAX]
     for mid, m in order:
         if time.time() > deadline: log("phase: deadline"); break
-        for name in ("predict", "market", "last7", "last10", "board", "ai"):          # نسخة ما قبل المباراة تبقى متاحة بعد انطلاقها
+        for name in ("predict", "market", "last7", "last10", "last20", "board", "ai"):          # نسخة ما قبل المباراة تبقى متاحة بعد انطلاقها
             if not os.path.exists(os.path.join(OUT, f"api/{name}/{mid}.json")): keep_prev(f"api/{name}/{mid}.json")
         snap = archive.get(mid)
         if not snap:                                     # لا لقطة محفوظة (بداية النظام): تقدير بأثر رجعي يُعلَّم ولا يدخل السجل
@@ -302,7 +302,7 @@ def main(log=print):
     log(f"matches to build: {len(todo)} (tier0={sum(mtier[m] == 0 for m in todo)}, tier1={sum(mtier[m] == 1 for m in todo)}, tier2={len(t2)})")
     stats["tiers"] = {"t0": sum(v == 0 for v in tier.values()), "t1": sum(v == 1 for v in tier.values()), "t2": sum(v == 2 for v in tier.values()), "with_data": len(have)}
     stats["t1_names"] = sorted(l["name"] for l in wl if tier[l["id"]] == 1)[:60]; stats["t2_names_sample"] = sorted(l["name"] for l in wl if tier[l["id"]] == 2)[:40]
-    jobs = (("predict", service.predict_match, 2), ("market", service.market_view, 2), ("last10", lambda i: service.last50_match(i, 10), 1),
+    jobs = (("predict", service.predict_match, 2), ("market", service.market_view, 2), ("last10", lambda i: service.last50_match(i, 10), 1), ("last20", lambda i: service.last50_match(i, 20), 1),
             ("board", lambda i: wait_board(i, t0 + BUDGET), 1))
     for lvl in (0, 1, 2):                       # الدوريات الكبرى أولًا وبكل أجزائها، ثم المشهورة، ثم البقية (نتائج فقط)
         mids = [m for m in todo if mtier[m] == lvl]

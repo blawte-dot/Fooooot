@@ -17,7 +17,7 @@ details.card summary{font-weight:700;cursor:pointer}.mr{display:grid;grid-templa
 <script>
 const $=s=>document.querySelector(s),esc=t=>String(t??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
 const T={today:"المباريات",analysis:"التحليل",best:"الأفضل",team:"فريق",leagues:"الدوريات",perf:"الأداء"};let cur="today",day=new Date().toLocaleDateString("sv"),M=[],mid=null;
-const SMAP=[[/^\/api\/(predict|board|last7|last10|market|ai|ai-news|ai-dossier|last50|team50|standings|data-status|backtest)\/([\w-]+)$/,m=>`api/${m[1]}/${m[2]}.json`],[/^\/api\/league\/([\w-]+)\/upcoming$/,m=>`api/league/${m[1]}/upcoming.json`]];
+const SMAP=[[/^\/api\/(predict|board|last7|last10|last20|market|ai|ai-news|ai-dossier|last50|team50|standings|data-status|backtest)\/([\w-]+)$/,m=>`api/${m[1]}/${m[2]}.json`],[/^\/api\/league\/([\w-]+)\/upcoming$/,m=>`api/league/${m[1]}/upcoming.json`]];
 function sp(p){const u=new URL(p,location.href),q=u.searchParams,s=u.pathname;if(s=="/api/leagues")return"api/leagues.json";if(s=="/api/matches")return`api/matches/${q.get("date")}.json`;if(s=="/api/famous")return`api/famous/${q.get("date")}.json`;for(const[r,f]of SMAP){const m=s.match(r);if(m)return f(m)}return null}
 const sj=async f=>{let r;try{r=await fetch(f)}catch{throw new Error("لا يوجد اتصال ولا نسخة محفوظة لهذه الصفحة")}if(!r.ok)throw new Error(/team50|last50/.test(f)?"هذه الصفحة لم تُحسب بعد. تُحسب تدريجيًا كل 30 دقيقة للمباريات والفرق الأقرب موعدًا أولًا، فجرّب لاحقًا":/api\/ai/.test(f)?"رأي Gemini لهذه المباراة لم يُحسب بعد. يُحسب للمباريات الأقرب موعدًا أولًا ويُحدَّث كل عدة ساعات، فجرّب لاحقًا":"لم تُحسب هذه الصفحة مسبقًا. التطبيق يعرض المباريات القادمة القريبة في الدوريات الخمسة الكبرى ودوري الأبطال فقط");return r.json()};
 async function sapi(p){const u=new URL(p,location.href),s=u.pathname;
@@ -109,13 +109,17 @@ let PK=null,PKS={g:"result",e:0},PKC={};
 const CALLC={"نعم":"#3ddc97","محايد":"#f2c14e","لا":"#ff6b6b","غير مؤكد":"#8793a3","انتظر":"#8793a3"};
 const pickerHTML=()=>`<div class="card" id="pk"><b>اختر حدثًا وسأخبرك باحتماله</b><div id="pks" class="mu" style="margin-top:6px">جارٍ تحميل الأسواق… (أول مرة قد يستغرق دقائق)</div></div>`;
 
-let L10=null,L10S={k:"goals",i:0};
-const l10HTML=()=>`<div class="card" id="l10"><b>اختر حدثًا وسأخبرك بتكراره في آخر 10 مباريات</b><div id="l10b" class="mu" style="margin-top:6px">جارٍ التحميل…</div></div>`;
+let L10D={},L10S={k:"goals",i:0,n:10};
+const l10HTML=()=>`<div class="card" id="l10"><b>اختر حدثًا وسأخبرك بتكراره في آخر 10 أو 20 مباراة</b><div id="l10b" class="mu" style="margin-top:6px">جارٍ التحميل…</div></div>`;
 function sumTxt(p,m){const b=[[m.home,p.home],["تعادل",p.draw],[m.away,p.away]].sort((x,y)=>y[1]-x[1])[0],o=p.markets&&p.markets.ou&&p.markets.ou["2.5"],bt=p.markets&&p.markets.btts,t=[];
 t.push(b[0]=="تعادل"?`الأرجح التعادل (${b[1]}%)`:`الأرجح فوز ${b[0]} (${b[1]}%)`+(b[1]<45?" — لا مرجّح واضح، المباراة مفتوحة":""));
 t.push(`مجموع الأهداف المتوقع ${(+p.xg_home+ +p.xg_away).toFixed(1)}`);if(o)t.push(`أكثر من 2.5 هدف: ${o.over}%`);if(bt)t.push(`كلا الفريقين يسجل: ${bt.yes}%`);return t.join(" · ")}
 async function shareTxt(t,m){const x=`${m.home} × ${m.away} (${m.league})\n${t}\nتقدير إحصائي وليس ضمانًا.`;try{if(navigator.share){await navigator.share({text:x});return}await navigator.clipboard.writeText(x);$("#shr").textContent="✅ نُسخت الخلاصة"}catch(e){}}
-async function initL10(id){try{const r=await api("/api/last10/"+id);if(cur!="analysis"||mid!=id||!$("#l10b"))return;L10=r;renderL10()}catch(e){if($("#l10b"))$("#l10b").innerHTML=`<span class="er">${esc(e.message)}</span>`}}
+async function initL10(id){L10D={};try{const R=await Promise.allSettled([api("/api/last10/"+id),api("/api/last20/"+id)]);if(cur!="analysis"||mid!=id||!$("#l10b"))return;if(R[0].status=="fulfilled")L10D[10]=R[0].value;if(R[1].status=="fulfilled")L10D[20]=R[1].value;if(!L10D[10]&&!L10D[20]){$("#l10b").innerHTML=`<span class="er">${esc((R[0].reason&&R[0].reason.message)||"غير متاح بعد")}</span>`;return}if(!L10D[L10S.n])L10S.n=L10D[10]?10:20;renderL10()}catch(e){if($("#l10b"))$("#l10b").innerHTML=`<span class="er">${esc(e.message)}</span>`}}
+const top3=(F,u)=>(F||[]).slice().sort((x,y)=>y.matches-x.matches||x.value-y.value).slice(0,3).map(x=>`${x.value} ${u} (${x.matches} مباراة)`).join("، ");
+function gl10(r){const m=r.match,one=(nm,T)=>{const g=T.metrics&&T.metrics.goals,n=T.n||0;if(!n||!g)return`<div class="mu">${esc(nm)}: لا بيانات كافية</div>`;const z=(g.for_freq||[]).find(x=>x.value==0),sc=z?n-z.matches:null;
+return`<div style="margin-top:8px"><b>${esc(nm)}</b> <span class="mu">(${n} مباراة)</span></div><div class="mu">أحرز لنفسه: <b>${T.gf}</b> هدفًا (بمعدل ${g.for_avg} في المباراة)${sc!=null?` وسجّل في ${sc} من ${n} مباراة`:""}${g.for_freq?`<br>الأكثر تكرارًا: ${esc(top3(g.for_freq,"هدف"))}`:""}<br>استقبل: <b>${T.ga}</b> (بمعدل ${g.against_avg})<br>مجموع أهداف مبارياته: <b>${T.gf+T.ga}</b> (بمعدل ${g.total_avg} للمباراة)${g.total_freq?`<br>الأكثر تكرارًا للمجموع: ${esc(top3(g.total_freq,"هدف"))}`:""}</div>`};
+return`<div class="card"><b>الأهداف في آخر ${r.n} مباراة</b>${one(m.home,r.home)}${one(m.away,r.away)}</div>`}
 function v10(e){const hr=e.hn?e.h/e.hn*100:0,ar=e.an?e.a/e.an*100:0,p=e.p,gap=Math.abs(hr-ar),lo=Math.min(hr,ar),hi=Math.max(hr,ar),small=Math.min(e.hn,e.an)<8,R=[];
 R.push(`المعدل المشترك ${p}% (${e.h}/${e.hn} للمضيف و${e.a}/${e.an} للضيف).`);
 R.push(gap<=20?`الفريقان متقاربان (${Math.round(hr)}% و${Math.round(ar)}%) فالنمط ثابت.`:`الفريقان مختلفان (${Math.round(hr)}% و${Math.round(ar)}%) فالنمط غير ثابت.`);
@@ -124,15 +128,16 @@ let c;if(!small&&lo>=60&&p>=70&&gap<=25){c="نعم";R.push("كل فريق حقق
 else if(p<=45||hi<=40){c="لا";R.push(p<=45?"المعدل المشترك 45% فأقل: الحدث لا يتكرر بما يكفي.":"لا فريق حقق الحدث في أكثر من 4 مباريات من 10.")}
 else{c="محايد";R.push(lo<60?"أحد الفريقين تحت 60% فلا إجماع.":"المعدل بين 45% و70%: لا يكفي للترجيح.")}
 return{c,R}}
-function renderL10(){const r=L10,box=$("#l10b");if(!box)return;const ks=Object.keys(AR).filter(k=>r.combined&&r.combined[k]&&(r.combined[k].lines||[]).length);
-if(!ks.length){box.innerHTML="إحصاءات آخر 10 مباريات غير كافية لهذه المباراة.";return}if(!ks.includes(L10S.k)){L10S.k=ks[0];L10S.i=0}
+function renderL10(){const box=$("#l10b");if(!box)return;const r=L10D[L10S.n],chips=`<div class="chs">${[10,20].map(n=>`<button class="ch ${L10S.n==n?"on":""}" data-n="${n}">آخر ${n} مباراة</button>`).join("")}</div>`,bind=()=>box.querySelectorAll("[data-n]").forEach(d=>d.onclick=()=>{L10S.n=+d.dataset.n;L10S.i=0;renderL10()});
+if(!r){box.innerHTML=chips+`<div class="mu">إحصاءات آخر ${L10S.n} مباراة لم تُحسب بعد لهذه المباراة (تُحسب تدريجيًا، أعد المحاولة لاحقًا).</div>`;bind();return}const ks=Object.keys(AR).filter(k=>r.combined&&r.combined[k]&&(r.combined[k].lines||[]).length);
+if(!ks.length){box.innerHTML=chips+gl10(r)+"<div class=\"mu\">باقي الإحصاءات غير كافية لهذه المباراة.</div>";bind();return}if(!ks.includes(L10S.k)){L10S.k=ks[0];L10S.i=0}
 const ev=[];for(const l of r.combined[L10S.k].lines){ev.push({t:"أكثر من "+l.line,h:l.home,a:l.away,hn:l.home_n,an:l.away_n,p:l.avg_pct});ev.push({t:"أقل من "+l.line,h:l.home_n-l.home,a:l.away_n-l.away,hn:l.home_n,an:l.away_n,p:Math.round((100-l.avg_pct)*10)/10})}
 if(L10S.i>=ev.length)L10S.i=0;const e=ev[L10S.i],m=r.match,v=v10(e),ic={"نعم":"✅","لا":"❌","محايد":"⚪"};
-box.innerHTML=`<label class="pl" for="l10g">القسم</label><select id="l10g" class="sel">${ks.map(k=>`<option value="${k}" ${k==L10S.k?"selected":""}>${AR[k][0]}</option>`).join("")}</select><label class="pl" for="l10e">الحدث</label><select id="l10e" class="sel">${ev.map((x,i)=>`<option value="${i}" ${i==L10S.i?"selected":""}>${ic[v10(x).c]} ${x.t} ${AR[L10S.k][1]}</option>`).join("")}</select>
+box.innerHTML=chips+`<label class="pl" for="l10g">القسم</label><select id="l10g" class="sel">${ks.map(k=>`<option value="${k}" ${k==L10S.k?"selected":""}>${AR[k][0]}</option>`).join("")}</select><label class="pl" for="l10e">الحدث</label><select id="l10e" class="sel">${ev.map((x,i)=>`<option value="${i}" ${i==L10S.i?"selected":""}>${ic[v10(x).c]} ${x.t} ${AR[L10S.k][1]}</option>`).join("")}</select>
 <div class="card" style="margin-top:8px"><b>${ic[v.c]} الحكم: ${v.c} — ${e.t} ${AR[L10S.k][1]}</b><div class="m2"><span>${esc(m.home)}</span><b>${e.h} من ${e.hn} (${pct(e.h,e.hn)}%)</b></div><div class="m2"><span>${esc(m.away)}</span><b>${e.a} من ${e.an} (${pct(e.a,e.an)}%)</b></div><div class="m2"><span><b>المعدل المشترك</b></span><b>${e.p}%</b></div><div class="mu" style="margin-top:6px"><b>لماذا:</b><br>${v.R.map(x=>"• "+esc(x)).join("<br>")}</div></div>
-<div class="card"><b>كل أحداث هذا القسم</b>${ev.map((x,i)=>{const y=v10(x);return `<div class="m2" data-i="${i}" style="cursor:pointer"><span>${ic[y.c]} ${x.t} ${AR[L10S.k][1]}</span><b>${x.p}% · ${y.c}</b></div>`}).join("")}</div>
-<div class="mu">الحكم مبني على تكرار الحدث في آخر 10 مباريات لكل فريق (له وعليه، بكل المسابقات المتاحة) وعلى اتفاق الفريقين: «نعم» عند 70% فأكثر مع 60% فأكثر لكل فريق، و«لا» عند 45% فأقل. هو وصف لما حدث وليس احتمالًا مُختبَرًا ولا نصيحة رهان؛ العينة صغيرة ولا تراعي قوة الخصوم. للاحتمال المُختبَر استخدم الأداة أعلاه.</div>`;
-$("#l10g").onchange=x=>{L10S.k=x.target.value;L10S.i=0;renderL10()};$("#l10e").onchange=x=>{L10S.i=+x.target.value;renderL10()};box.querySelectorAll("[data-i]").forEach(d=>d.onclick=()=>{L10S.i=+d.dataset.i;renderL10()})}
+${gl10(r)}<div class="card"><b>كل أحداث هذا القسم</b>${ev.map((x,i)=>{const y=v10(x);return `<div class="m2" data-i="${i}" style="cursor:pointer"><span>${ic[y.c]} ${x.t} ${AR[L10S.k][1]}</span><b>${x.p}% · ${y.c}</b></div>`}).join("")}</div>
+<div class="mu">الحكم مبني على تكرار الحدث في آخر ${r.n} مباراة لكل فريق (له وعليه، بكل المسابقات المتاحة) وعلى اتفاق الفريقين: «نعم» عند 70% فأكثر مع 60% فأكثر لكل فريق، و«لا» عند 45% فأقل. هو وصف لما حدث وليس احتمالًا مُختبَرًا ولا نصيحة رهان؛ العينة صغيرة ولا تراعي قوة الخصوم. للاحتمال المُختبَر استخدم الأداة أعلاه.</div>`;
+$("#l10g").onchange=x=>{L10S.k=x.target.value;L10S.i=0;renderL10()};$("#l10e").onchange=x=>{L10S.i=+x.target.value;renderL10()};box.querySelectorAll("[data-i]").forEach(d=>d.onclick=()=>{L10S.i=+d.dataset.i;renderL10()});bind()}
 async function initPicker(id){const box=()=>$("#pks");
 if(PKC[id]&&box()){PK=PKC[id];renderPicker()}                       // عرض فوري من آخر نتيجة ثم تحديثها بصمت
 try{const r=await api("/api/board/"+id);PKC[id]=r;if(cur!="analysis"||mid!=id||!box())return;PK=r;renderPicker();
