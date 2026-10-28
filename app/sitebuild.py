@@ -355,7 +355,7 @@ def main(log=print):
     try:    # اختيارات الرهان بشرط السعر (ESPN) من أفضل أسواق Gemini ومن المحرك
         from . import bets
         items = [bets.for_match(m, _out(f"api/predict/{m}.json"), _out(f"api/ai/{m}.json"), _out(f"api/board/{m}.json"), _out(f"api/market/{m}.json")) for m in todo if mtier.get(m, 2) == 0]
-        pk = bets.collect(items); pk["generated_at"] = review.now(); w("api/picks.json", pk); stats["picks"] = {"matches": len(pk["matches"]), "gemini": sum(len(i["gemini"]) for i in pk["matches"]), "engine": sum(len(i["engine"]) for i in pk["matches"])}
+        pk = bets.collect(items); pk["generated_at"] = review.now(); w("api/picks.json", pk); stats["picks"] = {"matches": len(pk["matches"]), "gemini": sum(len(i["gemini"]) for i in pk["matches"]), "engine": sum(len(i["engine"]) for i in pk["matches"]), "high": len(pk["high"])}
     except Exception as e: stats["errors"].append(f"picks: {type(e).__name__}: {str(e)[:150]}")
     built = [m for m in list(todo) + list(recent) if os.path.exists(os.path.join(OUT, f"api/predict/{m}.json"))]; w("api/index.json", {"ids": built})
     ids = set(todo); w("api/gen.json", {k: v for k, v in GEN.items() if k.split("/", 1)[1] in ids})

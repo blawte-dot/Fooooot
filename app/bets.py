@@ -3,6 +3,7 @@
 import re
 
 MIN_ODDS = 1.30
+HIGH_P, HIGH_ODDS = 70.0, 1.20      # قسم «احتمال عالٍ»: احتمال المحرك 70% فأكثر وسعر منشور فوق 1.20
 
 def odds_for(label, market, home, away):
     """(السعر العشري، احتمال السوق بعد إزالة الهامش %) لحدث له سعر منشور؛ وإلا (None, None). المتاح: 1X2 وخط مجموع الأهداف المنشور فقط."""
@@ -45,10 +46,16 @@ def for_match(mid, pred, ai, board, market):
         if ev["label"] in seen: continue
         p, _ = judge(ev, market, home, away)
         if p: eng.append(p)
-    return {**head, "gemini": gem, "excluded": exc, "engine": eng[:4], "has_ai": bool(ai)}
+    high, seen_h = [], set()
+    for ev in sorted(list((ai or {}).get("best_supported_markets") or []) + [e for e in (board or {}).get("events", [])], key=lambda e: -(e.get("p") or 0)):
+        if ev.get("label") in seen_h or (ev.get("p") or 0) < HIGH_P: continue
+        p, _ = judge(ev, market, home, away, HIGH_ODDS)
+        if p: high.append(p); seen_h.add(ev["label"])
+    return {**head, "gemini": gem, "excluded": exc, "engine": eng[:4], "high": high[:3], "has_ai": bool(ai)}
 
 def collect(items, min_odds=MIN_ODDS):
-    items = [i for i in items if i and (i["gemini"] or i["engine"])]
+    items = [i for i in items if i]; hi = sorted([i for i in items if i.get("high")], key=lambda i: -max(x["p"] for x in i["high"]))
+    items = [i for i in items if i["gemini"] or i["engine"]]
     key = lambda i: max([x["p"] for x in i["gemini"] + i["engine"]] or [0])      # الأعلى احتمالًا أولًا (السعر فوق الحد دائمًا)
-    return {"min_odds": min_odds, "matches": sorted(items, key=key, reverse=True),
+    return {"min_odds": min_odds, "high_p": HIGH_P, "high_odds": HIGH_ODDS, "high": hi, "matches": sorted(items, key=key, reverse=True),
             "note": "ليست نصيحة رهان ولا ضمانًا ولا وعدًا بربح. الأسعار من ESPN/DraftKings وللمباريات القادمة في الدوريات الخمسة الكبرى ودوري الأبطال فقط. «نسبة التعادل المالي» أقل احتمال يلزم تحقق الحدث ليتعادل الرهان. الاختيارات من أحداث اجتازت اختبار المحرك الإحصائي، لكن الاحتمالات تقديرية وقد تخطئ، والسوق عادةً أدق."}
