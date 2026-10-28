@@ -112,13 +112,23 @@ const pickerHTML=()=>`<div class="card" id="pk"><b>اختر حدثًا وسأخ�
 let L10=null,L10S={k:"goals",i:0};
 const l10HTML=()=>`<div class="card" id="l10"><b>اختر حدثًا وسأخبرك بتكراره في آخر 10 مباريات</b><div id="l10b" class="mu" style="margin-top:6px">جارٍ التحميل…</div></div>`;
 async function initL10(id){try{const r=await api("/api/last10/"+id);if(cur!="analysis"||mid!=id||!$("#l10b"))return;L10=r;renderL10()}catch(e){if($("#l10b"))$("#l10b").innerHTML=`<span class="er">${esc(e.message)}</span>`}}
+function v10(e){const hr=e.hn?e.h/e.hn*100:0,ar=e.an?e.a/e.an*100:0,p=e.p,gap=Math.abs(hr-ar),lo=Math.min(hr,ar),hi=Math.max(hr,ar),small=Math.min(e.hn,e.an)<8,R=[];
+R.push(`المعدل المشترك ${p}% (${e.h}/${e.hn} للمضيف و${e.a}/${e.an} للضيف).`);
+R.push(gap<=20?`الفريقان متقاربان (${Math.round(hr)}% و${Math.round(ar)}%) فالنمط ثابت.`:`الفريقان مختلفان (${Math.round(hr)}% و${Math.round(ar)}%) فالنمط غير ثابت.`);
+if(small)R.push("العينة أقل من 8 مباريات لأحد الفريقين فالثقة ضعيفة.");
+let c;if(!small&&lo>=60&&p>=70&&gap<=25){c="نعم";R.push("كل فريق حقق الحدث في 6 مباريات من 10 على الأقل والمعدل 70% فأكثر.")}
+else if(p<=45||hi<=40){c="لا";R.push(p<=45?"المعدل المشترك 45% فأقل: الحدث لا يتكرر بما يكفي.":"لا فريق حقق الحدث في أكثر من 4 مباريات من 10.")}
+else{c="محايد";R.push(lo<60?"أحد الفريقين تحت 60% فلا إجماع.":"المعدل بين 45% و70%: لا يكفي للترجيح.")}
+return{c,R}}
 function renderL10(){const r=L10,box=$("#l10b");if(!box)return;const ks=Object.keys(AR).filter(k=>r.combined&&r.combined[k]&&(r.combined[k].lines||[]).length);
 if(!ks.length){box.innerHTML="إحصاءات آخر 10 مباريات غير كافية لهذه المباراة.";return}if(!ks.includes(L10S.k)){L10S.k=ks[0];L10S.i=0}
-const ev=[];for(const l of r.combined[L10S.k].lines){ev.push({t:"أكثر من "+l.line,h:l.home,a:l.away,hn:l.home_n,an:l.away_n,p:l.avg_pct});ev.push({t:"أقل من "+l.line,h:l.home_n-l.home,a:l.away_n-l.away,hn:l.home_n,an:l.away_n,p:100-l.avg_pct})}
-if(L10S.i>=ev.length)L10S.i=0;const e=ev[L10S.i],m=r.match;
-box.innerHTML=`<label class="pl" for="l10g">القسم</label><select id="l10g" class="sel">${ks.map(k=>`<option value="${k}" ${k==L10S.k?"selected":""}>${AR[k][0]}</option>`).join("")}</select><label class="pl" for="l10e">الحدث</label><select id="l10e" class="sel">${ev.map((x,i)=>`<option value="${i}" ${i==L10S.i?"selected":""}>${x.t} ${AR[L10S.k][1]}</option>`).join("")}</select>
-<div class="card" style="margin-top:8px"><div class="m2"><span>${esc(m.home)}</span><b>${e.h} من ${e.hn} (${pct(e.h,e.hn)}%)</b></div><div class="m2"><span>${esc(m.away)}</span><b>${e.a} من ${e.an} (${pct(e.a,e.an)}%)</b></div><div class="m2"><span><b>المعدل المشترك</b></span><b>${e.p}%</b></div></div><div class="mu">هذه نسبة تكرار الحدث في آخر ${Math.max(e.hn,e.an)} مباراة لكل فريق (له وعليه، بكل المسابقات المتاحة). هي وصف لما حدث وليست احتمالًا مُختبَرًا؛ العينة صغيرة وتتأثر بالخصوم. للاحتمال المُختبَر استخدم الأداة أعلاه.</div>`;
-$("#l10g").onchange=x=>{L10S.k=x.target.value;L10S.i=0;renderL10()};$("#l10e").onchange=x=>{L10S.i=+x.target.value;renderL10()}}
+const ev=[];for(const l of r.combined[L10S.k].lines){ev.push({t:"أكثر من "+l.line,h:l.home,a:l.away,hn:l.home_n,an:l.away_n,p:l.avg_pct});ev.push({t:"أقل من "+l.line,h:l.home_n-l.home,a:l.away_n-l.away,hn:l.home_n,an:l.away_n,p:Math.round((100-l.avg_pct)*10)/10})}
+if(L10S.i>=ev.length)L10S.i=0;const e=ev[L10S.i],m=r.match,v=v10(e),ic={"نعم":"✅","لا":"❌","محايد":"⚪"};
+box.innerHTML=`<label class="pl" for="l10g">القسم</label><select id="l10g" class="sel">${ks.map(k=>`<option value="${k}" ${k==L10S.k?"selected":""}>${AR[k][0]}</option>`).join("")}</select><label class="pl" for="l10e">الحدث</label><select id="l10e" class="sel">${ev.map((x,i)=>`<option value="${i}" ${i==L10S.i?"selected":""}>${ic[v10(x).c]} ${x.t} ${AR[L10S.k][1]}</option>`).join("")}</select>
+<div class="card" style="margin-top:8px"><b>${ic[v.c]} الحكم: ${v.c} — ${e.t} ${AR[L10S.k][1]}</b><div class="m2"><span>${esc(m.home)}</span><b>${e.h} من ${e.hn} (${pct(e.h,e.hn)}%)</b></div><div class="m2"><span>${esc(m.away)}</span><b>${e.a} من ${e.an} (${pct(e.a,e.an)}%)</b></div><div class="m2"><span><b>المعدل المشترك</b></span><b>${e.p}%</b></div><div class="mu" style="margin-top:6px"><b>لماذا:</b><br>${v.R.map(x=>"• "+esc(x)).join("<br>")}</div></div>
+<div class="card"><b>كل أحداث هذا القسم</b>${ev.map((x,i)=>{const y=v10(x);return `<div class="m2" data-i="${i}" style="cursor:pointer"><span>${ic[y.c]} ${x.t} ${AR[L10S.k][1]}</span><b>${x.p}% · ${y.c}</b></div>`}).join("")}</div>
+<div class="mu">الحكم مبني على تكرار الحدث في آخر 10 مباريات لكل فريق (له وعليه، بكل المسابقات المتاحة) وعلى اتفاق الفريقين: «نعم» عند 70% فأكثر مع 60% فأكثر لكل فريق، و«لا» عند 45% فأقل. هو وصف لما حدث وليس احتمالًا مُختبَرًا ولا نصيحة رهان؛ العينة صغيرة ولا تراعي قوة الخصوم. للاحتمال المُختبَر استخدم الأداة أعلاه.</div>`;
+$("#l10g").onchange=x=>{L10S.k=x.target.value;L10S.i=0;renderL10()};$("#l10e").onchange=x=>{L10S.i=+x.target.value;renderL10()};box.querySelectorAll("[data-i]").forEach(d=>d.onclick=()=>{L10S.i=+d.dataset.i;renderL10()})}
 async function initPicker(id){const box=()=>$("#pks");
 if(PKC[id]&&box()){PK=PKC[id];renderPicker()}                       // عرض فوري من آخر نتيجة ثم تحديثها بصمت
 try{const r=await api("/api/board/"+id);PKC[id]=r;if(cur!="analysis"||mid!=id||!box())return;PK=r;renderPicker();
