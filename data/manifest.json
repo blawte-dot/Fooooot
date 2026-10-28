@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-28T05:36:02+00:00",
+ "generated_at": "2026-10-28T19:10:58+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -165,9 +165,9 @@
   },
   "l_1qpFVw": {
    "errors": [],
-   "matches": 637,
+   "matches": 638,
    "name": "Indian Super League",
-   "with_stats": 266
+   "with_stats": 267
   },
   "l_1rPvVD": {
    "errors": [],
@@ -237,9 +237,9 @@
   },
   "l_2xBPKk": {
    "errors": [],
-   "matches": 681,
+   "matches": 683,
    "name": "Super Liga",
-   "with_stats": 650
+   "with_stats": 652
   },
   "l_38d9HA": {
    "errors": [],
@@ -369,9 +369,9 @@
   },
   "l_46aZMC": {
    "errors": [],
-   "matches": 392,
+   "matches": 393,
    "name": "Premier League",
-   "with_stats": 392
+   "with_stats": 393
   },
   "l_47077Y": {
    "errors": [],
