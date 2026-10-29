@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-29T05:44:50+00:00",
+ "generated_at": "2026-10-29T19:44:27+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -9,9 +9,9 @@
   },
   "l_0ALvwF": {
    "errors": [],
-   "matches": 1989,
+   "matches": 1990,
    "name": "Serie A",
-   "with_stats": 833
+   "with_stats": 834
   },
   "l_0ErfuF": {
    "errors": [],
@@ -27,9 +27,9 @@
   },
   "l_0Lpz1f": {
    "errors": [],
-   "matches": 1012,
+   "matches": 1013,
    "name": "Saudi Pro League",
-   "with_stats": 705
+   "with_stats": 706
   },
   "l_0S1uaf": {
    "errors": [],
@@ -369,9 +369,9 @@
   },
   "l_46aZMC": {
    "errors": [],
-   "matches": 393,
+   "matches": 396,
    "name": "Premier League",
-   "with_stats": 393
+   "with_stats": 396
   },
   "l_47077Y": {
    "errors": [],
