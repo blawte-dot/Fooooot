@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-30T19:25:46+00:00",
+ "generated_at": "2026-10-30T20:46:03+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -27,9 +27,9 @@
   },
   "l_0Lpz1f": {
    "errors": [],
-   "matches": 1013,
+   "matches": 1018,
    "name": "Saudi Pro League",
-   "with_stats": 706
+   "with_stats": 711
   },
   "l_0S1uaf": {
    "errors": [],
@@ -69,13 +69,13 @@
   },
   "l_0kSJLz": {
    "errors": [],
-   "matches": 736,
+   "matches": 737,
    "name": "Liga I",
    "with_stats": 0
   },
   "l_0uqFK8": {
    "errors": [],
-   "matches": 1352,
+   "matches": 1353,
    "name": "Eliteserien",
    "with_stats": 0
   },
@@ -105,7 +105,7 @@
   },
   "l_1Kknkl": {
    "errors": [],
-   "matches": 245,
+   "matches": 246,
    "name": "Premier Soccer League",
    "with_stats": 0
   },
@@ -171,7 +171,7 @@
   },
   "l_1rPvVD": {
    "errors": [],
-   "matches": 456,
+   "matches": 457,
    "name": "1. Division",
    "with_stats": 0
   },
@@ -261,9 +261,9 @@
   },
   "l_3FJFUl": {
    "errors": [],
-   "matches": 1751,
+   "matches": 1753,
    "name": "Ligue 1",
-   "with_stats": 677
+   "with_stats": 679
   },
   "l_3Kf7Ni": {
    "errors": [],
@@ -297,9 +297,9 @@
   },
   "l_3hvsne": {
    "errors": [],
-   "matches": 1602,
+   "matches": 1604,
    "name": "2. Bundesliga",
-   "with_stats": 666
+   "with_stats": 668
   },
   "l_3kyHLd": {
    "errors": [],
@@ -351,9 +351,9 @@
   },
   "l_3zsMpo": {
    "errors": [],
-   "matches": 1035,
+   "matches": 1036,
    "name": "Bundesliga",
-   "with_stats": 436
+   "with_stats": 437
   },
   "l_45VZuL": {
    "errors": [],
@@ -369,13 +369,13 @@
   },
   "l_46aZMC": {
    "errors": [],
-   "matches": 396,
+   "matches": 399,
    "name": "Premier League",
-   "with_stats": 396
+   "with_stats": 399
   },
   "l_47077Y": {
    "errors": [],
-   "matches": 870,
+   "matches": 871,
    "name": "3. Liga",
    "with_stats": 0
   },
@@ -387,7 +387,7 @@
   },
   "l_49Zmno": {
    "errors": [],
-   "matches": 1035,
+   "matches": 1036,
    "name": "Superligaen",
    "with_stats": 0
   },
@@ -441,7 +441,7 @@
   },
   "l_4auCPk": {
    "errors": [],
-   "matches": 415,
+   "matches": 417,
    "name": "Challenge League",
    "with_stats": 0
   },
