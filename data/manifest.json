@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-30T15:06:56+00:00",
+ "generated_at": "2026-10-30T19:25:46+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -33,9 +33,9 @@
   },
   "l_0S1uaf": {
    "errors": [],
-   "matches": 1422,
+   "matches": 1423,
    "name": "Super Lig",
-   "with_stats": 720
+   "with_stats": 721
   },
   "l_0aEfof": {
    "errors": [],
@@ -87,7 +87,7 @@
   },
   "l_1BFfna": {
    "errors": [],
-   "matches": 889,
+   "matches": 890,
    "name": "1. Lig",
    "with_stats": 0
   },
@@ -165,9 +165,9 @@
   },
   "l_1qpFVw": {
    "errors": [],
-   "matches": 638,
+   "matches": 639,
    "name": "Indian Super League",
-   "with_stats": 267
+   "with_stats": 268
   },
   "l_1rPvVD": {
    "errors": [],
@@ -189,7 +189,7 @@
   },
   "l_214sqK": {
    "errors": [],
-   "matches": 412,
+   "matches": 413,
    "name": "Ekstraklasa",
    "with_stats": 0
   },
@@ -333,7 +333,7 @@
   },
   "l_3wr44B": {
    "errors": [],
-   "matches": 306,
+   "matches": 309,
    "name": "Qatar Stars League",
    "with_stats": 0
   },
