@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-31T01:17:13+00:00",
+ "generated_at": "2026-10-31T05:32:04+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -213,7 +213,7 @@
   },
   "l_2L6d1F": {
    "errors": [],
-   "matches": 1676,
+   "matches": 1677,
    "name": "First Division A",
    "with_stats": 0
   },
@@ -267,15 +267,15 @@
   },
   "l_3Kf7Ni": {
    "errors": [],
-   "matches": 628,
+   "matches": 630,
    "name": "USL League One",
    "with_stats": 0
   },
   "l_3Tn1kG": {
    "errors": [],
-   "matches": 1276,
+   "matches": 1277,
    "name": "MLS Next Pro",
-   "with_stats": 985
+   "with_stats": 986
   },
   "l_3UiOcj": {
    "errors": [],
@@ -327,9 +327,9 @@
   },
   "l_3v84VE": {
    "errors": [],
-   "matches": 1107,
+   "matches": 1110,
    "name": "Liga MX",
-   "with_stats": 562
+   "with_stats": 565
   },
   "l_3wr44B": {
    "errors": [],
@@ -345,7 +345,7 @@
   },
   "l_3yVUAO": {
    "errors": [],
-   "matches": 1173,
+   "matches": 1178,
    "name": "USL Championship",
    "with_stats": 0
   },
@@ -381,7 +381,7 @@
   },
   "l_49KZaB": {
    "errors": [],
-   "matches": 880,
+   "matches": 884,
    "name": "Eerste Divisie",
    "with_stats": 0
   },
