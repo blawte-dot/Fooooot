@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-10-30T20:46:03+00:00",
+ "generated_at": "2026-10-31T01:17:13+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
-   "matches": 386,
+   "matches": 391,
    "name": "Ligue 2",
-   "with_stats": 386
+   "with_stats": 391
   },
   "l_0ALvwF": {
    "errors": [],
@@ -15,9 +15,9 @@
   },
   "l_0ErfuF": {
    "errors": [],
-   "matches": 1998,
+   "matches": 1999,
    "name": "LaLiga",
-   "with_stats": 843
+   "with_stats": 844
   },
   "l_0F4I4F": {
    "errors": [],
@@ -99,9 +99,9 @@
   },
   "l_1Isor4": {
    "errors": [],
-   "matches": 1593,
+   "matches": 1594,
    "name": "Bundesliga",
-   "with_stats": 675
+   "with_stats": 676
   },
   "l_1Kknkl": {
    "errors": [],
@@ -153,15 +153,15 @@
   },
   "l_1eJSA7": {
    "errors": [],
-   "matches": 534,
+   "matches": 539,
    "name": "Premier Division",
    "with_stats": 0
   },
   "l_1pQOHK": {
    "errors": [],
-   "matches": 331,
+   "matches": 333,
    "name": "Challenger Pro League",
-   "with_stats": 330
+   "with_stats": 332
   },
   "l_1qpFVw": {
    "errors": [],
@@ -261,9 +261,9 @@
   },
   "l_3FJFUl": {
    "errors": [],
-   "matches": 1753,
+   "matches": 1754,
    "name": "Ligue 1",
-   "with_stats": 679
+   "with_stats": 680
   },
   "l_3Kf7Ni": {
    "errors": [],
@@ -315,9 +315,9 @@
   },
   "l_3qUkB8": {
    "errors": [],
-   "matches": 1110,
+   "matches": 1111,
    "name": "Serie B",
-   "with_stats": 913
+   "with_stats": 914
   },
   "l_3uNwVX": {
    "errors": [],
@@ -357,9 +357,9 @@
   },
   "l_45VZuL": {
    "errors": [],
-   "matches": 1732,
+   "matches": 1734,
    "name": "Liga Profesional",
-   "with_stats": 1212
+   "with_stats": 1214
   },
   "l_45xKXM": {
    "errors": [],
@@ -393,13 +393,13 @@
   },
   "l_4DWyTT": {
    "errors": [],
-   "matches": 2932,
+   "matches": 2933,
    "name": "Championship",
-   "with_stats": 1225
+   "with_stats": 1226
   },
   "l_4FPF2L": {
    "errors": [],
-   "matches": 489,
+   "matches": 491,
    "name": "Division Profesional",
    "with_stats": 0
   },
@@ -423,9 +423,9 @@
   },
   "l_4QexZg": {
    "errors": [],
-   "matches": 1569,
+   "matches": 1570,
    "name": "Liga Portugal",
-   "with_stats": 676
+   "with_stats": 677
   },
   "l_4V6jPs": {
    "errors": [],
