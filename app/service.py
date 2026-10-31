@@ -1,7 +1,7 @@
 import re, time, threading, unicodedata, traceback
 from datetime import date, datetime, timedelta, timezone
 from concurrent.futures import ThreadPoolExecutor
-from . import pitch_client as pc, model, cards, backtest, elo, stats, last50, xg as xgmod, counts, cache, espn
+from . import pitch_client as pc, model, cards, backtest, elo, stats, last50, xg as xgmod, counts, cache, espn, profile
 
 FM = {"47": "Premier League", "87": "LaLiga", "54": "Bundesliga", "55": "Serie A", "53": "Ligue 1"}  # معرّفات صور الدوريات في المصدر
 _B5N = {"premier league": "Premier League", "english premier league": "Premier League", "laliga": "LaLiga", "la liga": "LaLiga",
@@ -281,6 +281,24 @@ def search_teams(q, big5=False):
         return o[:5] + [l for l in o[5:] if l in byid and is_ucl(byid[l])]
     return {"ready": True, "teams": [{"id": tid, "name": e["name"], "competitions": [byid[l]["name"] for l in ids(e)[:3] if l in byid],
                                       "comp_ids": ids(e), "big5": lab(e)} for tid, e in hits[:(130 if big5 else 15)]]}
+
+_LCTX = {}
+
+def team_profile(team_id, name, comps):
+    """ملف الفريق التحليلي من تاريخه المحلي ودوري الأبطال (بلا طلبات إحصاءات: يقرأ المخزن المحفوظ). comps: معرّفات مسابقاته مرتبة بالأهمية."""
+    leagues = pc.get("/v1/leagues", ttl=6 * 3600)["leagues"]; byid = {l["id"]: l for l in leagues}
+    order = [c for c in comps if c in byid]; dom = next((l for l in order if not is_ucl(byid[l])), None)
+    chosen = ([dom] if dom else []) + [l for l in order if is_ucl(byid[l])][:1]
+    ref = date.today() + timedelta(days=1); allh, dom_hist = [], []
+    for lid in chosen:
+        try: H = [(*h, "ucl" if is_ucl(byid[lid]) else "league", byid[lid]["name"]) for h in history(lid, _all_seasons(leagues, lid), ref)]
+        except pc.PitchError: continue
+        allh += H
+        if lid == dom: dom_hist = H
+    key = (dom, ref)
+    if key not in _LCTX: _LCTX[key] = profile.league_ctx(dom_hist, ref) if dom_hist else None
+    games = last50._games(allh, team_id, ref)
+    return profile.build_profile(team_id, name, games, {g[5]: xgmod.STATS.get(g[5]) or {} for g in games}, _LCTX[key], ref)
 
 def team50(team_id, scope="main", comps=None, name=None):
     """comps: معرّفات مسابقات محفوظة مع النادي المفضل (مرتبة بالأهمية) فلا حاجة لانتظار فهرس الفرق."""
