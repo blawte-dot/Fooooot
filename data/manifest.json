@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-31T05:32:04+00:00",
+ "generated_at": "2026-10-31T09:32:43+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -195,13 +195,13 @@
   },
   "l_271pqa": {
    "errors": [],
-   "matches": 751,
+   "matches": 755,
    "name": "K League 2",
-   "with_stats": 594
+   "with_stats": 598
   },
   "l_2ApGa4": {
    "errors": [],
-   "matches": 1691,
+   "matches": 1697,
    "name": "J. League",
    "with_stats": 0
   },
@@ -285,7 +285,7 @@
   },
   "l_3fglZv": {
    "errors": [],
-   "matches": 896,
+   "matches": 905,
    "name": "J3 League",
    "with_stats": 0
   },
