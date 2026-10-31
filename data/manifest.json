@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-31T09:32:43+00:00",
+ "generated_at": "2026-10-31T13:37:07+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -93,9 +93,9 @@
   },
   "l_1D8Xrl": {
    "errors": [],
-   "matches": 1423,
+   "matches": 1424,
    "name": "Serie A",
-   "with_stats": 837
+   "with_stats": 838
   },
   "l_1Isor4": {
    "errors": [],
@@ -285,7 +285,7 @@
   },
   "l_3fglZv": {
    "errors": [],
-   "matches": 905,
+   "matches": 906,
    "name": "J3 League",
    "with_stats": 0
   },
