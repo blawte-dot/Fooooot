@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-31T14:32:09+00:00",
+ "generated_at": "2026-10-31T18:38:46+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -9,19 +9,19 @@
   },
   "l_0ALvwF": {
    "errors": [],
-   "matches": 1991,
+   "matches": 1992,
    "name": "Serie A",
-   "with_stats": 835
+   "with_stats": 836
   },
   "l_0ErfuF": {
    "errors": [],
-   "matches": 1999,
+   "matches": 2001,
    "name": "LaLiga",
-   "with_stats": 844
+   "with_stats": 846
   },
   "l_0F4I4F": {
    "errors": [],
-   "matches": 646,
+   "matches": 650,
    "name": "1. Liga",
    "with_stats": 0
   },
@@ -63,9 +63,9 @@
   },
   "l_0jy5yE": {
    "errors": [],
-   "matches": 480,
+   "matches": 484,
    "name": "Serie B",
-   "with_stats": 480
+   "with_stats": 484
   },
   "l_0kSJLz": {
    "errors": [],
@@ -81,7 +81,7 @@
   },
   "l_16Sq13": {
    "errors": [],
-   "matches": 536,
+   "matches": 539,
    "name": "Ligat ha'Al",
    "with_stats": 0
   },
@@ -99,13 +99,13 @@
   },
   "l_1Isor4": {
    "errors": [],
-   "matches": 1594,
+   "matches": 1599,
    "name": "Bundesliga",
-   "with_stats": 676
+   "with_stats": 681
   },
   "l_1Kknkl": {
    "errors": [],
-   "matches": 246,
+   "matches": 251,
    "name": "Premier Soccer League",
    "with_stats": 0
   },
@@ -237,9 +237,9 @@
   },
   "l_2xBPKk": {
    "errors": [],
-   "matches": 683,
+   "matches": 684,
    "name": "Super Liga",
-   "with_stats": 652
+   "with_stats": 653
   },
   "l_38d9HA": {
    "errors": [],
@@ -303,9 +303,9 @@
   },
   "l_3kyHLd": {
    "errors": [],
-   "matches": 587,
+   "matches": 589,
    "name": "LaLiga2",
-   "with_stats": 587
+   "with_stats": 589
   },
   "l_3qNjzC": {
    "errors": [],
@@ -333,7 +333,7 @@
   },
   "l_3wr44B": {
    "errors": [],
-   "matches": 309,
+   "matches": 312,
    "name": "Qatar Stars League",
    "with_stats": 0
   },
@@ -405,9 +405,9 @@
   },
   "l_4H43wr": {
    "errors": [],
-   "matches": 1641,
+   "matches": 1642,
    "name": "Eredivisie",
-   "with_stats": 683
+   "with_stats": 684
   },
   "l_4MPd7x": {
    "errors": [],
@@ -435,9 +435,9 @@
   },
   "l_4WFCIZ": {
    "errors": [],
-   "matches": 1980,
+   "matches": 1986,
    "name": "Premier League",
-   "with_stats": 820
+   "with_stats": 826
   },
   "l_4auCPk": {
    "errors": [],
