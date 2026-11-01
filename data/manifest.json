@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-01T09:57:28+00:00",
+ "generated_at": "2026-11-01T14:12:28+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -9,9 +9,9 @@
   },
   "l_0ALvwF": {
    "errors": [],
-   "matches": 1994,
+   "matches": 1995,
    "name": "Serie A",
-   "with_stats": 838
+   "with_stats": 839
   },
   "l_0ErfuF": {
    "errors": [],
@@ -93,9 +93,9 @@
   },
   "l_1D8Xrl": {
    "errors": [],
-   "matches": 1424,
+   "matches": 1425,
    "name": "Serie A",
-   "with_stats": 838
+   "with_stats": 839
   },
   "l_1Isor4": {
    "errors": [],
@@ -363,7 +363,7 @@
   },
   "l_45xKXM": {
    "errors": [],
-   "matches": 530,
+   "matches": 535,
    "name": "Virsliga",
    "with_stats": 0
   },
