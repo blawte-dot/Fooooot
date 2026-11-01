@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-01T05:57:24+00:00",
+ "generated_at": "2026-11-01T09:57:28+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -195,9 +195,9 @@
   },
   "l_271pqa": {
    "errors": [],
-   "matches": 755,
+   "matches": 759,
    "name": "K League 2",
-   "with_stats": 598
+   "with_stats": 602
   },
   "l_2ApGa4": {
    "errors": [],
@@ -327,9 +327,9 @@
   },
   "l_3v84VE": {
    "errors": [],
-   "matches": 1110,
+   "matches": 1114,
    "name": "Liga MX",
-   "with_stats": 565
+   "with_stats": 569
   },
   "l_3wr44B": {
    "errors": [],
