@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-11-01T03:23:50+00:00",
+ "generated_at": "2026-11-01T05:57:24+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
-   "matches": 391,
+   "matches": 393,
    "name": "Ligue 2",
-   "with_stats": 391
+   "with_stats": 393
   },
   "l_0ALvwF": {
    "errors": [],
@@ -315,9 +315,9 @@
   },
   "l_3qUkB8": {
    "errors": [],
-   "matches": 1111,
+   "matches": 1114,
    "name": "Serie B",
-   "with_stats": 914
+   "with_stats": 917
   },
   "l_3uNwVX": {
    "errors": [],
@@ -357,9 +357,9 @@
   },
   "l_45VZuL": {
    "errors": [],
-   "matches": 1734,
+   "matches": 1739,
    "name": "Liga Profesional",
-   "with_stats": 1214
+   "with_stats": 1219
   },
   "l_45xKXM": {
    "errors": [],
