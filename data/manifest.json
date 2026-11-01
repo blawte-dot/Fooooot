@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-01T19:08:43+00:00",
+ "generated_at": "2026-11-01T20:31:15+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -15,9 +15,9 @@
   },
   "l_0ErfuF": {
    "errors": [],
-   "matches": 2005,
+   "matches": 2006,
    "name": "LaLiga",
-   "with_stats": 850
+   "with_stats": 851
   },
   "l_0F4I4F": {
    "errors": [],
@@ -33,9 +33,9 @@
   },
   "l_0S1uaf": {
    "errors": [],
-   "matches": 1426,
+   "matches": 1430,
    "name": "Super Lig",
-   "with_stats": 724
+   "with_stats": 728
   },
   "l_0aEfof": {
    "errors": [],
@@ -57,9 +57,9 @@
   },
   "l_0eg6C9": {
    "errors": [],
-   "matches": 3018,
+   "matches": 3026,
    "name": "MLS",
-   "with_stats": 1174
+   "with_stats": 1182
   },
   "l_0jy5yE": {
    "errors": [],
@@ -147,9 +147,9 @@
   },
   "l_1dmt9H": {
    "errors": [],
-   "matches": 826,
+   "matches": 829,
    "name": "Serie A",
-   "with_stats": 689
+   "with_stats": 692
   },
   "l_1eJSA7": {
    "errors": [],
@@ -165,9 +165,9 @@
   },
   "l_1qpFVw": {
    "errors": [],
-   "matches": 641,
+   "matches": 643,
    "name": "Indian Super League",
-   "with_stats": 270
+   "with_stats": 272
   },
   "l_1rPvVD": {
    "errors": [],
@@ -339,9 +339,9 @@
   },
   "l_3xwVF2": {
    "errors": [],
-   "matches": 293,
+   "matches": 297,
    "name": "Super League 1",
-   "with_stats": 293
+   "with_stats": 297
   },
   "l_3yVUAO": {
    "errors": [],
@@ -447,9 +447,9 @@
   },
   "l_4d6Bwl": {
    "errors": [],
-   "matches": 1112,
+   "matches": 1116,
    "name": "Super League",
-   "with_stats": 500
+   "with_stats": 504
   },
   "l_4dzm4e": {
    "errors": [],
