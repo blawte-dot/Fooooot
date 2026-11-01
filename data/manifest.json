@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-01T14:12:28+00:00",
+ "generated_at": "2026-11-01T15:02:18+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -219,9 +219,9 @@
   },
   "l_2Mh0jT": {
    "errors": [],
-   "matches": 314,
+   "matches": 318,
    "name": "Premier League",
-   "with_stats": 314
+   "with_stats": 318
   },
   "l_2WZ2tt": {
    "errors": [],
@@ -411,9 +411,9 @@
   },
   "l_4MPd7x": {
    "errors": [],
-   "matches": 849,
+   "matches": 851,
    "name": "A-League",
-   "with_stats": 354
+   "with_stats": 356
   },
   "l_4MU9Yh": {
    "errors": [],
