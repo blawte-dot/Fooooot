@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-10-31T23:22:21+00:00",
+ "generated_at": "2026-11-01T03:23:50+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -159,9 +159,9 @@
   },
   "l_1pQOHK": {
    "errors": [],
-   "matches": 333,
+   "matches": 336,
    "name": "Challenger Pro League",
-   "with_stats": 332
+   "with_stats": 335
   },
   "l_1qpFVw": {
    "errors": [],
@@ -351,9 +351,9 @@
   },
   "l_3zsMpo": {
    "errors": [],
-   "matches": 1036,
+   "matches": 1038,
    "name": "Bundesliga",
-   "with_stats": 437
+   "with_stats": 439
   },
   "l_45VZuL": {
    "errors": [],
@@ -393,9 +393,9 @@
   },
   "l_4DWyTT": {
    "errors": [],
-   "matches": 2933,
+   "matches": 2944,
    "name": "Championship",
-   "with_stats": 1226
+   "with_stats": 1237
   },
   "l_4FPF2L": {
    "errors": [],
@@ -423,9 +423,9 @@
   },
   "l_4QexZg": {
    "errors": [],
-   "matches": 1570,
+   "matches": 1572,
    "name": "Liga Portugal",
-   "with_stats": 677
+   "with_stats": 679
   },
   "l_4V6jPs": {
    "errors": [],
