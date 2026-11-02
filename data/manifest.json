@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-02T00:34:29+00:00",
+ "generated_at": "2026-11-02T04:38:23+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -45,7 +45,7 @@
   },
   "l_0ahLw8": {
    "errors": [],
-   "matches": 2373,
+   "matches": 2385,
    "name": "League One",
    "with_stats": 0
   },
@@ -111,7 +111,7 @@
   },
   "l_1LMdEO": {
    "errors": [],
-   "matches": 1205,
+   "matches": 1208,
    "name": "Premiership",
    "with_stats": 0
   },
@@ -123,13 +123,13 @@
   },
   "l_1TVRZW": {
    "errors": [],
-   "matches": 683,
+   "matches": 687,
    "name": "Primera Division",
    "with_stats": 0
   },
   "l_1W6idJ": {
    "errors": [],
-   "matches": 2379,
+   "matches": 2391,
    "name": "League Two",
    "with_stats": 0
   },
@@ -159,9 +159,9 @@
   },
   "l_1pQOHK": {
    "errors": [],
-   "matches": 336,
+   "matches": 338,
    "name": "Challenger Pro League",
-   "with_stats": 335
+   "with_stats": 337
   },
   "l_1qpFVw": {
    "errors": [],
@@ -177,7 +177,7 @@
   },
   "l_1xXulJ": {
    "errors": [],
-   "matches": 1245,
+   "matches": 1252,
    "name": "Primera A",
    "with_stats": 0
   },
@@ -231,7 +231,7 @@
   },
   "l_2tFk9k": {
    "errors": [],
-   "matches": 414,
+   "matches": 419,
    "name": "HNL",
    "with_stats": 0
   },
@@ -249,13 +249,13 @@
   },
   "l_3CB6qX": {
    "errors": [],
-   "matches": 661,
+   "matches": 664,
    "name": "Saudi First Division",
    "with_stats": 0
   },
   "l_3Ci5Cg": {
    "errors": [],
-   "matches": 515,
+   "matches": 516,
    "name": "Veikkausliiga",
    "with_stats": 0
   },
@@ -309,7 +309,7 @@
   },
   "l_3qNjzC": {
    "errors": [],
-   "matches": 680,
+   "matches": 686,
    "name": "Liga de Primera",
    "with_stats": 0
   },
@@ -351,9 +351,9 @@
   },
   "l_3zsMpo": {
    "errors": [],
-   "matches": 1038,
+   "matches": 1041,
    "name": "Bundesliga",
-   "with_stats": 439
+   "with_stats": 442
   },
   "l_45VZuL": {
    "errors": [],
@@ -417,15 +417,15 @@
   },
   "l_4MU9Yh": {
    "errors": [],
-   "matches": 459,
+   "matches": 465,
    "name": "1. liga",
    "with_stats": 0
   },
   "l_4QexZg": {
    "errors": [],
-   "matches": 1572,
+   "matches": 1576,
    "name": "Liga Portugal",
-   "with_stats": 679
+   "with_stats": 683
   },
   "l_4V6jPs": {
    "errors": [],
@@ -453,7 +453,7 @@
   },
   "l_4dzm4e": {
    "errors": [],
-   "matches": 743,
+   "matches": 750,
    "name": "Primera Division",
    "with_stats": 0
   }
