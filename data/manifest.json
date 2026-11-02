@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-01T20:31:15+00:00",
+ "generated_at": "2026-11-02T00:34:29+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -9,15 +9,15 @@
   },
   "l_0ALvwF": {
    "errors": [],
-   "matches": 1998,
+   "matches": 1999,
    "name": "Serie A",
-   "with_stats": 842
+   "with_stats": 843
   },
   "l_0ErfuF": {
    "errors": [],
-   "matches": 2006,
+   "matches": 2007,
    "name": "LaLiga",
-   "with_stats": 851
+   "with_stats": 852
   },
   "l_0F4I4F": {
    "errors": [],
@@ -207,9 +207,9 @@
   },
   "l_2EKrnc": {
    "errors": [],
-   "matches": 1101,
+   "matches": 1102,
    "name": "K League 1",
-   "with_stats": 490
+   "with_stats": 491
   },
   "l_2L6d1F": {
    "errors": [],
@@ -261,9 +261,9 @@
   },
   "l_3FJFUl": {
    "errors": [],
-   "matches": 1758,
+   "matches": 1759,
    "name": "Ligue 1",
-   "with_stats": 684
+   "with_stats": 685
   },
   "l_3Kf7Ni": {
    "errors": [],
@@ -273,15 +273,15 @@
   },
   "l_3Tn1kG": {
    "errors": [],
-   "matches": 1277,
+   "matches": 1278,
    "name": "MLS Next Pro",
-   "with_stats": 986
+   "with_stats": 987
   },
   "l_3UiOcj": {
    "errors": [],
-   "matches": 346,
+   "matches": 348,
    "name": "Premier League",
-   "with_stats": 275
+   "with_stats": 277
   },
   "l_3fglZv": {
    "errors": [],
@@ -297,9 +297,9 @@
   },
   "l_3hvsne": {
    "errors": [],
-   "matches": 1608,
+   "matches": 1611,
    "name": "2. Bundesliga",
-   "with_stats": 672
+   "with_stats": 675
   },
   "l_3kyHLd": {
    "errors": [],
