@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-03T06:29:31+00:00",
+ "generated_at": "2026-11-03T10:36:49+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -201,7 +201,7 @@
   },
   "l_2ApGa4": {
    "errors": [],
-   "matches": 1697,
+   "matches": 1701,
    "name": "J. League",
    "with_stats": 0
   },
@@ -285,7 +285,7 @@
   },
   "l_3fglZv": {
    "errors": [],
-   "matches": 906,
+   "matches": 915,
    "name": "J3 League",
    "with_stats": 0
   },
@@ -315,9 +315,9 @@
   },
   "l_3qUkB8": {
    "errors": [],
-   "matches": 1117,
+   "matches": 1120,
    "name": "Serie B",
-   "with_stats": 920
+   "with_stats": 923
   },
   "l_3uNwVX": {
    "errors": [],
@@ -357,9 +357,9 @@
   },
   "l_45VZuL": {
    "errors": [],
-   "matches": 1743,
+   "matches": 1747,
    "name": "Liga Profesional",
-   "with_stats": 1223
+   "with_stats": 1227
   },
   "l_45xKXM": {
    "errors": [],
