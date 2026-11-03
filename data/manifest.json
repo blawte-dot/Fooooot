@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-03T10:36:49+00:00",
+ "generated_at": "2026-11-03T19:30:23+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -21,7 +21,7 @@
   },
   "l_0F4I4F": {
    "errors": [],
-   "matches": 650,
+   "matches": 654,
    "name": "1. Liga",
    "with_stats": 0
   },
@@ -81,7 +81,7 @@
   },
   "l_16Sq13": {
    "errors": [],
-   "matches": 539,
+   "matches": 543,
    "name": "Ligat ha'Al",
    "with_stats": 0
   },
