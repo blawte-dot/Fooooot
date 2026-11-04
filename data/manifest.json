@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-04T19:47:51+00:00",
+ "generated_at": "2026-11-04T23:53:36+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -51,9 +51,9 @@
   },
   "l_0bfbkO": {
    "errors": [],
-   "matches": 816,
+   "matches": 825,
    "name": "Champions League",
-   "with_stats": 440
+   "with_stats": 449
   },
   "l_0eg6C9": {
    "errors": [],
@@ -159,9 +159,9 @@
   },
   "l_1pQOHK": {
    "errors": [],
-   "matches": 338,
+   "matches": 340,
    "name": "Challenger Pro League",
-   "with_stats": 337
+   "with_stats": 339
   },
   "l_1qpFVw": {
    "errors": [],
@@ -393,9 +393,9 @@
   },
   "l_4DWyTT": {
    "errors": [],
-   "matches": 2953,
+   "matches": 2956,
    "name": "Championship",
-   "with_stats": 1246
+   "with_stats": 1249
   },
   "l_4FPF2L": {
    "errors": [],
