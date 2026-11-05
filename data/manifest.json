@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-05T05:10:43+00:00",
+ "generated_at": "2026-11-05T09:34:23+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -141,7 +141,7 @@
   },
   "l_1XsMdH": {
    "errors": [],
-   "matches": 1369,
+   "matches": 1372,
    "name": "Allsvenskan",
    "with_stats": 0
   },
@@ -321,7 +321,7 @@
   },
   "l_3uNwVX": {
    "errors": [],
-   "matches": 921,
+   "matches": 927,
    "name": "Liga 1",
    "with_stats": 0
   },
