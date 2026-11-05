@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-04T23:53:36+00:00",
+ "generated_at": "2026-11-05T05:10:43+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -45,7 +45,7 @@
   },
   "l_0ahLw8": {
    "errors": [],
-   "matches": 2385,
+   "matches": 2388,
    "name": "League One",
    "with_stats": 0
   },
@@ -93,9 +93,9 @@
   },
   "l_1D8Xrl": {
    "errors": [],
-   "matches": 1428,
+   "matches": 1432,
    "name": "Serie A",
-   "with_stats": 842
+   "with_stats": 846
   },
   "l_1Isor4": {
    "errors": [],
@@ -123,13 +123,13 @@
   },
   "l_1TVRZW": {
    "errors": [],
-   "matches": 687,
+   "matches": 691,
    "name": "Primera Division",
    "with_stats": 0
   },
   "l_1W6idJ": {
    "errors": [],
-   "matches": 2391,
+   "matches": 2392,
    "name": "League Two",
    "with_stats": 0
   },
@@ -177,7 +177,7 @@
   },
   "l_1xXulJ": {
    "errors": [],
-   "matches": 1252,
+   "matches": 1258,
    "name": "Primera A",
    "with_stats": 0
   },
@@ -249,13 +249,13 @@
   },
   "l_3CB6qX": {
    "errors": [],
-   "matches": 664,
+   "matches": 670,
    "name": "Saudi First Division",
    "with_stats": 0
   },
   "l_3Ci5Cg": {
    "errors": [],
-   "matches": 516,
+   "matches": 518,
    "name": "Veikkausliiga",
    "with_stats": 0
   },
@@ -309,7 +309,7 @@
   },
   "l_3qNjzC": {
    "errors": [],
-   "matches": 686,
+   "matches": 688,
    "name": "Liga de Primera",
    "with_stats": 0
   },
@@ -453,7 +453,7 @@
   },
   "l_4dzm4e": {
    "errors": [],
-   "matches": 750,
+   "matches": 751,
    "name": "Primera Division",
    "with_stats": 0
   }
