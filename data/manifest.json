@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-05T16:30:06+00:00",
+ "generated_at": "2026-11-05T20:54:37+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -225,9 +225,9 @@
   },
   "l_2WZ2tt": {
    "errors": [],
-   "matches": 761,
+   "matches": 770,
    "name": "Conference League",
-   "with_stats": 337
+   "with_stats": 346
   },
   "l_2tFk9k": {
    "errors": [],
@@ -243,9 +243,9 @@
   },
   "l_38d9HA": {
    "errors": [],
-   "matches": 854,
+   "matches": 862,
    "name": "Europa League",
-   "with_stats": 433
+   "with_stats": 441
   },
   "l_3CB6qX": {
    "errors": [],
@@ -357,9 +357,9 @@
   },
   "l_45VZuL": {
    "errors": [],
-   "matches": 1747,
+   "matches": 1748,
    "name": "Liga Profesional",
-   "with_stats": 1227
+   "with_stats": 1228
   },
   "l_45xKXM": {
    "errors": [],
