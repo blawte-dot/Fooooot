@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-11-06T20:01:16+00:00",
+ "generated_at": "2026-11-06T21:33:55+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
-   "matches": 395,
+   "matches": 401,
    "name": "Ligue 2",
-   "with_stats": 395
+   "with_stats": 401
   },
   "l_0ALvwF": {
    "errors": [],
@@ -63,9 +63,9 @@
   },
   "l_0jy5yE": {
    "errors": [],
-   "matches": 490,
+   "matches": 491,
    "name": "Serie B",
-   "with_stats": 490
+   "with_stats": 491
   },
   "l_0kSJLz": {
    "errors": [],
@@ -159,9 +159,9 @@
   },
   "l_1pQOHK": {
    "errors": [],
-   "matches": 340,
+   "matches": 341,
    "name": "Challenger Pro League",
-   "with_stats": 339
+   "with_stats": 340
   },
   "l_1qpFVw": {
    "errors": [],
@@ -225,9 +225,9 @@
   },
   "l_2WZ2tt": {
    "errors": [],
-   "matches": 770,
+   "matches": 779,
    "name": "Conference League",
-   "with_stats": 346
+   "with_stats": 355
   },
   "l_2tFk9k": {
    "errors": [],
@@ -243,9 +243,9 @@
   },
   "l_38d9HA": {
    "errors": [],
-   "matches": 862,
+   "matches": 871,
    "name": "Europa League",
-   "with_stats": 441
+   "with_stats": 450
   },
   "l_3CB6qX": {
    "errors": [],
@@ -351,15 +351,15 @@
   },
   "l_3zsMpo": {
    "errors": [],
-   "matches": 1041,
+   "matches": 1042,
    "name": "Bundesliga",
-   "with_stats": 442
+   "with_stats": 443
   },
   "l_45VZuL": {
    "errors": [],
-   "matches": 1748,
+   "matches": 1750,
    "name": "Liga Profesional",
-   "with_stats": 1228
+   "with_stats": 1230
   },
   "l_45xKXM": {
    "errors": [],
@@ -381,7 +381,7 @@
   },
   "l_49KZaB": {
    "errors": [],
-   "matches": 890,
+   "matches": 897,
    "name": "Eerste Divisie",
    "with_stats": 0
   },
@@ -405,9 +405,9 @@
   },
   "l_4H43wr": {
    "errors": [],
-   "matches": 1650,
+   "matches": 1651,
    "name": "Eredivisie",
-   "with_stats": 692
+   "with_stats": 693
   },
   "l_4MPd7x": {
    "errors": [],
@@ -441,7 +441,7 @@
   },
   "l_4auCPk": {
    "errors": [],
-   "matches": 420,
+   "matches": 423,
    "name": "Challenge League",
    "with_stats": 0
   },
