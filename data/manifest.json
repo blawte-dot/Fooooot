@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-06T15:59:14+00:00",
+ "generated_at": "2026-11-06T20:01:16+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -21,7 +21,7 @@
   },
   "l_0F4I4F": {
    "errors": [],
-   "matches": 654,
+   "matches": 655,
    "name": "1. Liga",
    "with_stats": 0
   },
@@ -33,9 +33,9 @@
   },
   "l_0S1uaf": {
    "errors": [],
-   "matches": 1431,
+   "matches": 1432,
    "name": "Super Lig",
-   "with_stats": 729
+   "with_stats": 730
   },
   "l_0aEfof": {
    "errors": [],
@@ -69,7 +69,7 @@
   },
   "l_0kSJLz": {
    "errors": [],
-   "matches": 744,
+   "matches": 745,
    "name": "Liga I",
    "with_stats": 0
   },
@@ -81,13 +81,13 @@
   },
   "l_16Sq13": {
    "errors": [],
-   "matches": 543,
+   "matches": 544,
    "name": "Ligat ha'Al",
    "with_stats": 0
   },
   "l_1BFfna": {
    "errors": [],
-   "matches": 899,
+   "matches": 901,
    "name": "1. Lig",
    "with_stats": 0
   },
@@ -165,13 +165,13 @@
   },
   "l_1qpFVw": {
    "errors": [],
-   "matches": 645,
+   "matches": 646,
    "name": "Indian Super League",
-   "with_stats": 274
+   "with_stats": 275
   },
   "l_1rPvVD": {
    "errors": [],
-   "matches": 462,
+   "matches": 463,
    "name": "1. Division",
    "with_stats": 0
   },
@@ -189,7 +189,7 @@
   },
   "l_214sqK": {
    "errors": [],
-   "matches": 421,
+   "matches": 422,
    "name": "Ekstraklasa",
    "with_stats": 0
   },
@@ -219,9 +219,9 @@
   },
   "l_2Mh0jT": {
    "errors": [],
-   "matches": 321,
+   "matches": 322,
    "name": "Premier League",
-   "with_stats": 321
+   "with_stats": 322
   },
   "l_2WZ2tt": {
    "errors": [],
@@ -231,7 +231,7 @@
   },
   "l_2tFk9k": {
    "errors": [],
-   "matches": 419,
+   "matches": 420,
    "name": "HNL",
    "with_stats": 0
   },
@@ -297,9 +297,9 @@
   },
   "l_3hvsne": {
    "errors": [],
-   "matches": 1611,
+   "matches": 1613,
    "name": "2. Bundesliga",
-   "with_stats": 675
+   "with_stats": 677
   },
   "l_3kyHLd": {
    "errors": [],
@@ -333,7 +333,7 @@
   },
   "l_3wr44B": {
    "errors": [],
-   "matches": 312,
+   "matches": 314,
    "name": "Qatar Stars League",
    "with_stats": 0
   },
@@ -375,7 +375,7 @@
   },
   "l_47077Y": {
    "errors": [],
-   "matches": 880,
+   "matches": 881,
    "name": "3. Liga",
    "with_stats": 0
   },
@@ -387,7 +387,7 @@
   },
   "l_49Zmno": {
    "errors": [],
-   "matches": 1041,
+   "matches": 1042,
    "name": "Superligaen",
    "with_stats": 0
   },
