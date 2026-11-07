@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-07T14:20:45+00:00",
+ "generated_at": "2026-11-07T14:55:59+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -291,7 +291,7 @@
   },
   "l_3hW1NO": {
    "errors": [],
-   "matches": 297,
+   "matches": 298,
    "name": "Thai League 1",
    "with_stats": 0
   },
@@ -435,9 +435,9 @@
   },
   "l_4WFCIZ": {
    "errors": [],
-   "matches": 1991,
+   "matches": 1992,
    "name": "Premier League",
-   "with_stats": 831
+   "with_stats": 832
   },
   "l_4auCPk": {
    "errors": [],
