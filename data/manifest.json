@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-06T21:33:55+00:00",
+ "generated_at": "2026-11-07T01:39:13+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -9,15 +9,15 @@
   },
   "l_0ALvwF": {
    "errors": [],
-   "matches": 2001,
+   "matches": 2002,
    "name": "Serie A",
-   "with_stats": 845
+   "with_stats": 846
   },
   "l_0ErfuF": {
    "errors": [],
-   "matches": 2008,
+   "matches": 2009,
    "name": "LaLiga",
-   "with_stats": 853
+   "with_stats": 854
   },
   "l_0F4I4F": {
    "errors": [],
@@ -99,9 +99,9 @@
   },
   "l_1Isor4": {
    "errors": [],
-   "matches": 1602,
+   "matches": 1603,
    "name": "Bundesliga",
-   "with_stats": 684
+   "with_stats": 685
   },
   "l_1Kknkl": {
    "errors": [],
@@ -261,9 +261,9 @@
   },
   "l_3FJFUl": {
    "errors": [],
-   "matches": 1760,
+   "matches": 1761,
    "name": "Ligue 1",
-   "with_stats": 686
+   "with_stats": 687
   },
   "l_3Kf7Ni": {
    "errors": [],
@@ -393,9 +393,9 @@
   },
   "l_4DWyTT": {
    "errors": [],
-   "matches": 2956,
+   "matches": 2957,
    "name": "Championship",
-   "with_stats": 1249
+   "with_stats": 1250
   },
   "l_4FPF2L": {
    "errors": [],
@@ -423,9 +423,9 @@
   },
   "l_4QexZg": {
    "errors": [],
-   "matches": 1578,
+   "matches": 1579,
    "name": "Liga Portugal",
-   "with_stats": 685
+   "with_stats": 686
   },
   "l_4V6jPs": {
    "errors": [],
@@ -435,9 +435,9 @@
   },
   "l_4WFCIZ": {
    "errors": [],
-   "matches": 1990,
+   "matches": 1991,
    "name": "Premier League",
-   "with_stats": 830
+   "with_stats": 831
   },
   "l_4auCPk": {
    "errors": [],
