@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-08T04:34:07+00:00",
+ "generated_at": "2026-11-08T05:56:05+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -123,7 +123,7 @@
   },
   "l_1TVRZW": {
    "errors": [],
-   "matches": 691,
+   "matches": 693,
    "name": "Primera Division",
    "with_stats": 0
   },
@@ -177,7 +177,7 @@
   },
   "l_1xXulJ": {
    "errors": [],
-   "matches": 1258,
+   "matches": 1263,
    "name": "Primera A",
    "with_stats": 0
   },
@@ -249,7 +249,7 @@
   },
   "l_3CB6qX": {
    "errors": [],
-   "matches": 670,
+   "matches": 674,
    "name": "Saudi First Division",
    "with_stats": 0
   },
@@ -267,7 +267,7 @@
   },
   "l_3Kf7Ni": {
    "errors": [],
-   "matches": 632,
+   "matches": 633,
    "name": "USL League One",
    "with_stats": 0
   },
@@ -309,15 +309,15 @@
   },
   "l_3qNjzC": {
    "errors": [],
-   "matches": 688,
+   "matches": 690,
    "name": "Liga de Primera",
    "with_stats": 0
   },
   "l_3qUkB8": {
    "errors": [],
-   "matches": 1122,
+   "matches": 1127,
    "name": "Serie B",
-   "with_stats": 925
+   "with_stats": 930
   },
   "l_3uNwVX": {
    "errors": [],
@@ -327,9 +327,9 @@
   },
   "l_3v84VE": {
    "errors": [],
-   "matches": 1119,
+   "matches": 1123,
    "name": "Liga MX",
-   "with_stats": 574
+   "with_stats": 578
   },
   "l_3wr44B": {
    "errors": [],
@@ -453,7 +453,7 @@
   },
   "l_4dzm4e": {
    "errors": [],
-   "matches": 751,
+   "matches": 755,
    "name": "Primera Division",
    "with_stats": 0
   }
