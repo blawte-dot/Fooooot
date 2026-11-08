@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-08T19:09:15+00:00",
+ "generated_at": "2026-11-08T20:28:15+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -15,9 +15,9 @@
   },
   "l_0ErfuF": {
    "errors": [],
-   "matches": 2015,
+   "matches": 2017,
    "name": "LaLiga",
-   "with_stats": 860
+   "with_stats": 862
   },
   "l_0F4I4F": {
    "errors": [],
@@ -33,9 +33,9 @@
   },
   "l_0S1uaf": {
    "errors": [],
-   "matches": 1436,
+   "matches": 1440,
    "name": "Super Lig",
-   "with_stats": 734
+   "with_stats": 738
   },
   "l_0aEfof": {
    "errors": [],
@@ -219,9 +219,9 @@
   },
   "l_2Mh0jT": {
    "errors": [],
-   "matches": 325,
+   "matches": 329,
    "name": "Premier League",
-   "with_stats": 325
+   "with_stats": 329
   },
   "l_2WZ2tt": {
    "errors": [],
@@ -297,9 +297,9 @@
   },
   "l_3hvsne": {
    "errors": [],
-   "matches": 1616,
+   "matches": 1620,
    "name": "2. Bundesliga",
-   "with_stats": 680
+   "with_stats": 684
   },
   "l_3kyHLd": {
    "errors": [],
