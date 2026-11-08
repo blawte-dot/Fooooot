@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-08T15:07:08+00:00",
+ "generated_at": "2026-11-08T19:09:15+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -9,15 +9,15 @@
   },
   "l_0ALvwF": {
    "errors": [],
-   "matches": 2007,
+   "matches": 2010,
    "name": "Serie A",
-   "with_stats": 851
+   "with_stats": 854
   },
   "l_0ErfuF": {
    "errors": [],
-   "matches": 2014,
+   "matches": 2015,
    "name": "LaLiga",
-   "with_stats": 859
+   "with_stats": 860
   },
   "l_0F4I4F": {
    "errors": [],
@@ -39,9 +39,9 @@
   },
   "l_0aEfof": {
    "errors": [],
-   "matches": 409,
+   "matches": 413,
    "name": "Pro League",
-   "with_stats": 409
+   "with_stats": 413
   },
   "l_0ahLw8": {
    "errors": [],
@@ -99,9 +99,9 @@
   },
   "l_1Isor4": {
    "errors": [],
-   "matches": 1608,
+   "matches": 1610,
    "name": "Bundesliga",
-   "with_stats": 690
+   "with_stats": 692
   },
   "l_1Kknkl": {
    "errors": [],
@@ -261,9 +261,9 @@
   },
   "l_3FJFUl": {
    "errors": [],
-   "matches": 1763,
+   "matches": 1768,
    "name": "Ligue 1",
-   "with_stats": 689
+   "with_stats": 694
   },
   "l_3Kf7Ni": {
    "errors": [],
@@ -303,9 +303,9 @@
   },
   "l_3kyHLd": {
    "errors": [],
-   "matches": 599,
+   "matches": 602,
    "name": "LaLiga2",
-   "with_stats": 599
+   "with_stats": 602
   },
   "l_3qNjzC": {
    "errors": [],
@@ -333,15 +333,15 @@
   },
   "l_3wr44B": {
    "errors": [],
-   "matches": 316,
+   "matches": 318,
    "name": "Qatar Stars League",
    "with_stats": 0
   },
   "l_3xwVF2": {
    "errors": [],
-   "matches": 300,
+   "matches": 305,
    "name": "Super League 1",
-   "with_stats": 300
+   "with_stats": 305
   },
   "l_3yVUAO": {
    "errors": [],
@@ -411,9 +411,9 @@
   },
   "l_4MPd7x": {
    "errors": [],
-   "matches": 855,
+   "matches": 857,
    "name": "A-League",
-   "with_stats": 360
+   "with_stats": 362
   },
   "l_4MU9Yh": {
    "errors": [],
@@ -435,21 +435,21 @@
   },
   "l_4WFCIZ": {
    "errors": [],
-   "matches": 1995,
+   "matches": 2000,
    "name": "Premier League",
-   "with_stats": 835
+   "with_stats": 840
   },
   "l_4auCPk": {
    "errors": [],
-   "matches": 424,
+   "matches": 425,
    "name": "Challenge League",
    "with_stats": 0
   },
   "l_4d6Bwl": {
    "errors": [],
-   "matches": 1118,
+   "matches": 1122,
    "name": "Super League",
-   "with_stats": 506
+   "with_stats": 510
   },
   "l_4dzm4e": {
    "errors": [],
