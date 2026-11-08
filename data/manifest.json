@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-08T14:15:41+00:00",
+ "generated_at": "2026-11-08T15:07:08+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -15,9 +15,9 @@
   },
   "l_0ErfuF": {
    "errors": [],
-   "matches": 2013,
+   "matches": 2014,
    "name": "LaLiga",
-   "with_stats": 858
+   "with_stats": 859
   },
   "l_0F4I4F": {
    "errors": [],
@@ -237,9 +237,9 @@
   },
   "l_2xBPKk": {
    "errors": [],
-   "matches": 690,
+   "matches": 694,
    "name": "Super Liga",
-   "with_stats": 659
+   "with_stats": 663
   },
   "l_38d9HA": {
    "errors": [],
@@ -255,7 +255,7 @@
   },
   "l_3Ci5Cg": {
    "errors": [],
-   "matches": 518,
+   "matches": 521,
    "name": "Veikkausliiga",
    "with_stats": 0
   },
