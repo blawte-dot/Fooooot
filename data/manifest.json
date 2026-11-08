@@ -1,23 +1,23 @@
 {
- "generated_at": "2026-11-07T20:12:54+00:00",
+ "generated_at": "2026-11-08T00:17:40+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
-   "matches": 401,
+   "matches": 404,
    "name": "Ligue 2",
-   "with_stats": 401
+   "with_stats": 404
   },
   "l_0ALvwF": {
    "errors": [],
-   "matches": 2005,
+   "matches": 2006,
    "name": "Serie A",
-   "with_stats": 849
+   "with_stats": 850
   },
   "l_0ErfuF": {
    "errors": [],
-   "matches": 2012,
+   "matches": 2013,
    "name": "LaLiga",
-   "with_stats": 857
+   "with_stats": 858
   },
   "l_0F4I4F": {
    "errors": [],
@@ -57,15 +57,15 @@
   },
   "l_0eg6C9": {
    "errors": [],
-   "matches": 3032,
+   "matches": 3040,
    "name": "MLS",
-   "with_stats": 1188
+   "with_stats": 1196
   },
   "l_0jy5yE": {
    "errors": [],
-   "matches": 491,
+   "matches": 497,
    "name": "Serie B",
-   "with_stats": 491
+   "with_stats": 497
   },
   "l_0kSJLz": {
    "errors": [],
@@ -147,9 +147,9 @@
   },
   "l_1dmt9H": {
    "errors": [],
-   "matches": 833,
+   "matches": 835,
    "name": "Serie A",
-   "with_stats": 696
+   "with_stats": 698
   },
   "l_1eJSA7": {
    "errors": [],
@@ -159,9 +159,9 @@
   },
   "l_1pQOHK": {
    "errors": [],
-   "matches": 341,
+   "matches": 345,
    "name": "Challenger Pro League",
-   "with_stats": 340
+   "with_stats": 344
   },
   "l_1qpFVw": {
    "errors": [],
@@ -261,9 +261,9 @@
   },
   "l_3FJFUl": {
    "errors": [],
-   "matches": 1762,
+   "matches": 1763,
    "name": "Ligue 1",
-   "with_stats": 688
+   "with_stats": 689
   },
   "l_3Kf7Ni": {
    "errors": [],
@@ -279,9 +279,9 @@
   },
   "l_3UiOcj": {
    "errors": [],
-   "matches": 348,
+   "matches": 350,
    "name": "Premier League",
-   "with_stats": 277
+   "with_stats": 279
   },
   "l_3fglZv": {
    "errors": [],
@@ -351,15 +351,15 @@
   },
   "l_3zsMpo": {
    "errors": [],
-   "matches": 1042,
+   "matches": 1044,
    "name": "Bundesliga",
-   "with_stats": 443
+   "with_stats": 445
   },
   "l_45VZuL": {
    "errors": [],
-   "matches": 1750,
+   "matches": 1760,
    "name": "Liga Profesional",
-   "with_stats": 1230
+   "with_stats": 1240
   },
   "l_45xKXM": {
    "errors": [],
@@ -405,9 +405,9 @@
   },
   "l_4H43wr": {
    "errors": [],
-   "matches": 1651,
+   "matches": 1654,
    "name": "Eredivisie",
-   "with_stats": 693
+   "with_stats": 696
   },
   "l_4MPd7x": {
    "errors": [],
