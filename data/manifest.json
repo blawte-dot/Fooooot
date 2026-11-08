@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-08T10:04:51+00:00",
+ "generated_at": "2026-11-08T14:15:41+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -9,9 +9,9 @@
   },
   "l_0ALvwF": {
    "errors": [],
-   "matches": 2006,
+   "matches": 2007,
    "name": "Serie A",
-   "with_stats": 850
+   "with_stats": 851
   },
   "l_0ErfuF": {
    "errors": [],
@@ -207,9 +207,9 @@
   },
   "l_2EKrnc": {
    "errors": [],
-   "matches": 1107,
+   "matches": 1108,
    "name": "K League 1",
-   "with_stats": 496
+   "with_stats": 497
   },
   "l_2L6d1F": {
    "errors": [],
@@ -291,7 +291,7 @@
   },
   "l_3hW1NO": {
    "errors": [],
-   "matches": 298,
+   "matches": 302,
    "name": "Thai League 1",
    "with_stats": 0
   },
@@ -363,7 +363,7 @@
   },
   "l_45xKXM": {
    "errors": [],
-   "matches": 535,
+   "matches": 539,
    "name": "Virsliga",
    "with_stats": 0
   },
