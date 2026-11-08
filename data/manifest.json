@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-08T00:17:40+00:00",
+ "generated_at": "2026-11-08T04:34:07+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -345,7 +345,7 @@
   },
   "l_3yVUAO": {
    "errors": [],
-   "matches": 1181,
+   "matches": 1183,
    "name": "USL Championship",
    "with_stats": 0
   },
@@ -393,9 +393,9 @@
   },
   "l_4DWyTT": {
    "errors": [],
-   "matches": 2957,
+   "matches": 2968,
    "name": "Championship",
-   "with_stats": 1250
+   "with_stats": 1261
   },
   "l_4FPF2L": {
    "errors": [],
@@ -423,9 +423,9 @@
   },
   "l_4QexZg": {
    "errors": [],
-   "matches": 1579,
+   "matches": 1581,
    "name": "Liga Portugal",
-   "with_stats": 686
+   "with_stats": 688
   },
   "l_4V6jPs": {
    "errors": [],
