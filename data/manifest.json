@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-10T16:40:25+00:00",
+ "generated_at": "2026-11-10T20:44:49+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -75,7 +75,7 @@
   },
   "l_0uqFK8": {
    "errors": [],
-   "matches": 1361,
+   "matches": 1368,
    "name": "Eliteserien",
    "with_stats": 0
   },
@@ -111,7 +111,7 @@
   },
   "l_1LMdEO": {
    "errors": [],
-   "matches": 1210,
+   "matches": 1214,
    "name": "Premiership",
    "with_stats": 0
   },
@@ -417,7 +417,7 @@
   },
   "l_4MU9Yh": {
    "errors": [],
-   "matches": 469,
+   "matches": 471,
    "name": "1. liga",
    "with_stats": 0
   },
