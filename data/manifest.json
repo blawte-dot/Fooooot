@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-13T23:44:26+00:00",
+ "generated_at": "2026-11-14T09:04:13+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -123,7 +123,7 @@
   },
   "l_1TVRZW": {
    "errors": [],
-   "matches": 695,
+   "matches": 696,
    "name": "Primera Division",
    "with_stats": 0
   },
@@ -177,7 +177,7 @@
   },
   "l_1xXulJ": {
    "errors": [],
-   "matches": 1268,
+   "matches": 1271,
    "name": "Primera A",
    "with_stats": 0
   },
@@ -285,7 +285,7 @@
   },
   "l_3fglZv": {
    "errors": [],
-   "matches": 926,
+   "matches": 929,
    "name": "J3 League",
    "with_stats": 0
   },
