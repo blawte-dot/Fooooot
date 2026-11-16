@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-15T21:06:29+00:00",
+ "generated_at": "2026-11-16T01:14:29+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -93,9 +93,9 @@
   },
   "l_1D8Xrl": {
    "errors": [],
-   "matches": 1436,
+   "matches": 1437,
    "name": "Serie A",
-   "with_stats": 850
+   "with_stats": 851
   },
   "l_1Isor4": {
    "errors": [],
@@ -303,9 +303,9 @@
   },
   "l_3kyHLd": {
    "errors": [],
-   "matches": 611,
+   "matches": 615,
    "name": "LaLiga2",
-   "with_stats": 611
+   "with_stats": 615
   },
   "l_3qNjzC": {
    "errors": [],
