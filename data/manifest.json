@@ -1,11 +1,11 @@
 {
- "generated_at": "2026-11-20T17:00:23+00:00",
+ "generated_at": "2026-11-20T21:10:30+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
-   "matches": 404,
+   "matches": 408,
    "name": "Ligue 2",
-   "with_stats": 404
+   "with_stats": 408
   },
   "l_0ALvwF": {
    "errors": [],
@@ -27,9 +27,9 @@
   },
   "l_0Lpz1f": {
    "errors": [],
-   "matches": 1021,
+   "matches": 1022,
    "name": "Saudi Pro League",
-   "with_stats": 714
+   "with_stats": 715
   },
   "l_0S1uaf": {
    "errors": [],
@@ -39,9 +39,9 @@
   },
   "l_0aEfof": {
    "errors": [],
-   "matches": 414,
+   "matches": 417,
    "name": "Pro League",
-   "with_stats": 414
+   "with_stats": 417
   },
   "l_0ahLw8": {
    "errors": [],
@@ -69,7 +69,7 @@
   },
   "l_0kSJLz": {
    "errors": [],
-   "matches": 752,
+   "matches": 754,
    "name": "Liga I",
    "with_stats": 0
   },
@@ -87,7 +87,7 @@
   },
   "l_1BFfna": {
    "errors": [],
-   "matches": 909,
+   "matches": 910,
    "name": "1. Lig",
    "with_stats": 0
   },
@@ -147,9 +147,9 @@
   },
   "l_1dmt9H": {
    "errors": [],
-   "matches": 841,
+   "matches": 842,
    "name": "Serie A",
-   "with_stats": 704
+   "with_stats": 705
   },
   "l_1eJSA7": {
    "errors": [],
@@ -159,9 +159,9 @@
   },
   "l_1pQOHK": {
    "errors": [],
-   "matches": 347,
+   "matches": 348,
    "name": "Challenger Pro League",
-   "with_stats": 346
+   "with_stats": 347
   },
   "l_1qpFVw": {
    "errors": [],
@@ -189,7 +189,7 @@
   },
   "l_214sqK": {
    "errors": [],
-   "matches": 430,
+   "matches": 431,
    "name": "Ekstraklasa",
    "with_stats": 0
   },
@@ -219,9 +219,9 @@
   },
   "l_2Mh0jT": {
    "errors": [],
-   "matches": 329,
+   "matches": 330,
    "name": "Premier League",
-   "with_stats": 329
+   "with_stats": 330
   },
   "l_2WZ2tt": {
    "errors": [],
@@ -297,9 +297,9 @@
   },
   "l_3hvsne": {
    "errors": [],
-   "matches": 1620,
+   "matches": 1622,
    "name": "2. Bundesliga",
-   "with_stats": 684
+   "with_stats": 686
   },
   "l_3kyHLd": {
    "errors": [],
@@ -333,7 +333,7 @@
   },
   "l_3wr44B": {
    "errors": [],
-   "matches": 321,
+   "matches": 322,
    "name": "Qatar Stars League",
    "with_stats": 0
   },
@@ -375,7 +375,7 @@
   },
   "l_47077Y": {
    "errors": [],
-   "matches": 890,
+   "matches": 891,
    "name": "3. Liga",
    "with_stats": 0
   },
@@ -387,7 +387,7 @@
   },
   "l_49Zmno": {
    "errors": [],
-   "matches": 1047,
+   "matches": 1048,
    "name": "Superligaen",
    "with_stats": 0
   },
@@ -441,7 +441,7 @@
   },
   "l_4auCPk": {
    "errors": [],
-   "matches": 425,
+   "matches": 429,
    "name": "Challenge League",
    "with_stats": 0
   },
