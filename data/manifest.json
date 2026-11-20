@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-20T11:24:10+00:00",
+ "generated_at": "2026-11-20T15:27:28+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -165,9 +165,9 @@
   },
   "l_1qpFVw": {
    "errors": [],
-   "matches": 648,
+   "matches": 649,
    "name": "Indian Super League",
-   "with_stats": 277
+   "with_stats": 278
   },
   "l_1rPvVD": {
    "errors": [],
@@ -201,7 +201,7 @@
   },
   "l_2ApGa4": {
    "errors": [],
-   "matches": 1711,
+   "matches": 1714,
    "name": "J. League",
    "with_stats": 0
   },
@@ -333,7 +333,7 @@
   },
   "l_3wr44B": {
    "errors": [],
-   "matches": 319,
+   "matches": 320,
    "name": "Qatar Stars League",
    "with_stats": 0
   },
