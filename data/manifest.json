@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-21T05:33:50+00:00",
+ "generated_at": "2026-11-21T09:52:13+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -195,9 +195,9 @@
   },
   "l_271pqa": {
    "errors": [],
-   "matches": 767,
+   "matches": 771,
    "name": "K League 2",
-   "with_stats": 610
+   "with_stats": 614
   },
   "l_2ApGa4": {
    "errors": [],
@@ -285,7 +285,7 @@
   },
   "l_3fglZv": {
    "errors": [],
-   "matches": 936,
+   "matches": 943,
    "name": "J3 League",
    "with_stats": 0
   },
