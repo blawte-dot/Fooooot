@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-21T01:31:24+00:00",
+ "generated_at": "2026-11-21T05:33:50+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -57,9 +57,9 @@
   },
   "l_0eg6C9": {
    "errors": [],
-   "matches": 3048,
+   "matches": 3049,
    "name": "MLS",
-   "with_stats": 1204
+   "with_stats": 1205
   },
   "l_0jy5yE": {
    "errors": [],
@@ -327,9 +327,9 @@
   },
   "l_3v84VE": {
    "errors": [],
-   "matches": 1126,
+   "matches": 1129,
    "name": "Liga MX",
-   "with_stats": 581
+   "with_stats": 584
   },
   "l_3wr44B": {
    "errors": [],
@@ -357,9 +357,9 @@
   },
   "l_45VZuL": {
    "errors": [],
-   "matches": 1762,
+   "matches": 1763,
    "name": "Liga Profesional",
-   "with_stats": 1242
+   "with_stats": 1243
   },
   "l_45xKXM": {
    "errors": [],
