@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-20T21:10:30+00:00",
+ "generated_at": "2026-11-21T01:31:24+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -15,9 +15,9 @@
   },
   "l_0ErfuF": {
    "errors": [],
-   "matches": 2018,
+   "matches": 2019,
    "name": "LaLiga",
-   "with_stats": 863
+   "with_stats": 864
   },
   "l_0F4I4F": {
    "errors": [],
@@ -45,7 +45,7 @@
   },
   "l_0ahLw8": {
    "errors": [],
-   "matches": 2393,
+   "matches": 2394,
    "name": "League One",
    "with_stats": 0
   },
@@ -63,9 +63,9 @@
   },
   "l_0jy5yE": {
    "errors": [],
-   "matches": 500,
+   "matches": 501,
    "name": "Serie B",
-   "with_stats": 500
+   "with_stats": 501
   },
   "l_0kSJLz": {
    "errors": [],
@@ -75,7 +75,7 @@
   },
   "l_0uqFK8": {
    "errors": [],
-   "matches": 1368,
+   "matches": 1369,
    "name": "Eliteserien",
    "with_stats": 0
   },
@@ -99,9 +99,9 @@
   },
   "l_1Isor4": {
    "errors": [],
-   "matches": 1611,
+   "matches": 1612,
    "name": "Bundesliga",
-   "with_stats": 693
+   "with_stats": 694
   },
   "l_1Kknkl": {
    "errors": [],
@@ -177,7 +177,7 @@
   },
   "l_1xXulJ": {
    "errors": [],
-   "matches": 1278,
+   "matches": 1279,
    "name": "Primera A",
    "with_stats": 0
   },
@@ -213,7 +213,7 @@
   },
   "l_2L6d1F": {
    "errors": [],
-   "matches": 1695,
+   "matches": 1696,
    "name": "First Division A",
    "with_stats": 0
   },
@@ -261,9 +261,9 @@
   },
   "l_3FJFUl": {
    "errors": [],
-   "matches": 1769,
+   "matches": 1770,
    "name": "Ligue 1",
-   "with_stats": 695
+   "with_stats": 696
   },
   "l_3Kf7Ni": {
    "errors": [],
@@ -303,13 +303,13 @@
   },
   "l_3kyHLd": {
    "errors": [],
-   "matches": 616,
+   "matches": 617,
    "name": "LaLiga2",
-   "with_stats": 616
+   "with_stats": 617
   },
   "l_3qNjzC": {
    "errors": [],
-   "matches": 696,
+   "matches": 698,
    "name": "Liga de Primera",
    "with_stats": 0
   },
@@ -381,7 +381,7 @@
   },
   "l_49KZaB": {
    "errors": [],
-   "matches": 907,
+   "matches": 916,
    "name": "Eerste Divisie",
    "with_stats": 0
   },
@@ -399,7 +399,7 @@
   },
   "l_4FPF2L": {
    "errors": [],
-   "matches": 507,
+   "matches": 509,
    "name": "Division Profesional",
    "with_stats": 0
   },
@@ -441,7 +441,7 @@
   },
   "l_4auCPk": {
    "errors": [],
-   "matches": 429,
+   "matches": 430,
    "name": "Challenge League",
    "with_stats": 0
   },
