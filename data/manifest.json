@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-21T09:52:13+00:00",
+ "generated_at": "2026-11-21T12:35:16+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -33,9 +33,9 @@
   },
   "l_0S1uaf": {
    "errors": [],
-   "matches": 1440,
+   "matches": 1441,
    "name": "Super Lig",
-   "with_stats": 738
+   "with_stats": 739
   },
   "l_0aEfof": {
    "errors": [],
@@ -411,9 +411,9 @@
   },
   "l_4MPd7x": {
    "errors": [],
-   "matches": 858,
+   "matches": 861,
    "name": "A-League",
-   "with_stats": 363
+   "with_stats": 366
   },
   "l_4MU9Yh": {
    "errors": [],
