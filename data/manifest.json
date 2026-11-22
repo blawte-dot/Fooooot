@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-22T11:00:05+00:00",
+ "generated_at": "2026-11-22T15:03:42+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -9,9 +9,9 @@
   },
   "l_0ALvwF": {
    "errors": [],
-   "matches": 2015,
+   "matches": 2016,
    "name": "Serie A",
-   "with_stats": 859
+   "with_stats": 860
   },
   "l_0ErfuF": {
    "errors": [],
@@ -33,9 +33,9 @@
   },
   "l_0S1uaf": {
    "errors": [],
-   "matches": 1441,
+   "matches": 1447,
    "name": "Super Lig",
-   "with_stats": 739
+   "with_stats": 745
   },
   "l_0aEfof": {
    "errors": [],
@@ -291,7 +291,7 @@
   },
   "l_3hW1NO": {
    "errors": [],
-   "matches": 305,
+   "matches": 308,
    "name": "Thai League 1",
    "with_stats": 0
   },
@@ -411,9 +411,9 @@
   },
   "l_4MPd7x": {
    "errors": [],
-   "matches": 861,
+   "matches": 862,
    "name": "A-League",
-   "with_stats": 366
+   "with_stats": 367
   },
   "l_4MU9Yh": {
    "errors": [],
