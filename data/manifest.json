@@ -1,23 +1,23 @@
 {
- "generated_at": "2026-11-23T18:59:53+00:00",
+ "generated_at": "2026-11-23T23:06:48+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
-   "matches": 411,
+   "matches": 413,
    "name": "Ligue 2",
-   "with_stats": 411
+   "with_stats": 413
   },
   "l_0ALvwF": {
    "errors": [],
-   "matches": 2020,
+   "matches": 2021,
    "name": "Serie A",
-   "with_stats": 864
+   "with_stats": 865
   },
   "l_0ErfuF": {
    "errors": [],
-   "matches": 2027,
+   "matches": 2028,
    "name": "LaLiga",
-   "with_stats": 872
+   "with_stats": 873
   },
   "l_0F4I4F": {
    "errors": [],
@@ -69,7 +69,7 @@
   },
   "l_0kSJLz": {
    "errors": [],
-   "matches": 754,
+   "matches": 760,
    "name": "Liga I",
    "with_stats": 0
   },
@@ -87,7 +87,7 @@
   },
   "l_1BFfna": {
    "errors": [],
-   "matches": 910,
+   "matches": 919,
    "name": "1. Lig",
    "with_stats": 0
   },
@@ -189,7 +189,7 @@
   },
   "l_214sqK": {
    "errors": [],
-   "matches": 431,
+   "matches": 439,
    "name": "Ekstraklasa",
    "with_stats": 0
   },
@@ -375,7 +375,7 @@
   },
   "l_47077Y": {
    "errors": [],
-   "matches": 891,
+   "matches": 900,
    "name": "3. Liga",
    "with_stats": 0
   },
@@ -387,7 +387,7 @@
   },
   "l_49Zmno": {
    "errors": [],
-   "matches": 1048,
+   "matches": 1053,
    "name": "Superligaen",
    "with_stats": 0
   },
@@ -435,9 +435,9 @@
   },
   "l_4WFCIZ": {
    "errors": [],
-   "matches": 2009,
+   "matches": 2010,
    "name": "Premier League",
-   "with_stats": 849
+   "with_stats": 850
   },
   "l_4auCPk": {
    "errors": [],
