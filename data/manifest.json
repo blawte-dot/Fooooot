@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-23T09:10:50+00:00",
+ "generated_at": "2026-11-23T18:59:53+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -33,9 +33,9 @@
   },
   "l_0S1uaf": {
    "errors": [],
-   "matches": 1447,
+   "matches": 1448,
    "name": "Super Lig",
-   "with_stats": 745
+   "with_stats": 746
   },
   "l_0aEfof": {
    "errors": [],
@@ -201,7 +201,7 @@
   },
   "l_2ApGa4": {
    "errors": [],
-   "matches": 1714,
+   "matches": 1721,
    "name": "J. League",
    "with_stats": 0
   },
@@ -249,7 +249,7 @@
   },
   "l_3CB6qX": {
    "errors": [],
-   "matches": 679,
+   "matches": 681,
    "name": "Saudi First Division",
    "with_stats": 0
   },
@@ -369,9 +369,9 @@
   },
   "l_46aZMC": {
    "errors": [],
-   "matches": 402,
+   "matches": 404,
    "name": "Premier League",
-   "with_stats": 402
+   "with_stats": 404
   },
   "l_47077Y": {
    "errors": [],
