@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-24T11:22:41+00:00",
+ "generated_at": "2026-11-24T18:57:56+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -21,7 +21,7 @@
   },
   "l_0F4I4F": {
    "errors": [],
-   "matches": 667,
+   "matches": 671,
    "name": "1. Liga",
    "with_stats": 0
   },
@@ -129,7 +129,7 @@
   },
   "l_1W6idJ": {
    "errors": [],
-   "matches": 2404,
+   "matches": 2414,
    "name": "League Two",
    "with_stats": 0
   },
@@ -141,7 +141,7 @@
   },
   "l_1XsMdH": {
    "errors": [],
-   "matches": 1382,
+   "matches": 1388,
    "name": "Allsvenskan",
    "with_stats": 0
   },
@@ -165,9 +165,9 @@
   },
   "l_1qpFVw": {
    "errors": [],
-   "matches": 653,
+   "matches": 654,
    "name": "Indian Super League",
-   "with_stats": 282
+   "with_stats": 283
   },
   "l_1rPvVD": {
    "errors": [],
@@ -231,7 +231,7 @@
   },
   "l_2tFk9k": {
    "errors": [],
-   "matches": 425,
+   "matches": 429,
    "name": "HNL",
    "with_stats": 0
   },
@@ -417,7 +417,7 @@
   },
   "l_4MU9Yh": {
    "errors": [],
-   "matches": 474,
+   "matches": 477,
    "name": "1. liga",
    "with_stats": 0
   },
