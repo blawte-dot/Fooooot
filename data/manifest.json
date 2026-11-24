@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-24T18:57:56+00:00",
+ "generated_at": "2026-11-24T22:59:53+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -33,9 +33,9 @@
   },
   "l_0S1uaf": {
    "errors": [],
-   "matches": 1448,
+   "matches": 1449,
    "name": "Super Lig",
-   "with_stats": 746
+   "with_stats": 747
   },
   "l_0aEfof": {
    "errors": [],
@@ -51,9 +51,9 @@
   },
   "l_0bfbkO": {
    "errors": [],
-   "matches": 825,
+   "matches": 834,
    "name": "Champions League",
-   "with_stats": 449
+   "with_stats": 458
   },
   "l_0eg6C9": {
    "errors": [],
@@ -63,9 +63,9 @@
   },
   "l_0jy5yE": {
    "errors": [],
-   "matches": 510,
+   "matches": 516,
    "name": "Serie B",
-   "with_stats": 510
+   "with_stats": 516
   },
   "l_0kSJLz": {
    "errors": [],
@@ -105,13 +105,13 @@
   },
   "l_1Kknkl": {
    "errors": [],
-   "matches": 253,
+   "matches": 255,
    "name": "Premier Soccer League",
    "with_stats": 0
   },
   "l_1LMdEO": {
    "errors": [],
-   "matches": 1219,
+   "matches": 1222,
    "name": "Premiership",
    "with_stats": 0
   },
@@ -321,7 +321,7 @@
   },
   "l_3uNwVX": {
    "errors": [],
-   "matches": 942,
+   "matches": 945,
    "name": "Liga 1",
    "with_stats": 0
   },
@@ -369,9 +369,9 @@
   },
   "l_46aZMC": {
    "errors": [],
-   "matches": 404,
+   "matches": 409,
    "name": "Premier League",
-   "with_stats": 404
+   "with_stats": 409
   },
   "l_47077Y": {
    "errors": [],
@@ -393,9 +393,9 @@
   },
   "l_4DWyTT": {
    "errors": [],
-   "matches": 2980,
+   "matches": 2988,
    "name": "Championship",
-   "with_stats": 1273
+   "with_stats": 1281
   },
   "l_4FPF2L": {
    "errors": [],
@@ -453,7 +453,7 @@
   },
   "l_4dzm4e": {
    "errors": [],
-   "matches": 760,
+   "matches": 767,
    "name": "Primera Division",
    "with_stats": 0
   }
