@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-23T23:06:48+00:00",
+ "generated_at": "2026-11-24T02:57:21+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -45,7 +45,7 @@
   },
   "l_0ahLw8": {
    "errors": [],
-   "matches": 2394,
+   "matches": 2405,
    "name": "League One",
    "with_stats": 0
   },
@@ -75,7 +75,7 @@
   },
   "l_0uqFK8": {
    "errors": [],
-   "matches": 1369,
+   "matches": 1376,
    "name": "Eliteserien",
    "with_stats": 0
   },
@@ -93,9 +93,9 @@
   },
   "l_1D8Xrl": {
    "errors": [],
-   "matches": 1451,
+   "matches": 1455,
    "name": "Serie A",
-   "with_stats": 865
+   "with_stats": 869
   },
   "l_1Isor4": {
    "errors": [],
@@ -177,7 +177,7 @@
   },
   "l_1xXulJ": {
    "errors": [],
-   "matches": 1279,
+   "matches": 1282,
    "name": "Primera A",
    "with_stats": 0
   },
@@ -213,7 +213,7 @@
   },
   "l_2L6d1F": {
    "errors": [],
-   "matches": 1696,
+   "matches": 1704,
    "name": "First Division A",
    "with_stats": 0
   },
@@ -309,7 +309,7 @@
   },
   "l_3qNjzC": {
    "errors": [],
-   "matches": 698,
+   "matches": 704,
    "name": "Liga de Primera",
    "with_stats": 0
   },
@@ -339,9 +339,9 @@
   },
   "l_3xwVF2": {
    "errors": [],
-   "matches": 312,
+   "matches": 313,
    "name": "Super League 1",
-   "with_stats": 312
+   "with_stats": 313
   },
   "l_3yVUAO": {
    "errors": [],
@@ -381,7 +381,7 @@
   },
   "l_49KZaB": {
    "errors": [],
-   "matches": 916,
+   "matches": 920,
    "name": "Eerste Divisie",
    "with_stats": 0
   },
@@ -399,7 +399,7 @@
   },
   "l_4FPF2L": {
    "errors": [],
-   "matches": 509,
+   "matches": 513,
    "name": "Division Profesional",
    "with_stats": 0
   },
