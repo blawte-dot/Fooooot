@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-25T14:15:20+00:00",
+ "generated_at": "2026-11-25T22:36:19+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -51,9 +51,9 @@
   },
   "l_0bfbkO": {
    "errors": [],
-   "matches": 834,
+   "matches": 843,
    "name": "Champions League",
-   "with_stats": 458
+   "with_stats": 467
   },
   "l_0eg6C9": {
    "errors": [],
