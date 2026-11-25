@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-24T22:59:53+00:00",
+ "generated_at": "2026-11-25T04:41:44+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -93,9 +93,9 @@
   },
   "l_1D8Xrl": {
    "errors": [],
-   "matches": 1455,
+   "matches": 1456,
    "name": "Serie A",
-   "with_stats": 869
+   "with_stats": 870
   },
   "l_1Isor4": {
    "errors": [],
@@ -123,7 +123,7 @@
   },
   "l_1TVRZW": {
    "errors": [],
-   "matches": 698,
+   "matches": 699,
    "name": "Primera Division",
    "with_stats": 0
   },
