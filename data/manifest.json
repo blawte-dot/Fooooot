@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-26T08:51:49+00:00",
+ "generated_at": "2026-11-26T17:53:52+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -27,9 +27,9 @@
   },
   "l_0Lpz1f": {
    "errors": [],
-   "matches": 1022,
+   "matches": 1024,
    "name": "Saudi Pro League",
-   "with_stats": 715
+   "with_stats": 717
   },
   "l_0S1uaf": {
    "errors": [],
@@ -225,9 +225,9 @@
   },
   "l_2WZ2tt": {
    "errors": [],
-   "matches": 779,
+   "matches": 780,
    "name": "Conference League",
-   "with_stats": 355
+   "with_stats": 356
   },
   "l_2tFk9k": {
    "errors": [],
