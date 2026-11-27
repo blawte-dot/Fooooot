@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-27T12:59:52+00:00",
+ "generated_at": "2026-11-27T18:05:04+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -27,9 +27,9 @@
   },
   "l_0Lpz1f": {
    "errors": [],
-   "matches": 1024,
+   "matches": 1027,
    "name": "Saudi Pro League",
-   "with_stats": 717
+   "with_stats": 720
   },
   "l_0S1uaf": {
    "errors": [],
@@ -69,7 +69,7 @@
   },
   "l_0kSJLz": {
    "errors": [],
-   "matches": 760,
+   "matches": 761,
    "name": "Liga I",
    "with_stats": 0
   },
@@ -81,7 +81,7 @@
   },
   "l_16Sq13": {
    "errors": [],
-   "matches": 550,
+   "matches": 551,
    "name": "Ligat ha'Al",
    "with_stats": 0
   },
@@ -165,9 +165,9 @@
   },
   "l_1qpFVw": {
    "errors": [],
-   "matches": 654,
+   "matches": 655,
    "name": "Indian Super League",
-   "with_stats": 283
+   "with_stats": 284
   },
   "l_1rPvVD": {
    "errors": [],
@@ -225,9 +225,9 @@
   },
   "l_2WZ2tt": {
    "errors": [],
-   "matches": 780,
+   "matches": 797,
    "name": "Conference League",
-   "with_stats": 356
+   "with_stats": 373
   },
   "l_2tFk9k": {
    "errors": [],
@@ -237,9 +237,9 @@
   },
   "l_2xBPKk": {
    "errors": [],
-   "matches": 704,
+   "matches": 705,
    "name": "Super Liga",
-   "with_stats": 673
+   "with_stats": 674
   },
   "l_38d9HA": {
    "errors": [],
@@ -291,7 +291,7 @@
   },
   "l_3hW1NO": {
    "errors": [],
-   "matches": 308,
+   "matches": 309,
    "name": "Thai League 1",
    "with_stats": 0
   },
@@ -333,7 +333,7 @@
   },
   "l_3wr44B": {
    "errors": [],
-   "matches": 324,
+   "matches": 326,
    "name": "Qatar Stars League",
    "with_stats": 0
   },
