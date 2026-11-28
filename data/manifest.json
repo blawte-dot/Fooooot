@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-28T07:40:33+00:00",
+ "generated_at": "2026-11-28T15:58:51+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -15,9 +15,9 @@
   },
   "l_0ErfuF": {
    "errors": [],
-   "matches": 2029,
+   "matches": 2030,
    "name": "LaLiga",
-   "with_stats": 874
+   "with_stats": 875
   },
   "l_0F4I4F": {
    "errors": [],
@@ -93,9 +93,9 @@
   },
   "l_1D8Xrl": {
    "errors": [],
-   "matches": 1458,
+   "matches": 1459,
    "name": "Serie A",
-   "with_stats": 872
+   "with_stats": 873
   },
   "l_1Isor4": {
    "errors": [],
@@ -105,7 +105,7 @@
   },
   "l_1Kknkl": {
    "errors": [],
-   "matches": 256,
+   "matches": 257,
    "name": "Premier Soccer League",
    "with_stats": 0
   },
@@ -219,9 +219,9 @@
   },
   "l_2Mh0jT": {
    "errors": [],
-   "matches": 337,
+   "matches": 339,
    "name": "Premier League",
-   "with_stats": 337
+   "with_stats": 339
   },
   "l_2WZ2tt": {
    "errors": [],
@@ -291,7 +291,7 @@
   },
   "l_3hW1NO": {
    "errors": [],
-   "matches": 309,
+   "matches": 312,
    "name": "Thai League 1",
    "with_stats": 0
   },
@@ -333,7 +333,7 @@
   },
   "l_3wr44B": {
    "errors": [],
-   "matches": 326,
+   "matches": 327,
    "name": "Qatar Stars League",
    "with_stats": 0
   },
@@ -411,9 +411,9 @@
   },
   "l_4MPd7x": {
    "errors": [],
-   "matches": 863,
+   "matches": 864,
    "name": "A-League",
-   "with_stats": 368
+   "with_stats": 369
   },
   "l_4MU9Yh": {
    "errors": [],
