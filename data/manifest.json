@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-28T15:58:51+00:00",
+ "generated_at": "2026-11-28T16:51:33+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -9,9 +9,9 @@
   },
   "l_0ALvwF": {
    "errors": [],
-   "matches": 2022,
+   "matches": 2023,
    "name": "Serie A",
-   "with_stats": 866
+   "with_stats": 867
   },
   "l_0ErfuF": {
    "errors": [],
@@ -39,9 +39,9 @@
   },
   "l_0aEfof": {
    "errors": [],
-   "matches": 420,
+   "matches": 421,
    "name": "Pro League",
-   "with_stats": 420
+   "with_stats": 421
   },
   "l_0ahLw8": {
    "errors": [],
@@ -63,9 +63,9 @@
   },
   "l_0jy5yE": {
    "errors": [],
-   "matches": 520,
+   "matches": 523,
    "name": "Serie B",
-   "with_stats": 520
+   "with_stats": 523
   },
   "l_0kSJLz": {
    "errors": [],
@@ -99,9 +99,9 @@
   },
   "l_1Isor4": {
    "errors": [],
-   "matches": 1621,
+   "matches": 1625,
    "name": "Bundesliga",
-   "with_stats": 703
+   "with_stats": 707
   },
   "l_1Kknkl": {
    "errors": [],
@@ -417,7 +417,7 @@
   },
   "l_4MU9Yh": {
    "errors": [],
-   "matches": 477,
+   "matches": 480,
    "name": "1. liga",
    "with_stats": 0
   },
