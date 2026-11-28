@@ -1,5 +1,5 @@
 {
- "generated_at": "2026-11-28T00:04:18+00:00",
+ "generated_at": "2026-11-28T04:16:44+00:00",
  "leagues": {
   "l_0275VP": {
    "errors": [],
@@ -57,9 +57,9 @@
   },
   "l_0eg6C9": {
    "errors": [],
-   "matches": 3057,
+   "matches": 3058,
    "name": "MLS",
-   "with_stats": 1213
+   "with_stats": 1214
   },
   "l_0jy5yE": {
    "errors": [],
@@ -315,9 +315,9 @@
   },
   "l_3qUkB8": {
    "errors": [],
-   "matches": 1142,
+   "matches": 1143,
    "name": "Serie B",
-   "with_stats": 945
+   "with_stats": 946
   },
   "l_3uNwVX": {
    "errors": [],
@@ -453,7 +453,7 @@
   },
   "l_4dzm4e": {
    "errors": [],
-   "matches": 767,
+   "matches": 769,
    "name": "Primera Division",
    "with_stats": 0
   }
